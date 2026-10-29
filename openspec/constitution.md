@@ -3,10 +3,10 @@
 | Campo | Valor |
 | --- | --- |
 | Versão | 1.1.0 |
-| Estado | Texto da v1.0.1 aprovado por Kaio Macedo em 2026-10-29; v1.1.0 aguardando confirmação e ratificação |
+| Estado | Ratificada |
 | Criada em | 2026-10-29 |
 | Última alteração | 2026-10-29 |
-| Ratificada em | Pendente: confirmação do texto da v1.1.0 por Kaio Macedo |
+| Ratificada em | 2026-10-29, por Kaio Macedo (versão 1.1.0) |
 | Responsáveis pela aprovação | Kaio Macedo, responsável pelo projeto, com aprovação única (DP-19) |
 | Fonte normativa | `openspec/constitution.md` neste repositório |
 
@@ -800,7 +800,7 @@ Sínteses desta constitution, como a nota do cofre Obsidian, MUST indicar a vers
 | --- | --- | --- | --- |
 | 1.0.0 | 2026-10-29 | Versão inicial proposta para validação. | Pendente (DP-19). |
 | 1.0.1 | 2026-10-29 | PATCH: palavras-chave normativas passam de DEVE/NÃO DEVE/PODE para MUST/MUST NOT/MAY, alinhadas às especificações OpenSpec. Sem efeito normativo; nenhuma especificação existente afetada. | Texto aprovado por Kaio Macedo em 2026-10-29. |
-| 1.1.0 | 2026-10-29 | MINOR: Sofia INFIS como orquestradora e consumidora A2A (1.1, 1.2, RA-07); análise sob demanda (1.2); só validação nesta fase (1.3); fluxo passo a passo no OpenSpec (6.1); revisão de PR pelo responsável quando o autor for o assistente de IA (6.6); versionamento no GitHub (6.8); revisão da constitution a cada novo leiaute (8.4); DP-19, DP-20 e DP-21 resolvidas; fonte inicial em DP-04; referências para DP-01, DP-16 e DP-18. Nenhuma especificação existente afetada. | Pendente de confirmação do texto por Kaio Macedo. |
+| 1.1.0 | 2026-10-29 | MINOR: Sofia INFIS como orquestradora e consumidora A2A (1.1, 1.2, RA-07); análise sob demanda (1.2); só validação nesta fase (1.3); fluxo passo a passo no OpenSpec (6.1); revisão de PR pelo responsável quando o autor for o assistente de IA (6.6); versionamento no GitHub (6.8); revisão da constitution a cada novo leiaute (8.4); DP-19, DP-20 e DP-21 resolvidas; fonte inicial em DP-04; referências para DP-01, DP-16 e DP-18. Nenhuma especificação existente afetada. | Ratificada por Kaio Macedo em 2026-10-29. |
 
 ---
 

@@ -2,7 +2,7 @@
 
 Agente de IA que analisa arquivos da Escrituração Contábil Fiscal (ECF), valida sua estrutura e a consistência das informações e gera um relatório de inconsistências com evidências e referências aos manuais oficiais.
 
-**Situação:** especificação. A [constitution](openspec/constitution.md) v1.1.0 teve o texto aprovado; a ratificação formal depende de DP-19. Nenhum código de implementação foi criado.
+**Situação:** especificação. A [constitution](openspec/constitution.md) v1.1.0 foi ratificada por Kaio Macedo em 2026-10-29. Nenhum código de implementação foi criado.
 
 ## Estrutura
 
