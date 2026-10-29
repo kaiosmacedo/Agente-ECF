@@ -2,58 +2,76 @@ using System.ComponentModel.DataAnnotations;
 using Api.Agente.Infraestrutura.Configuracao;
 using Api.Agente.Tests.Infra;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Api.Agente.Tests;
 
 public sealed class ConfiguracaoTests
 {
     [Fact(DisplayName = "REQ-CONFIG-002 Opção obrigatória ausente impede a inicialização e cita o nome")]
-    public void OpcaoObrigatoriaAusente()
+    public async Task OpcaoObrigatoriaAusente()
     {
-        using var fabrica = ComOpcaoDeExemplo(valor: null);
+        var erro = await IniciarHost(ConfigurarExemplo, ("Exemplo:Endereco", null), new ProvedorDeLogEmMemoria());
 
-        var mensagem = MensagemCompleta(Assert.ThrowsAny<Exception>(() => fabrica.CreateClient()));
-
-        Assert.Contains("Exemplo:Endereco", mensagem, StringComparison.Ordinal);
+        Assert.Contains("Exemplo:Endereco", erro.Message, StringComparison.Ordinal);
     }
 
     [Fact(DisplayName = "REQ-CONFIG-002 Opção inválida impede a inicialização sem revelar o valor")]
-    public void OpcaoInvalidaSemRevelarValor()
+    public async Task OpcaoInvalidaSemRevelarValor()
     {
-        using var fabrica = ComOpcaoDeExemplo(valor: "segredo-nao-url");
+        var logs = new ProvedorDeLogEmMemoria();
 
-        var mensagem = MensagemCompleta(Assert.ThrowsAny<Exception>(() => fabrica.CreateClient()));
+        var erro = await IniciarHost(ConfigurarExemplo, ("Exemplo:Endereco", "segredo-nao-url"), logs);
 
-        Assert.Contains("Exemplo:Endereco", mensagem, StringComparison.Ordinal);
-        Assert.DoesNotContain("segredo-nao-url", mensagem, StringComparison.Ordinal);
-        Assert.DoesNotContain(fabrica.Logs.Registros, r => r.TextoCompleto.Contains("segredo-nao-url", StringComparison.Ordinal));
+        Assert.Contains("Exemplo:Endereco", erro.Message, StringComparison.Ordinal);
+        Assert.DoesNotContain("segredo-nao-url", erro.ToString(), StringComparison.Ordinal);
+        Assert.DoesNotContain(logs.Registros, r => r.TextoCompleto.Contains("segredo-nao-url", StringComparison.Ordinal));
     }
 
-    [Fact(DisplayName = "REQ-CONFIG-002 Nível de log fora da lista impede a inicialização")]
-    public void NivelDeLogInvalido()
+    [Fact(DisplayName = "REQ-CONFIG-002 Nível de log fora da lista impede a inicialização sem revelar o valor")]
+    public async Task NivelDeLogInvalido()
+    {
+        var erro = await IniciarHost(
+            (servicos, configuracao) => servicos.AdicionarOpcoesValidadas<OpcoesObservabilidade>(configuracao, OpcoesObservabilidade.Secao),
+            ("Observabilidade:NivelMinimo", "Verboso"),
+            new ProvedorDeLogEmMemoria());
+
+        Assert.Contains("Observabilidade:NivelMinimo", erro.Message, StringComparison.Ordinal);
+        Assert.DoesNotContain("Verboso", erro.ToString(), StringComparison.Ordinal);
+    }
+
+    [Fact(DisplayName = "REQ-CONFIG-002 O serviço não sobe com opção obrigatória inválida")]
+    public void ServicoNaoSobeComOpcaoInvalida()
     {
         using var fabrica = new FabricaApi().Com(builder => builder.UseSetting("Observabilidade:NivelMinimo", "Verboso"));
 
-        var mensagem = MensagemCompleta(Assert.ThrowsAny<Exception>(() => fabrica.CreateClient()));
-
-        Assert.Contains("Observabilidade:NivelMinimo", mensagem, StringComparison.Ordinal);
-        Assert.DoesNotContain("Verboso", mensagem, StringComparison.Ordinal);
+        Assert.ThrowsAny<Exception>(() => fabrica.CreateClient());
     }
 
-    private static FabricaApi ComOpcaoDeExemplo(string? valor) => new FabricaApi().Com(builder =>
+    // Host isolado com o mesmo registro de opções do serviço: o erro de validação chega intacto,
+    // sem a corrida de descarte do servidor de testes quando a inicialização falha.
+    private static async Task<OptionsValidationException> IniciarHost(
+        Action<IServiceCollection, IConfiguration> registrar, (string Chave, string? Valor) opcao, ProvedorDeLogEmMemoria logs)
     {
-        if (valor is not null)
+        var builder = Host.CreateApplicationBuilder();
+        builder.Logging.ClearProviders();
+        builder.Logging.AddProvider(logs);
+        if (opcao.Valor is not null)
         {
-            builder.UseSetting("Exemplo:Endereco", valor);
+            builder.Configuration.AddInMemoryCollection([new KeyValuePair<string, string?>(opcao.Chave, opcao.Valor)]);
         }
 
-        builder.ConfigureServices((contexto, servicos) =>
-            servicos.AdicionarOpcoesValidadas<OpcoesDeExemplo>(contexto.Configuration, "Exemplo"));
-    });
+        registrar(builder.Services, builder.Configuration);
+        using var host = builder.Build();
+        return await Assert.ThrowsAsync<OptionsValidationException>(() => host.StartAsync(TestContext.Current.CancellationToken));
+    }
 
-    private static string MensagemCompleta(Exception erro) => erro.ToString();
+    private static void ConfigurarExemplo(IServiceCollection servicos, IConfiguration configuracao) =>
+        servicos.AdicionarOpcoesValidadas<OpcoesDeExemplo>(configuracao, "Exemplo");
 
     private sealed class OpcoesDeExemplo
     {
