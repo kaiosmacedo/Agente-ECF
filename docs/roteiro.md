@@ -4,7 +4,7 @@ Sequência das mudanças OpenSpec que constroem o agente, com dependências, dec
 
 ## Como ler
 
-- **Especificada:** proposta e specs prontas para validação de Kaio Macedo. Ainda sem esclarecimentos respondidos, plano técnico ou tarefas.
+- **Especificação aprovada:** proposta e specs aprovadas por Kaio Macedo; faltam esclarecimentos, plano técnico e tarefas.
 - **Em implementação:** especificação, plano e tarefas aprovados; código em andamento na branch `feat/<id>`.
 - **Concluída:** mesclada na `main` e arquivada no OpenSpec.
 
@@ -14,29 +14,29 @@ Cada mudança segue o fluxo da constitution (6.1): especificação → esclareci
 
 | Etapa | Situação |
 | --- | --- |
-| Constitution | v1.2.0 vigente (ratificada na v1.1.0); emenda v1.3.0 proposta neste roteiro. |
+| Constitution | v1.3.0 vigente (ratificada na v1.1.0; emendas aprovadas por Kaio Macedo). |
 | CI/CD | CI ativo com checks obrigatórios `OpenSpec` e `.NET`; CD para o Vercel pronto, aguardando o token. |
 | Vercel | Time `agent-ecf`; projetos `agente-ecf-agente` e `agente-ecf-rag` configurados. |
 | Mudança 01 | Em implementação (PR #2): 25 de 32 tarefas concluídas; falta o token, o primeiro deploy e o fechamento. |
-| Mudanças 02 a 13 | Especificadas para validação. |
+| Mudanças 02 a 13 | Especificações aprovadas por Kaio Macedo em 2026-10-29 (PR #4); próxima etapa: esclarecimentos da mudança 02. |
 
 ## Mudanças
 
 | Nº | Mudança | Capacidades | Depende de | DPs | Skills | Estado |
 | --- | --- | --- | --- | --- | --- | --- |
 | 01 | `fundacao-solucao` | `plataforma/saude-servicos`, `configuracao-servicos`, `observabilidade`, `qualidade-entrega`, `entrega-servicos` | — | 17, 18 | `testes-agentes-ia`, `vercel-dotnet-pgvector-atlas`, `github-versionamento` | Em implementação |
-| 02 | `autenticacao-autorizacao` | `plataforma/autenticacao` | 01 | 09 | `testes-agentes-ia` | Especificada |
-| 03 | `execucao-e-resultado` | `agente/execucao-analise`, `agente/contrato-resultado` | 01, 02 | 07, 08, 15, 23, 25 | `testes-agentes-ia` | Especificada |
-| 04 | `registro-consumo-ia` | `plataforma/consumo-custos` | 01, 02 | 13, 26 | `controle-custos-llm`, `testes-agentes-ia` | Especificada |
-| 05 | `base-conhecimento-ingestao` | `rag/ingestao-documentos`, `rag/administracao-base` | 02, 04 | 02, 03, 04, 24 | `rag-pgvector`, `controle-custos-llm`, `testes-agentes-ia` | Especificada |
-| 06 | `recuperacao-conhecimento-mcp` | `rag/recuperacao-conhecimento`, `agente/consulta-conhecimento` | 03, 05 | 03, 14 | `mcp-client-server`, `rag-pgvector`, `vercel-dotnet-pgvector-atlas` | Especificada |
-| 07 | `recepcao-identificacao-leiaute` | `agente/recepcao-arquivos`, `agente/identificacao-leiaute` | 03 | 04, 05, 11, 22, 25 | `testes-agentes-ia` | Especificada |
-| 08 | `validacao-estrutural` | `agente/validacao-estrutural` | 07 | 04 | `testes-agentes-ia` | Especificada |
-| 09 | `regras-negocio-irpj-csll` | `agente/regras-negocio` | 08 | 04, 06 | `testes-agentes-ia` | Especificada |
-| 10 | `analise-llm` | `agente/analise-llm` | 04, 06, 08 | 02, 12, 14 | `semantic-kernel-tools`, `controle-custos-llm`, `testes-agentes-ia` | Especificada |
-| 11 | `ferramentas-agente` | `agente/ferramentas` | 10 | 10 | `semantic-kernel-tools`, `testes-agentes-ia` | Especificada |
-| 12 | `memoria-conversacional` | `agente/memoria-conversacional` | 02, 10 | 01, 11 | `memoria-mongodb`, `testes-agentes-ia` | Especificada |
-| 13 | `servidor-a2a` | `integracao/servidor-a2a` | 02, 03, 10 | 09, 16 | `vercel-dotnet-pgvector-atlas`, `testes-agentes-ia` | Especificada |
+| 02 | `autenticacao-autorizacao` | `plataforma/autenticacao` | 01 | 09 | `testes-agentes-ia` | Especificação aprovada |
+| 03 | `execucao-e-resultado` | `agente/execucao-analise`, `agente/contrato-resultado` | 01, 02 | 07, 08, 15, 23, 25 | `testes-agentes-ia` | Especificação aprovada |
+| 04 | `registro-consumo-ia` | `plataforma/consumo-custos` | 01, 02 | 13, 26 | `controle-custos-llm`, `testes-agentes-ia` | Especificação aprovada |
+| 05 | `base-conhecimento-ingestao` | `rag/ingestao-documentos`, `rag/administracao-base` | 02, 04 | 02, 03, 04, 24 | `rag-pgvector`, `controle-custos-llm`, `testes-agentes-ia` | Especificação aprovada |
+| 06 | `recuperacao-conhecimento-mcp` | `rag/recuperacao-conhecimento`, `agente/consulta-conhecimento` | 03, 05 | 03, 14 | `mcp-client-server`, `rag-pgvector`, `vercel-dotnet-pgvector-atlas` | Especificação aprovada |
+| 07 | `recepcao-identificacao-leiaute` | `agente/recepcao-arquivos`, `agente/identificacao-leiaute` | 03 | 04, 05, 11, 22, 25 | `testes-agentes-ia` | Especificação aprovada |
+| 08 | `validacao-estrutural` | `agente/validacao-estrutural` | 07 | 04 | `testes-agentes-ia` | Especificação aprovada |
+| 09 | `regras-negocio-irpj-csll` | `agente/regras-negocio` | 08 | 04, 06 | `testes-agentes-ia` | Especificação aprovada |
+| 10 | `analise-llm` | `agente/analise-llm` | 04, 06, 08 | 02, 12, 14 | `semantic-kernel-tools`, `controle-custos-llm`, `testes-agentes-ia` | Especificação aprovada |
+| 11 | `ferramentas-agente` | `agente/ferramentas` | 10 | 10 | `semantic-kernel-tools`, `testes-agentes-ia` | Especificação aprovada |
+| 12 | `memoria-conversacional` | `agente/memoria-conversacional` | 02, 10 | 01, 11 | `memoria-mongodb`, `testes-agentes-ia` | Especificação aprovada |
+| 13 | `servidor-a2a` | `integracao/servidor-a2a` | 02, 03, 10 | 09, 16 | `vercel-dotnet-pgvector-atlas`, `testes-agentes-ia` | Especificação aprovada |
 
 `github-versionamento` vale para todas as mudanças. As mudanças 05 a 09 podem avançar em paralelo com 04 quando suas dependências estiverem mescladas.
 

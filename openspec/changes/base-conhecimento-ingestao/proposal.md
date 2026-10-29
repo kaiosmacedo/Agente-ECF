@@ -1,6 +1,6 @@
 # Proposal: Base de conhecimento e ingestão de manuais
 
-> **Estado:** especificada para validação de Kaio Macedo (roteiro, mudança 05). Plano técnico e tarefas só depois da aprovação e dos esclarecimentos bloqueantes.
+> **Estado:** especificação aprovada por Kaio Macedo em 2026-10-29 (roteiro, mudança 05; PR #4). Próxima etapa: esclarecimentos. Plano técnico e tarefas só depois dos esclarecimentos bloqueantes.
 
 ## Why
 
@@ -61,4 +61,4 @@ A ingestão guarda o documento como dado. Nenhum requisito desta mudança depend
 
 ## Aprovação
 
-Pendente da validação de Kaio Macedo.
+Especificação aprovada por Kaio Macedo em 2026-10-29 (PR #4). Esclarecimentos, plano técnico e tarefas seguem na branch `feat/<id>` da mudança.

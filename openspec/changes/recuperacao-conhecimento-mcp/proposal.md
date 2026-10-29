@@ -1,6 +1,6 @@
 # Proposal: Recuperação de conhecimento por MCP
 
-> **Estado:** especificada para validação de Kaio Macedo (roteiro, mudança 06). Plano técnico e tarefas só depois da aprovação e dos esclarecimentos bloqueantes.
+> **Estado:** especificação aprovada por Kaio Macedo em 2026-10-29 (roteiro, mudança 06; PR #4). Próxima etapa: esclarecimentos. Plano técnico e tarefas só depois dos esclarecimentos bloqueantes.
 
 ## Why
 
@@ -54,4 +54,4 @@ Não se aplica: a recuperação devolve trechos das fontes ingeridas na mudança
 
 ## Aprovação
 
-Pendente da validação de Kaio Macedo.
+Especificação aprovada por Kaio Macedo em 2026-10-29 (PR #4). Esclarecimentos, plano técnico e tarefas seguem na branch `feat/<id>` da mudança.

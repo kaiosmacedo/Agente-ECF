@@ -3,7 +3,7 @@
 | Campo | Valor |
 | --- | --- |
 | Versão | 1.3.0 |
-| Estado | Vigente na v1.2.0 (ratificada na v1.1.0); emenda v1.3.0 aguardando aprovação de Kaio Macedo |
+| Estado | Vigente (ratificada na v1.1.0; emendas v1.2.0 e v1.3.0 aprovadas) |
 | Criada em | 2026-10-29 |
 | Última alteração | 2026-10-29 |
 | Ratificada em | 2026-10-29, por Kaio Macedo (versão 1.1.0) |
@@ -807,7 +807,7 @@ Sínteses desta constitution, como a nota do cofre Obsidian, MUST indicar a vers
 | 1.0.1 | 2026-10-29 | PATCH: palavras-chave normativas passam de DEVE/NÃO DEVE/PODE para MUST/MUST NOT/MAY, alinhadas às especificações OpenSpec. Sem efeito normativo; nenhuma especificação existente afetada. | Texto aprovado por Kaio Macedo em 2026-10-29. |
 | 1.1.0 | 2026-10-29 | MINOR: Sofia INFIS como orquestradora e consumidora A2A (1.1, 1.2, RA-07); análise sob demanda (1.2); só validação nesta fase (1.3); fluxo passo a passo no OpenSpec (6.1); revisão de PR pelo responsável quando o autor for o assistente de IA (6.6); versionamento no GitHub (6.8); revisão da constitution a cada novo leiaute (8.4); DP-19, DP-20 e DP-21 resolvidas; fonte inicial em DP-04; referências para DP-01, DP-16 e DP-18. Nenhuma especificação existente afetada. | Ratificada por Kaio Macedo em 2026-10-29. |
 | 1.2.0 | 2026-10-29 | MINOR: delegação ao assistente de IA da validação e do merge de PRs (6.6); branches `ci/` e do Dependabot e checks obrigatórios do CI (6.8); decisões do responsável para DP-17 e DP-18, a formalizar em ADR. Nenhuma especificação existente afetada. | Decisões aprovadas por Kaio Macedo em 2026-10-29; merge por delegação (6.6). |
-| 1.3.0 | 2026-10-29 | MINOR: roteiro em `docs/roteiro.md` e uso obrigatório das skills do projeto indicadas no roteiro e no `tasks.md` (6.1); especificação conjunta de várias mudanças numa branch `docs/roteiro-*` (6.8). Nenhuma especificação vigente afetada. | Pendente de aprovação de Kaio Macedo. |
+| 1.3.0 | 2026-10-29 | MINOR: roteiro em `docs/roteiro.md` e uso obrigatório das skills do projeto indicadas no roteiro e no `tasks.md` (6.1); especificação conjunta de várias mudanças numa branch `docs/roteiro-*` (6.8). Nenhuma especificação vigente afetada. | Aprovada por Kaio Macedo em 2026-10-29 (PR #4). |
 
 ---
 

@@ -1,6 +1,6 @@
 # Proposal: Recepção do arquivo e identificação do leiaute
 
-> **Estado:** especificada para validação de Kaio Macedo (roteiro, mudança 07). Plano técnico e tarefas só depois da aprovação e dos esclarecimentos bloqueantes.
+> **Estado:** especificação aprovada por Kaio Macedo em 2026-10-29 (roteiro, mudança 07; PR #4). Próxima etapa: esclarecimentos. Plano técnico e tarefas só depois dos esclarecimentos bloqueantes.
 
 ## Why
 
@@ -58,4 +58,4 @@ As etapas 1 a 3 do fluxo (P03) recebem o arquivo, validam tamanho, formato e con
 
 ## Aprovação
 
-Pendente da validação de Kaio Macedo.
+Especificação aprovada por Kaio Macedo em 2026-10-29 (PR #4). Esclarecimentos, plano técnico e tarefas seguem na branch `feat/<id>` da mudança.

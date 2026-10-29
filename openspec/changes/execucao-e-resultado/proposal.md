@@ -1,6 +1,6 @@
 # Proposal: Execução da análise e contrato de resultado
 
-> **Estado:** especificada para validação de Kaio Macedo (roteiro, mudança 03). Plano técnico e tarefas só depois da aprovação e dos esclarecimentos bloqueantes.
+> **Estado:** especificação aprovada por Kaio Macedo em 2026-10-29 (roteiro, mudança 03; PR #4). Próxima etapa: esclarecimentos. Plano técnico e tarefas só depois dos esclarecimentos bloqueantes.
 
 ## Why
 
@@ -59,4 +59,4 @@ Não se aplica: o contrato não contém regras fiscais. As regras que produzem a
 
 ## Aprovação
 
-Pendente da validação de Kaio Macedo.
+Especificação aprovada por Kaio Macedo em 2026-10-29 (PR #4). Esclarecimentos, plano técnico e tarefas seguem na branch `feat/<id>` da mudança.
