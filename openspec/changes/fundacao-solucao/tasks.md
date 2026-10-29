@@ -47,18 +47,18 @@
 
 ## 8. Entrega no Vercel
 
-- [ ] 8.1 Criar `vercel.json` em cada serviço com o preset de contêiner e o deploy pela integração Git desligado, com a chave confirmada na documentação vigente (D9, D10); verificar que um PR não gera publicação no Vercel (REQ-ENTREGA-004).
+- [x] 8.1 Criar `vercel.json` em cada serviço com o preset de contêiner e o deploy pela integração Git desligado, com a chave confirmada na documentação vigente (D9, D10); verificar que um PR não gera publicação no Vercel (REQ-ENTREGA-004).
 - [ ] 8.2 Criar `.github/workflows/cd.yml` disparado pelo sucesso do `CI` em push na `main`, com Vercel CLI em versão fixa, Environment `producao`, deploy por serviço e verificação de `/health/live` com novas tentativas até 60 s (D9); verificar que o GitHub aceita o workflow e que ele não dispara em PRs (REQ-ENTREGA-004, REQ-ENTREGA-005).
 - [x] 8.3 **(com Kaio Macedo)** Criar no Vercel os projetos `agente-ecf-agente` e `agente-ecf-rag`, com Root Directory na pasta de cada serviço, preset de contêiner, `PORT=8080` e `ASPNETCORE_ENVIRONMENT=Production` (D10); verificar as configurações no painel do Vercel.
-- [ ] 8.4 **(com Kaio Macedo)** Criar o token do Vercel e cadastrar `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID_AGENTE` e `VERCEL_PROJECT_ID_RAG` no Environment `producao`, e as URLs de produção como variáveis do repositório; verificar com `gh secret list --env producao` que os nomes existem, sem ver os valores.
-- [ ] 8.5 Documentar em `docs/ci-cd.md` o passo a passo do Vercel, a rotação do token e o rollback; verificar que o procedimento corresponde ao executado em 8.3 e 8.4.
+- [x] 8.4 **(com Kaio Macedo)** Criar o token do Vercel e cadastrar `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID_AGENTE` e `VERCEL_PROJECT_ID_RAG` no Environment `producao`, e as URLs de produção como variáveis do repositório; verificar com `gh secret list --env producao` que os nomes existem, sem ver os valores.
+- [x] 8.5 Documentar em `docs/ci-cd.md` o passo a passo do Vercel, a rotação do token e o rollback; verificar que o procedimento corresponde ao executado em 8.3 e 8.4.
 - [ ] 8.6 Após o merge desta mudança, verificar a execução do `cd.yml`: deploy dos dois serviços e `/health/live` com HTTP 200 em produção, registrando o tempo de partida a frio no PR ou no ADR 0002 (REQ-ENTREGA-004, REQ-ENTREGA-005).
 
 ## 9. Fechamento
 
 - [x] 9.1 Atualizar o `README.md` com a estrutura `src/` e `tests/` e os comandos de build e teste; verificar que os comandos executam como escritos.
 - [x] 9.2 Marcar os ADRs 0001 e 0002 como Aceitos após a aprovação e atualizar o índice em `docs/adr/README.md`; verificar os links do índice.
-- [ ] 9.3 Atualizar a nota `Projetos/Agente-ECF` do cofre Obsidian com o estado entregue (DoD-18); verificar a tabela de mudanças da nota.
+- [x] 9.3 Atualizar a nota `Projetos/Agente-ECF` do cofre Obsidian com o estado entregue (DoD-18); verificar a tabela de mudanças da nota.
 - [ ] 9.4 Executar `/opsx:verify` e conferir a Definition of Done (seção 7 da constitution); verificar que todos os itens aplicáveis estão atendidos ou justificados no PR.
 
 ## Workflow follow-up
