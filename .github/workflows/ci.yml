@@ -54,7 +54,7 @@ jobs:
   dotnet:
     name: .NET
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -78,17 +78,23 @@ jobs:
           SOLUCAO: ${{ steps.solucao.outputs.arquivo }}
         run: dotnet restore "$SOLUCAO"
 
-      - name: Compilar
+      - name: Verificar formatação
         if: steps.solucao.outputs.arquivo != ''
         env:
           SOLUCAO: ${{ steps.solucao.outputs.arquivo }}
-        run: dotnet build "$SOLUCAO" --no-restore -c Release
+        run: dotnet format "$SOLUCAO" --verify-no-changes --no-restore
+
+      - name: Compilar (avisos como erros)
+        if: steps.solucao.outputs.arquivo != ''
+        env:
+          SOLUCAO: ${{ steps.solucao.outputs.arquivo }}
+        run: dotnet build "$SOLUCAO" --no-restore -c Release -p:SourceRevisionId="$GITHUB_SHA"
 
       - name: Testar
         if: steps.solucao.outputs.arquivo != ''
         env:
           SOLUCAO: ${{ steps.solucao.outputs.arquivo }}
-        run: dotnet test "$SOLUCAO" --no-build -c Release
+        run: dotnet test --solution "$SOLUCAO" --no-build -c Release
 
       - name: Verificar pacotes vulneráveis
         if: steps.solucao.outputs.arquivo != ''
@@ -100,3 +106,9 @@ jobs:
             echo "::error::Pacotes com vulnerabilidade conhecida (SQ-11)."
             exit 1
           fi
+
+      - name: Construir e testar contêineres
+        if: steps.solucao.outputs.arquivo != ''
+        env:
+          VERSAO: ${{ github.sha }}
+        run: bash .github/scripts/testar-conteineres.sh

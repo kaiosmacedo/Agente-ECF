@@ -2,23 +2,44 @@
 
 Agente de IA que analisa arquivos da Escrituração Contábil Fiscal (ECF), valida sua estrutura e a consistência das informações e gera um relatório de inconsistências com evidências e referências aos manuais oficiais.
 
-**Situação:** especificação. A [constitution](openspec/constitution.md) v1.2.0 está vigente; a v1.1.0 foi ratificada por Kaio Macedo em 2026-10-29. Nenhum código de implementação foi criado.
+**Situação:** fundação em implementação (mudança `fundacao-solucao`). A [constitution](openspec/constitution.md) v1.2.0 está vigente; a v1.1.0 foi ratificada por Kaio Macedo em 2026-10-29.
 
 ## Estrutura
 
 | Caminho | Conteúdo |
 | --- | --- |
+| `src/Api.Agente/`, `src/Api.RAG/` | Serviços ASP.NET Core (.NET 10), um projeto por serviço, com as pastas `Endpoints`, `Aplicacao`, `Dominio` e `Infraestrutura` (ADR 0001). Cada um tem `Dockerfile` e `vercel.json`. |
+| `tests/Api.Agente.Tests/`, `tests/Api.RAG.Tests/` | Testes xUnit: HTTP em memória, logs, configuração e regras de arquitetura. |
+| `Agente-ECF.slnx`, `global.json`, `Directory.Build.props`, `.editorconfig`, `nuget.config` | Solução, SDK, regras de qualidade, formatação e origem dos pacotes. |
 | `openspec/constitution.md` | Princípios, restrições e critérios obrigatórios. Fonte normativa do projeto. |
 | `openspec/config.yaml` | Contexto e regras aplicados pelo OpenSpec a cada artefato. |
 | `openspec/specs/` | Especificações vigentes, por capacidade. |
 | `openspec/changes/` | Mudanças em andamento; as concluídas ficam em `changes/archive/`. |
 | `docs/adr/` | Decisões arquiteturais (ADRs). |
 | `docs/governanca/desvios.md` | Registro de desvios da constitution. |
-| `.github/` | CI (`workflows/ci.yml`), modelo de PR e Dependabot. Detalhes em `docs/ci-cd.md`. |
-| `docs/ci-cd.md` | Pipeline de CI/CD: checks obrigatórios e entrega planejada no Vercel. |
+| `.github/` | CI (`workflows/ci.yml`), CD (`workflows/cd.yml`), teste de contêineres, modelo de PR e Dependabot. |
+| `docs/ci-cd.md` | Pipeline de CI/CD, configuração do Vercel, rotação do token e rollback. |
 | `.claude/` | Comandos e skills do OpenSpec e skills do projeto: `github-versionamento`, `testes-agentes-ia`, `rag-pgvector`, `mcp-client-server`, `semantic-kernel-tools`, `controle-custos-llm`, `memoria-mongodb` (após o ADR de memória) e `vercel-dotnet-pgvector-atlas` (após o ADR de hospedagem). |
 
-Serviços previstos (.NET 10, ASP.NET Core): **Api.Agente**, que orquestra a análise, integra a OpenAI e expõe REST e A2A, e **Api.RAG**, que gerencia a base de conhecimento em PostgreSQL com PgVector e expõe a recuperação por MCP.
+Serviços (.NET 10, ASP.NET Core): **Api.Agente**, que vai orquestrar a análise, integrar a OpenAI e expor REST e A2A, e **Api.RAG**, que vai gerenciar a base de conhecimento em PostgreSQL com PgVector e expor a recuperação por MCP. Hoje, os dois oferecem `/health/live`, `/health/ready`, correlação por `X-Correlation-Id` e logs em JSON.
+
+## Build e testes
+
+Requer o SDK do .NET 10. A partir da raiz:
+
+```bash
+dotnet build Agente-ECF.slnx -c Release
+```
+
+```bash
+dotnet test --solution Agente-ECF.slnx -c Release
+```
+
+```bash
+dotnet run --project src/Api.Agente
+```
+
+A Api.Agente escuta em `http://localhost:8080` e a Api.RAG em `http://localhost:8081` (perfil local). Em contêiner, a porta vem de `PORT`, com 8080 como padrão. Os demais comandos de verificação estão em `docs/ci-cd.md`.
 
 ## Fluxo de trabalho
 
