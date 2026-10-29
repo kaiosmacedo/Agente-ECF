@@ -2,8 +2,8 @@
 
 | Campo | Valor |
 | --- | --- |
-| Versão | 1.1.0 |
-| Estado | Ratificada |
+| Versão | 1.2.0 |
+| Estado | Vigente (ratificada na v1.1.0; emenda v1.2.0 aprovada) |
 | Criada em | 2026-10-29 |
 | Última alteração | 2026-10-29 |
 | Ratificada em | 2026-10-29, por Kaio Macedo (versão 1.1.0) |
@@ -696,7 +696,8 @@ Todo `design.md` MUST conter a seção "Verificação da constitution", com uma 
 - Todo PR MUST declarar os princípios impactados e apresentar as evidências de teste.
 - Todo PR MUST indicar os desvios registrados, se houver.
 - O PR MUST ser aprovado por pessoa diferente do autor. Quando o autor for o assistente de IA, o responsável pelo projeto MAY ser o revisor. PRs escritos pelo responsável MUST ser revisados por outra pessoa.
-- Como os PRs são abertos com a conta GitHub do responsável, a aprovação MUST ser registrada por comentário de revisão no PR, seguido do merge feito pelo responsável.
+- Como os PRs são abertos com a conta GitHub do responsável, a aprovação MUST ser registrada por comentário de revisão no PR, seguido do merge.
+- Em 2026-10-29, o responsável delegou ao assistente de IA a validação e o merge de todos os PRs. Ao usar a delegação, o assistente MUST registrar no comentário de revisão a delegação, as verificações executadas e o resultado, e MUST NOT mesclar com check obrigatório falho ou pendente. O responsável MAY revogar ou restringir a delegação a qualquer momento.
 - Uma violação desta constitution sem desvio registrado MUST bloquear o merge.
 
 ### 6.7 Desvios
@@ -710,7 +711,8 @@ Todo `design.md` MUST conter a seção "Verificação da constitution", com uma 
 
 - O repositório oficial é privado, no GitHub: `kaiosmacedo/Agente-ECF`.
 - A branch `main` é a linha principal. Ela MUST receber alterações somente por PR, exceto o commit inicial de criação do repositório.
-- Cada mudança OpenSpec MUST ser desenvolvida em branch própria, nomeada `feat/<id-da-mudança>`. Correções sem nova mudança (P20) usam `fix/<descrição>`, e alterações de documentação ou governança usam `docs/<descrição>`.
+- Cada mudança OpenSpec MUST ser desenvolvida em branch própria, nomeada `feat/<id-da-mudança>`. Correções sem nova mudança (P20) usam `fix/<descrição>`, alterações de documentação ou governança usam `docs/<descrição>` e alterações de pipeline usam `ci/<descrição>`. Branches abertas pelo Dependabot (`dependabot/...`) são aceitas.
+- Os checks `OpenSpec` e `.NET` do workflow `CI` MUST passar antes de qualquer merge na `main`. O pipeline está descrito em `docs/ci-cd.md`.
 - Mensagens de commit MUST seguir Conventional Commits, com escopo de componente, por exemplo `feat(rag): ...` ou `docs(constitution): ...`.
 - O procedimento operacional fica na skill `github-versionamento` do projeto.
 
@@ -801,6 +803,7 @@ Sínteses desta constitution, como a nota do cofre Obsidian, MUST indicar a vers
 | 1.0.0 | 2026-10-29 | Versão inicial proposta para validação. | Pendente (DP-19). |
 | 1.0.1 | 2026-10-29 | PATCH: palavras-chave normativas passam de DEVE/NÃO DEVE/PODE para MUST/MUST NOT/MAY, alinhadas às especificações OpenSpec. Sem efeito normativo; nenhuma especificação existente afetada. | Texto aprovado por Kaio Macedo em 2026-10-29. |
 | 1.1.0 | 2026-10-29 | MINOR: Sofia INFIS como orquestradora e consumidora A2A (1.1, 1.2, RA-07); análise sob demanda (1.2); só validação nesta fase (1.3); fluxo passo a passo no OpenSpec (6.1); revisão de PR pelo responsável quando o autor for o assistente de IA (6.6); versionamento no GitHub (6.8); revisão da constitution a cada novo leiaute (8.4); DP-19, DP-20 e DP-21 resolvidas; fonte inicial em DP-04; referências para DP-01, DP-16 e DP-18. Nenhuma especificação existente afetada. | Ratificada por Kaio Macedo em 2026-10-29. |
+| 1.2.0 | 2026-10-29 | MINOR: delegação ao assistente de IA da validação e do merge de PRs (6.6); branches `ci/` e do Dependabot e checks obrigatórios do CI (6.8); decisões do responsável para DP-17 e DP-18, a formalizar em ADR. Nenhuma especificação existente afetada. | Decisões aprovadas por Kaio Macedo em 2026-10-29; merge por delegação (6.6). |
 
 ---
 
@@ -826,8 +829,8 @@ As decisões abaixo não estão definidas. Elas MUST NOT ser tratadas como requi
 | DP-14 | Valores da política de retentativas e dos timeouts do LLM e das ferramentas. | Plano técnico das mudanças de análise e ferramentas. | Design | Configuração de produção. |
 | DP-15 | Formato do relatório entregue ao usuário (apenas JSON ou também documento legível) e seu público. | Especificação do resultado. | Especificação | Etapa 9 do fluxo. |
 | DP-16 | Escopo, capacidades expostas, autenticação e priorização do servidor A2A. Consumidora prevista: Sofia INFIS (1.1). | Especificação dedicada, quando priorizada. | Especificação | Implementação do A2A. |
-| DP-17 | Organização física da solução (camadas em projetos ou pastas), frameworks de teste, testes de arquitetura e regras de analisadores. | Plano técnico da mudança de fundação. | Design ou ADR | Início da implementação. |
-| DP-18 | Hospedagem, ambientes, contêineres e pipeline de CI/CD. Referência a avaliar: o projeto AgenteAnaliseDIMP usa Vercel com contêiner .NET 10 e PostgreSQL gerenciado com PgVector (skill `vercel-dotnet-pgvector-atlas`). | Plano técnico da fundação. | ADR | Primeira implantação. |
+| DP-17 | Organização física da solução (camadas em projetos ou pastas), frameworks de teste, testes de arquitetura e regras de analisadores. **Decisão do responsável em 2026-10-29:** um projeto por serviço, com camadas em pastas verificadas por testes de arquitetura; xUnit e Testcontainers. Formalização em ADR na mudança `fundacao-solucao`. | Plano técnico da mudança de fundação. | Design ou ADR | Início da implementação. |
+| DP-18 | Hospedagem, ambientes, contêineres e pipeline de CI/CD. **Decisões do responsável em 2026-10-29:** CI no GitHub Actions (ativo, seção 6.8); hospedagem no Vercel com contêineres, como no projeto AgenteAnaliseDIMP. Pendentes: ambientes, viabilidade do MCP e do A2A no Vercel e provedores de banco, a formalizar em ADR na mudança `fundacao-solucao`. | Plano técnico da fundação. | ADR | Primeira implantação. |
 | DP-22 | Processamento síncrono ou assíncrono das análises e tratamento de arquivos grandes. | Especificação e plano técnico da recepção. | Especificação e design | Etapa 2 do fluxo. |
 | DP-23 | Política de rejeição ou reclassificação de itens com referência não verificável (P07). | Especificação do contrato de resultado. | Especificação | Validação semântica. |
 | DP-24 | Conjunto representativo de exemplos para avaliar a recuperação e a análise: origem, anonimização e resultados esperados. | Especificação de avaliação, antes da definição de parâmetros. | Especificação | Aprovação de parâmetros (P11) e de modelos. |
