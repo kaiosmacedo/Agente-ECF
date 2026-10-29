@@ -1,4 +1,4 @@
-# Atualização das actions fixadas por SHA (SQ-11). NuGet entra com a mudança fundacao-solucao.
+# Atualização de dependências (SQ-11): actions fixadas por SHA, pacotes NuGet e imagens Docker.
 version: 2
 updates:
   - package-ecosystem: github-actions
@@ -7,3 +7,22 @@ updates:
       interval: weekly
     commit-message:
       prefix: ci
+
+  - package-ecosystem: nuget
+    directories:
+      - /src/*
+      - /tests/*
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: build
+      include: scope
+
+  - package-ecosystem: docker
+    directories:
+      - /src/*
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: build
+      include: scope
