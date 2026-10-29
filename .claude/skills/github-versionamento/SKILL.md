@@ -7,6 +7,8 @@ description: Padronizar o versionamento Git e GitHub do Agente-ECF, conduzido co
 
 Adaptada da skill de mesmo nome usada com o GitHub Spec Kit. As regras vêm da seção 6.8 (versionamento), 6.6 (revisão de PR) e 7 (Definition of Done) de `openspec/constitution.md`; em conflito, a constitution prevalece.
 
+**Mudanças do roteiro** (`docs/roteiro.md`): todas as mudanças (01 a 13). O `tasks.md` indica os grupos de tarefas que usam esta skill.
+
 ## Contrato de entrada e saída
 
 - **Entradas:** repositório local, mudança OpenSpec (`openspec/changes/<id>/`) ou motivo da alteração, branch de destino e autorização para publicar.

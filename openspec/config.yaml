@@ -10,7 +10,7 @@ context: |
   Nesta fase o agente apenas valida o arquivo, sob demanda, a cada envio. É um dos agentes da
   Sofia INFIS (orquestradora), que o aciona por A2A; também é usado pelos endpoints REST.
 
-  Fonte normativa: openspec/constitution.md (v1.2.0; ratificada em 2026-10-29). Ler antes de
+  Fonte normativa: openspec/constitution.md (v1.3.0; ratificada em 2026-10-29). Ler antes de
   produzir qualquer artefato.
   Em conflito, a constitution prevalece. Desvios exigem registro em docs/governanca/desvios.md.
   ADRs ficam em docs/adr/.
@@ -20,6 +20,13 @@ context: |
   feat/<id-da-mudança> por mudança, PR para main (skill github-versionamento).
   Fonte oficial inicial (DP-04): Manual da ECF, leiaute 12 (20/05/2026; AC 2025 e situações
   especiais de 2026), no portal SPED.
+
+  Roteiro: docs/roteiro.md (ordem das mudanças, dependências, DPs, skills e prefixos de requisito).
+  Specs organizadas por domínio: plataforma/ (os dois serviços), agente/ (Api.Agente),
+  rag/ (Api.RAG) e integracao/ (outros agentes, como a Sofia INFIS).
+  Skills do projeto em .claude/skills/: github-versionamento, testes-agentes-ia,
+  vercel-dotnet-pgvector-atlas, controle-custos-llm, rag-pgvector, mcp-client-server,
+  semantic-kernel-tools e memoria-mongodb. Cada uma declara pré-condições (ADRs e DPs).
 
   Stack: .NET 10 com ASP.NET Core.
   - Api.Agente: REST de execução; orquestração do fluxo; OpenAI via Semantic Kernel e Function
@@ -54,6 +61,7 @@ rules:
     - Declarar explicitamente o que está fora do escopo.
   specs:
     - 'Cabeçalho de requisito no formato "### Requirement: REQ-<CAPACIDADE>-<NNN> <título>", com CAPACIDADE em maiúsculas e NNN sequencial por capacidade. Identificadores são estáveis e nunca reutilizados.'
+    - Capacidades novas ficam no domínio correto (plataforma/, agente/, rag/ ou integracao/) e usam o prefixo registrado em docs/roteiro.md; prefixo novo é registrado no roteiro na mesma mudança.
     - Texto do requisito em pt-BR com as palavras-chave em inglês no sentido da RFC 2119 (SHALL ou MUST; SHALL NOT ou MUST NOT; MAY), como na constitution. A frase com SHALL/MUST vem na linha imediatamente após o cabeçalho.
     - 'Requisito de domínio fiscal ou contábil inclui a linha "Fonte: <documento>, <versão>, <localização>". Sem fonte, não é requisito aprovado.'
     - Cada requisito tem ao menos um cenário verificável (WHEN/THEN) com valores concretos ou sintéticos, cobrindo também falha e ausência de evidência quando pertinente.
@@ -64,19 +72,23 @@ rules:
     - Referenciar os ADRs criados ou necessários em docs/adr/.
     - Especificar parâmetros ajustáveis (modelo, chunk, topK, limiares, retentativas, timeouts) com plano de avaliação; não fixar valores sem evidência.
     - Justificar qualquer projeto, biblioteca, pacote ou padrão adicional (problema, alternativas, custo).
+    - Listar as skills do projeto aplicáveis (docs/roteiro.md) e confirmar as pré-condições declaradas em cada uma; pré-condição não atendida vira esclarecimento ou tarefa.
   tasks:
     - Cada tarefa referencia os requisitos que atende, por exemplo "(REQ-RECEPCAO-001)".
     - Cada cenário tem tarefa de teste correspondente; incluir testes adversariais quando a mudança tocar LLM, RAG, prompts ou ferramentas.
     - Incluir tarefas de atualização de contratos, documentação e da nota do projeto no cofre Obsidian.
+    - 'Indicar em cada grupo de tarefas a skill do projeto aplicável, na forma "Skill: <nome>" logo abaixo do título do grupo, quando houver.'
     - A última seção verifica a Definition of Done (seção 7 da constitution).
 
 operations:
   apply:
     guidance:
       - Ler openspec/constitution.md e o design.md da mudança antes de implementar.
+      - 'Antes de cada grupo de tarefas, carregar a skill indicada no tasks.md ("Skill: <nome>") e seguir suas regras.'
       - Não implementar regra de domínio sem requisito com fonte oficial; parar e registrar o esclarecimento.
       - Executar os testes e `openspec validate --strict` antes de concluir.
   archive:
     guidance:
       - Confirmar a Definition of Done (seção 7 da constitution) antes de arquivar.
-      - Atualizar a nota Projetos/Agente-ECF no cofre Obsidian com o estado entregue.
+      - Atualizar a nota Projetos/Agente-ECF, o roteiro e o registro em Specs/Agente-ECF no cofre Obsidian com o estado entregue.
+      - Atualizar o estado da mudança em docs/roteiro.md.

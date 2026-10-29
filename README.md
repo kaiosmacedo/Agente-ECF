@@ -12,6 +12,7 @@ Agente de IA que analisa arquivos da Escrituração Contábil Fiscal (ECF), vali
 | `openspec/config.yaml` | Contexto e regras aplicados pelo OpenSpec a cada artefato. |
 | `openspec/specs/` | Especificações vigentes, por capacidade. |
 | `openspec/changes/` | Mudanças em andamento; as concluídas ficam em `changes/archive/`. |
+| `docs/roteiro.md` | Roteiro das mudanças: ordem, dependências, decisões pendentes, skills e prefixos de requisito. |
 | `docs/adr/` | Decisões arquiteturais (ADRs). |
 | `docs/governanca/desvios.md` | Registro de desvios da constitution. |
 | `.github/` | CI (`workflows/ci.yml`), modelo de PR e Dependabot. Detalhes em `docs/ci-cd.md`. |
