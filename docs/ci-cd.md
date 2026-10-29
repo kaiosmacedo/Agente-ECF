@@ -35,45 +35,32 @@ O workflow `CD` dispara quando o `CI` termina com sucesso em push na `main` (ou 
 
 PRs e outras branches não publicam: o CD só reage ao CI de push na `main`, e o `vercel.json` de cada serviço desliga o deploy pela integração Git do Vercel (`"git": { "deploymentEnabled": false }`).
 
-## Configuração do Vercel (feita uma vez, com o responsável)
+## Configuração do Vercel
 
-Passos que exigem a conta de Kaio Macedo. O assistente conduz e executa o que não depende de credenciais; o token é criado e cadastrado somente pelo responsável.
+Configuração feita em 2026-10-29 no time **`agent-ecf`** (plano Hobby), com a conta de Kaio Macedo autenticada na Vercel CLI. O assistente executou os passos sem credenciais; o token é criado e cadastrado somente pelo responsável.
 
-1. **Projetos.** No painel do Vercel, criar dois projetos: `agente-ecf-agente` e `agente-ecf-rag`.
-2. **Configuração de cada projeto** (Settings): Framework Preset **Container**; Root Directory `src/Api.Agente` ou `src/Api.RAG`; variáveis de ambiente de Production `PORT=8080` e `ASPNETCORE_ENVIRONMENT=Production`.
-3. **Integração Git.** Não é necessária: o deploy é feito pelo `cd.yml`. Se o repositório for conectado, o `vercel.json` impede deploys automáticos.
-4. **IDs.** Em Settings de cada projeto, copiar o **Project ID**; em Settings do time ou da conta, o **Team ID** (é o `VERCEL_ORG_ID`).
-5. **Token.** Em Account Settings → Tokens, criar um token com escopo restrito ao time e validade definida.
-6. **Segredos no GitHub** (Environment `producao`), cadastrados pelo responsável no terminal:
+| Item | Estado |
+| --- | --- |
+| Projetos `agente-ecf-agente` e `agente-ecf-rag` | Criados pela CLI (`vercel project create`). |
+| Preset e Root Directory | `Container`; `src/Api.Agente` e `src/Api.RAG` (`vercel project update --framework container --root-directory ...`). |
+| Variáveis de Production | `PORT=8080` e `ASPNETCORE_ENVIRONMENT=Production`, tipo Config (`vercel env add ... --no-sensitive`). |
+| Integração Git | Não conectada: o deploy é feito pelo `cd.yml`. Se for conectada, o `vercel.json` impede deploys automáticos. |
+| Segredos `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID_AGENTE`, `VERCEL_PROJECT_ID_RAG` | Cadastrados no Environment `producao` (identificadores, não credenciais). |
+| Variáveis `VERCEL_URL_AGENTE`, `VERCEL_URL_RAG` | `https://agente-ecf-agente.vercel.app` e `https://agente-ecf-rag.vercel.app`, a confirmar no primeiro deploy. |
+| Segredo `VERCEL_TOKEN` | Criado e cadastrado pelo responsável (passos abaixo). |
+
+**Token (responsável):**
+
+1. Em https://vercel.com/account/settings/tokens, criar o token `agente-ecf-github-cd`, com escopo no time `agent-ecf` e validade definida.
+2. Em https://github.com/kaiosmacedo/Agente-ECF/settings/environments, abrir `producao` → **Add environment secret** → nome `VERCEL_TOKEN` → colar o token. Alternativa no terminal, que pede o valor sem exibi-lo:
 
    ```bash
    gh secret set VERCEL_TOKEN --env producao --repo kaiosmacedo/Agente-ECF
    ```
 
-   ```bash
-   gh secret set VERCEL_ORG_ID --env producao --repo kaiosmacedo/Agente-ECF
-   ```
+3. Conferir: `gh secret list --env producao --repo kaiosmacedo/Agente-ECF` mostra os quatro nomes, sem os valores.
 
-   ```bash
-   gh secret set VERCEL_PROJECT_ID_AGENTE --env producao --repo kaiosmacedo/Agente-ECF
-   ```
-
-   ```bash
-   gh secret set VERCEL_PROJECT_ID_RAG --env producao --repo kaiosmacedo/Agente-ECF
-   ```
-
-   Cada comando pede o valor sem exibi-lo.
-7. **URLs de produção** como variáveis do repositório (valores visíveis, sem segredo):
-
-   ```bash
-   gh variable set VERCEL_URL_AGENTE --repo kaiosmacedo/Agente-ECF --body "https://<dominio-de-producao-do-agente>"
-   ```
-
-   ```bash
-   gh variable set VERCEL_URL_RAG --repo kaiosmacedo/Agente-ECF --body "https://<dominio-de-producao-do-rag>"
-   ```
-
-8. **Conferência:** `gh secret list --env producao --repo kaiosmacedo/Agente-ECF` mostra os quatro nomes, sem os valores.
+Se o primeiro deploy atribuir outro domínio de produção, atualizar a variável correspondente com `gh variable set`.
 
 ## Rotação do token
 
