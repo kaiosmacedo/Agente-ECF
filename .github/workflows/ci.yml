@@ -1,0 +1,102 @@
+# CI do Agente-ECF (constitution: SQ-08, SQ-11, DoD-13 e seção 6.8).
+# Os nomes dos jobs (OpenSpec e .NET) são os checks obrigatórios da branch main.
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  OPENSPEC_TELEMETRY: "0"
+  DOTNET_NOLOGO: "true"
+  DOTNET_CLI_TELEMETRY_OPTOUT: "true"
+
+jobs:
+  openspec:
+    name: OpenSpec
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+
+      - name: Instalar OpenSpec
+        run: npm install -g @fission-ai/openspec@1.15.0
+
+      - name: Conferir constitution e configuração
+        run: |
+          test -f openspec/constitution.md
+          openspec context --json > /dev/null
+
+      - name: Validar specs e mudanças (strict)
+        run: |
+          mudancas=$(find openspec/changes -mindepth 1 -maxdepth 1 -type d ! -name archive | wc -l)
+          specs=$(find openspec/specs -name spec.md | wc -l)
+          if [ "$mudancas" -eq 0 ] && [ "$specs" -eq 0 ]; then
+            echo "::notice::Nenhuma spec ou mudança OpenSpec para validar."
+            exit 0
+          fi
+          openspec validate --all --strict --no-interactive
+
+  dotnet:
+    name: .NET
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Localizar solução
+        id: solucao
+        run: |
+          arquivo=$(find . -maxdepth 2 \( -name '*.slnx' -o -name '*.sln' \) -not -path './.git/*' | head -n 1)
+          echo "arquivo=$arquivo" >> "$GITHUB_OUTPUT"
+          if [ -z "$arquivo" ]; then
+            echo "::notice::Nenhuma solução .NET encontrada; build e testes começam com a mudança fundacao-solucao."
+          fi
+
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        if: steps.solucao.outputs.arquivo != ''
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Restaurar
+        if: steps.solucao.outputs.arquivo != ''
+        env:
+          SOLUCAO: ${{ steps.solucao.outputs.arquivo }}
+        run: dotnet restore "$SOLUCAO"
+
+      - name: Compilar
+        if: steps.solucao.outputs.arquivo != ''
+        env:
+          SOLUCAO: ${{ steps.solucao.outputs.arquivo }}
+        run: dotnet build "$SOLUCAO" --no-restore -c Release
+
+      - name: Testar
+        if: steps.solucao.outputs.arquivo != ''
+        env:
+          SOLUCAO: ${{ steps.solucao.outputs.arquivo }}
+        run: dotnet test "$SOLUCAO" --no-build -c Release
+
+      - name: Verificar pacotes vulneráveis
+        if: steps.solucao.outputs.arquivo != ''
+        env:
+          SOLUCAO: ${{ steps.solucao.outputs.arquivo }}
+        run: |
+          dotnet list "$SOLUCAO" package --vulnerable --include-transitive | tee vulneraveis.txt
+          if grep -qi "has the following vulnerable packages" vulneraveis.txt; then
+            echo "::error::Pacotes com vulnerabilidade conhecida (SQ-11)."
+            exit 1
+          fi
