@@ -7,6 +7,8 @@ description: Implementar o registro e a auditoria de consumo de tokens e custos 
 
 Adaptada da skill de mesmo nome do pacote INFIS para Spec Kit. Em conflito, `openspec/constitution.md` prevalece.
 
+**Mudanças do roteiro** (`docs/roteiro.md`): 04 `registro-consumo-ia`; também nas chamadas a provedores de 05 `base-conhecimento-ingestao` e 10 `analise-llm`. O `tasks.md` indica os grupos de tarefas que usam esta skill.
+
 ## Regras transversais
 
 - Ler `openspec/constitution.md`, `openspec/config.yaml` e os artefatos da mudança em `openspec/changes/<id>/` antes de alterar arquivos. Se não existirem, informar e não inventar requisitos.

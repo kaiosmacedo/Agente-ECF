@@ -7,6 +7,8 @@ description: Projetar e executar os testes automatizados do Agente-ECF (.NET 10)
 
 Adaptada da skill de mesmo nome do pacote INFIS para Spec Kit. Em conflito, `openspec/constitution.md` prevalece. Stack decidida pelo responsável em 2026-10-29: xUnit e Testcontainers (DP-17).
 
+**Mudanças do roteiro** (`docs/roteiro.md`): todas as mudanças (01 a 13); em 07 a 09, as fixtures seguem as localizações extraídas do Manual da ECF. O `tasks.md` indica os grupos de tarefas que usam esta skill.
+
 ## Regras transversais
 
 - Ler `openspec/constitution.md`, `openspec/config.yaml` e os artefatos da mudança em `openspec/changes/<id>/` antes de alterar arquivos. Se não existirem, informar e não inventar requisitos.

@@ -7,6 +7,8 @@ description: Implementar a memória conversacional da Api.Agente do Agente-ECF e
 
 Adaptada da skill de mesmo nome do pacote INFIS para Spec Kit. Em conflito, `openspec/constitution.md` prevalece.
 
+**Mudanças do roteiro** (`docs/roteiro.md`): 12 `memoria-conversacional`, depois do ADR de DP-01. O `tasks.md` indica os grupos de tarefas que usam esta skill.
+
 ## Regras transversais
 
 - Ler `openspec/constitution.md`, `openspec/config.yaml` e os artefatos da mudança em `openspec/changes/<id>/` antes de alterar arquivos. Se não existirem, informar e não inventar requisitos.

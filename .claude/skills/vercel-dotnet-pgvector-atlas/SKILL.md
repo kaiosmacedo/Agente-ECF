@@ -7,6 +7,8 @@ description: Preparar, validar e implantar a Api.Agente e a Api.RAG (.NET 10, AS
 
 Adaptada da skill usada no projeto AgenteAnaliseDIMP. As regras vêm de `openspec/constitution.md`; em conflito, a constitution prevalece.
 
+**Mudanças do roteiro** (`docs/roteiro.md`): 01 `fundacao-solucao` (deploy) e as provas de conceito de MCP e A2A antes de 06 `recuperacao-conhecimento-mcp` e 13 `servidor-a2a`. O `tasks.md` indica os grupos de tarefas que usam esta skill.
+
 ## 0. Condição de uso
 
 Esta skill **não decide** a hospedagem. Antes de qualquer passo, confirmar em `docs/adr/`:

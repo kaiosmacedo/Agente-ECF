@@ -7,6 +7,8 @@ description: Projetar, implementar e testar Function Calling com Semantic Kernel
 
 Adaptada da skill de mesmo nome do pacote INFIS para Spec Kit. Em conflito, `openspec/constitution.md` prevalece.
 
+**Mudanças do roteiro** (`docs/roteiro.md`): 10 `analise-llm` e 11 `ferramentas-agente`. O `tasks.md` indica os grupos de tarefas que usam esta skill.
+
 ## Regras transversais
 
 - Ler `openspec/constitution.md`, `openspec/config.yaml` e os artefatos da mudança em `openspec/changes/<id>/` antes de alterar arquivos. Se não existirem, informar e não inventar requisitos.

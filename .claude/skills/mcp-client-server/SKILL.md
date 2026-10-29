@@ -7,6 +7,8 @@ description: Implementar e validar a comunicação MCP entre a Api.Agente (clien
 
 Adaptada da skill de mesmo nome do pacote INFIS para Spec Kit. Em conflito, `openspec/constitution.md` prevalece.
 
+**Mudanças do roteiro** (`docs/roteiro.md`): 06 `recuperacao-conhecimento-mcp`. O `tasks.md` indica os grupos de tarefas que usam esta skill.
+
 ## Regras transversais
 
 - Ler `openspec/constitution.md`, `openspec/config.yaml` e os artefatos da mudança em `openspec/changes/<id>/` antes de alterar arquivos. Se não existirem, informar e não inventar requisitos.
