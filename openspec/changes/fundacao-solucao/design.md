@@ -1,6 +1,6 @@
 # Design: Fundação da solução
 
-> **Estado:** rascunho aguardando a revisão de Kaio Macedo, junto com a especificação e as tarefas (ver `proposal.md`, seção Aprovação).
+> **Estado:** aprovado por Kaio Macedo em 2026-10-29, junto com a especificação e as tarefas (ver `proposal.md`, seção Aprovação).
 
 ## Context
 

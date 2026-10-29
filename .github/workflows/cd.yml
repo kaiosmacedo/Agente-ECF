@@ -1,0 +1,76 @@
+# CD do Agente-ECF (ADR 0002; REQ-ENTREGA-004 e REQ-ENTREGA-005).
+# Publica em produção somente depois do CI aprovado em push na main. PRs não publicam.
+name: CD
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cd-producao
+  cancel-in-progress: false
+
+jobs:
+  publicar:
+    name: Publicar ${{ matrix.servico.nome }}
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: producao
+    strategy:
+      fail-fast: false
+      matrix:
+        servico:
+          - nome: Api.Agente
+            segredo_projeto: VERCEL_PROJECT_ID_AGENTE
+            variavel_url: VERCEL_URL_AGENTE
+          - nome: Api.RAG
+            segredo_projeto: VERCEL_PROJECT_ID_RAG
+            variavel_url: VERCEL_URL_RAG
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+
+      - name: Instalar Vercel CLI
+        run: npm install -g vercel@65.7.0
+
+      - name: Publicar em produção
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets[matrix.servico.segredo_projeto] }}
+          VERCEL_TELEMETRY_DISABLED: "1"
+        run: |
+          if [ -z "$VERCEL_TOKEN" ] || [ -z "$VERCEL_ORG_ID" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
+            echo "::error::Segredos do Vercel ausentes no Environment producao (ver docs/ci-cd.md)."
+            exit 1
+          fi
+          vercel deploy --prod --yes --token "$VERCEL_TOKEN"
+
+      - name: Verificar saúde em produção
+        env:
+          URL_BASE: ${{ vars[matrix.servico.variavel_url] }}
+        run: |
+          if [ -z "$URL_BASE" ]; then
+            echo "::error::Variável ${{ matrix.servico.variavel_url }} ausente (ver docs/ci-cd.md)."
+            exit 1
+          fi
+          inicio=$SECONDS
+          until curl -fsS --max-time 5 "$URL_BASE/health/live" > /dev/null; do
+            if (( SECONDS - inicio >= 60 )); then
+              echo "::error::$URL_BASE/health/live não respondeu HTTP 200 em 60 s."
+              exit 1
+            fi
+            sleep 5
+          done
+          echo "::notice::${{ matrix.servico.nome }} saudável em produção após $(( SECONDS - inicio )) s."

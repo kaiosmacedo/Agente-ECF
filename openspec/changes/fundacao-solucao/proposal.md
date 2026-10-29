@@ -40,7 +40,7 @@ O Agente-ECF ainda não tem código. Antes de receber arquivos, consultar manuai
 
 ## Aprovação
 
-Especificação, plano técnico e tarefas **aguardam a revisão de Kaio Macedo**, que optou em 2026-10-29 por revisá-los em conjunto antes do início da implementação. O plano técnico e as tarefas foram redigidos antes dessa aprovação, a pedido do responsável; qualquer ajuste na especificação é refletido neles antes do `/opsx:apply`.
+Especificação, plano técnico e tarefas **aprovados por Kaio Macedo em 2026-10-29**, revisados em conjunto antes do início da implementação, como o responsável optou. O plano técnico e as tarefas foram redigidos antes dessa aprovação, a pedido do responsável, e aprovados sem ajustes.
 
 ## Fontes oficiais
 

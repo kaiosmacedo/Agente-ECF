@@ -496,3 +496,6 @@ appsettings.*.local.json
 
 # Arquivos ECF reais e dados de clientes não são versionados (SQ-10)
 dados-reais/
+
+# Vercel CLI (vínculo local de projeto)
+.vercel/

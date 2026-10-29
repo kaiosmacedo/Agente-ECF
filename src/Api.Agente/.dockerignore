@@ -1,0 +1,14 @@
+# Fora da imagem: artefatos locais, segredos e arquivos de desenvolvimento (REQ-ENTREGA-003).
+bin/
+obj/
+.vercel/
+.env
+.env.*
+appsettings.*.local.json
+Properties/
+*.user
+.vs/
+.vscode/
+Dockerfile
+.dockerignore
+vercel.json

@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 | --- | --- |
-| Estado | Proposto |
+| Estado | Aceito (Kaio Macedo, 2026-10-29) |
 | Data | 2026-10-29 |
 | Responsáveis | Kaio Macedo (decisão), assistente de IA (redação) |
 | Decisões pendentes resolvidas | DP-17 |

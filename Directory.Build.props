@@ -1,0 +1,10 @@
+<Project>
+  <!-- Regras de qualidade (constitution SQ-08; REQ-QUALIDADE-002). Valem no build local e no CI.
+       O build dos contêineres usa só a pasta do serviço (ADR 0002) e não lê este arquivo,
+       por isso cada .csproj declara sozinho o que precisa para compilar. -->
+  <PropertyGroup>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+  </PropertyGroup>
+</Project>
