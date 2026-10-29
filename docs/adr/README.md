@@ -10,7 +10,8 @@ Registro das decisões arquiteturais do Agente-ECF, conforme a seção 6.5 da [c
 
 | ADR | Título | Estado | Data |
 | --- | --- | --- | --- |
-| — | Nenhum ADR registrado. | — | — |
+| [0001](0001-organizacao-da-solucao-e-testes.md) | Organização da solução e estratégia de testes | Proposto | 2026-10-29 |
+| [0002](0002-hospedagem-vercel-e-ci-cd.md) | Hospedagem no Vercel e pipeline de CI/CD | Proposto | 2026-10-29 |
 
 ## Decisões pendentes que exigem ADR
 
@@ -21,8 +22,8 @@ Registro das decisões arquiteturais do Agente-ECF, conforme a seção 6.5 da [c
 | DP-09 | Autenticação e autorização (REST, MCP, A2A e entre serviços). |
 | DP-11 | Retenção e exclusão de dados (LGPD), quando não aprovada como política. |
 | DP-12 | Política de dados com a OpenAI. |
-| DP-17 | Organização física da solução, quando não resolvida no design. |
-| DP-18 | Hospedagem, ambientes e CI/CD. |
+| DP-17 | Organização física da solução — ADR 0001 (proposto). |
+| DP-18 | Hospedagem, ambientes e CI/CD — ADR 0002 (proposto). |
 | DP-25 | Armazenamento das execuções e resultados, quando não resolvido no design. |
 
 ## Modelo
