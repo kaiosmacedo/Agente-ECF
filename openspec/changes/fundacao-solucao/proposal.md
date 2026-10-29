@@ -18,11 +18,11 @@ O Agente-ECF ainda não tem código. Antes de receber arquivos, consultar manuai
 ## Capabilities
 
 ### New Capabilities
-- `saude-servicos`: verificações de vivacidade e prontidão de cada serviço, acessíveis sem autenticação e sem expor dados.
-- `configuracao-servicos`: origem externa da configuração e validação obrigatória na inicialização.
-- `observabilidade`: identificador de correlação por requisição e logs estruturados sem dados sensíveis.
-- `qualidade-entrega`: verificações automáticas que bloqueiam o merge na `main` (especificação, compilação, analisadores, testes, regras de arquitetura e dependências).
-- `entrega-servicos`: empacotamento de cada serviço em contêiner executável na hospedagem escolhida e publicação nos ambientes definidos.
+- `plataforma/saude-servicos`: verificações de vivacidade e prontidão de cada serviço, acessíveis sem autenticação e sem expor dados.
+- `plataforma/configuracao-servicos`: origem externa da configuração e validação obrigatória na inicialização.
+- `plataforma/observabilidade`: identificador de correlação por requisição e logs estruturados sem dados sensíveis.
+- `plataforma/qualidade-entrega`: verificações automáticas que bloqueiam o merge na `main` (especificação, compilação, analisadores, testes, regras de arquitetura e dependências).
+- `plataforma/entrega-servicos`: empacotamento de cada serviço em contêiner executável na hospedagem escolhida e publicação nos ambientes definidos.
 
 ### Modified Capabilities
 - Nenhuma. Não há specs vigentes.

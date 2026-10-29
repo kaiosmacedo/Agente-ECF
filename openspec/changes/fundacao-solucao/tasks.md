@@ -35,15 +35,15 @@
 ## 6. Contêineres
 
 - [x] 6.1 Fazer o `Program.cs` dos dois serviços escutar em `0.0.0.0` na porta de `PORT`, com 8080 como padrão (D7); verificar com teste a resolução da URL com e sem `PORT` (REQ-ENTREGA-002).
-- [ ] 6.2 Criar `Dockerfile` e `.dockerignore` em `src/Api.Agente` e `src/Api.RAG` (D7); verificar localmente `docker build` e `GET /health/live` com `PORT=3000` e sem `PORT` (REQ-ENTREGA-001, REQ-ENTREGA-002).
-- [ ] 6.3 Verificar pela listagem de arquivos de cada imagem que não há `.env`, `appsettings.*.local.json`, `.git`, `tests` nem `openspec` (REQ-ENTREGA-003).
+- [x] 6.2 Criar `Dockerfile` e `.dockerignore` em `src/Api.Agente` e `src/Api.RAG` (D7); verificar localmente `docker build` e `GET /health/live` com `PORT=3000` e sem `PORT` (REQ-ENTREGA-001, REQ-ENTREGA-002).
+- [x] 6.3 Verificar pela listagem de arquivos de cada imagem que não há `.env`, `appsettings.*.local.json`, `.git`, `tests` nem `openspec` (REQ-ENTREGA-003).
 
 ## 7. Pipeline de integração
 
-- [ ] 7.1 Estender o job `.NET` do `ci.yml` com formatação, build com o SHA na versão, testes, pacotes vulneráveis e, por serviço, construção, execução, verificação de saúde em até 30 s e listagem da imagem (D8); verificar o job verde no PR (REQ-QUALIDADE-001, REQ-QUALIDADE-002, REQ-QUALIDADE-005, REQ-ENTREGA-001, REQ-ENTREGA-003).
-- [ ] 7.2 Incluir NuGet (`/src/*`, `/tests/*`) e Docker (`/src/*`) no `dependabot.yml`; verificar após o merge que o GitHub aceita a configuração, sem erro na aba Dependabot (REQ-QUALIDADE-005).
+- [x] 7.1 Estender o job `.NET` do `ci.yml` com formatação, build com o SHA na versão, testes, pacotes vulneráveis e, por serviço, construção, execução, verificação de saúde em até 30 s e listagem da imagem (D8); verificar o job verde no PR (REQ-QUALIDADE-001, REQ-QUALIDADE-002, REQ-QUALIDADE-005, REQ-ENTREGA-001, REQ-ENTREGA-003).
+- [x] 7.2 Incluir NuGet (`/src/*`, `/tests/*`) e Docker (`/src/*`) no `dependabot.yml`; verificar após o merge que o GitHub aceita a configuração, sem erro na aba Dependabot (REQ-QUALIDADE-005).
 - [x] 7.3 Verificar com `gh api` que a proteção da `main` exige os checks `OpenSpec` e `.NET` e bloqueia merge com check falho ou pendente (REQ-QUALIDADE-001).
-- [ ] 7.4 Atualizar a seção de integração contínua de `docs/ci-cd.md` com as novas etapas; verificar que os comandos locais documentados executam como escrito.
+- [x] 7.4 Atualizar a seção de integração contínua de `docs/ci-cd.md` com as novas etapas; verificar que os comandos locais documentados executam como escrito.
 
 ## 8. Entrega no Vercel
 
