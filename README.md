@@ -2,7 +2,7 @@
 
 Agente de IA que analisa arquivos da Escrituração Contábil Fiscal (ECF), valida sua estrutura e a consistência das informações e gera um relatório de inconsistências com evidências e referências aos manuais oficiais.
 
-**Situação:** fundação em implementação (mudança `fundacao-solucao`). A [constitution](openspec/constitution.md) v1.2.0 está vigente; a v1.1.0 foi ratificada por Kaio Macedo em 2026-10-29.
+**Situação:** fundação concluída e em produção (https://agente-ecf-agente.vercel.app e https://agente-ecf-rag.vercel.app); as próximas mudanças estão em esclarecimentos (`docs/roteiro.md`). A [constitution](openspec/constitution.md) v1.2.0 está vigente; a v1.1.0 foi ratificada por Kaio Macedo em 2026-10-29.
 
 ## Estrutura
 

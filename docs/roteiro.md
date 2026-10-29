@@ -14,17 +14,17 @@ Cada mudança segue o fluxo da constitution (6.1): especificação → esclareci
 
 | Etapa | Situação |
 | --- | --- |
-| Constitution | v1.3.0 vigente (ratificada na v1.1.0; emendas aprovadas por Kaio Macedo). |
-| CI/CD | CI ativo com checks obrigatórios `OpenSpec` e `.NET`; CD para o Vercel pronto, aguardando o token. |
-| Vercel | Time `agent-ecf`; projetos `agente-ecf-agente` e `agente-ecf-rag` configurados. |
-| Mudança 01 | Em implementação (PR #2): 25 de 32 tarefas concluídas; falta o token, o primeiro deploy e o fechamento. |
+| Constitution | v1.3.1 vigente (ratificada na v1.1.0; emendas aprovadas por Kaio Macedo). |
+| CI/CD | CI com checks obrigatórios `OpenSpec` e `.NET`; CD publica no Vercel a cada merge na `main`. |
+| Vercel | Em produção: https://agente-ecf-agente.vercel.app e https://agente-ecf-rag.vercel.app (time `agent-ecf`). |
+| Mudança 01 | Concluída: mesclada (PR #2), em produção e arquivada em 2026-10-29; specs vigentes em `openspec/specs/plataforma/`. |
 | Mudanças 02 a 13 | Especificações aprovadas por Kaio Macedo em 2026-10-29 (PR #4); próxima etapa: esclarecimentos da mudança 02. |
 
 ## Mudanças
 
 | Nº | Mudança | Capacidades | Depende de | DPs | Skills | Estado |
 | --- | --- | --- | --- | --- | --- | --- |
-| 01 | `fundacao-solucao` | `plataforma/saude-servicos`, `configuracao-servicos`, `observabilidade`, `qualidade-entrega`, `entrega-servicos` | — | 17, 18 | `testes-agentes-ia`, `vercel-dotnet-pgvector-atlas`, `github-versionamento` | Em implementação |
+| 01 | `fundacao-solucao` | `plataforma/saude-servicos`, `configuracao-servicos`, `observabilidade`, `qualidade-entrega`, `entrega-servicos` | — | 17, 18 | `testes-agentes-ia`, `vercel-dotnet-pgvector-atlas`, `github-versionamento` | Concluída |
 | 02 | `autenticacao-autorizacao` | `plataforma/autenticacao` | 01 | 09 | `testes-agentes-ia` | Especificação aprovada |
 | 03 | `execucao-e-resultado` | `agente/execucao-analise`, `agente/contrato-resultado` | 01, 02 | 07, 08, 15, 23, 25 | `testes-agentes-ia` | Especificação aprovada |
 | 04 | `registro-consumo-ia` | `plataforma/consumo-custos` | 01, 02 | 13, 26 | `controle-custos-llm`, `testes-agentes-ia` | Especificação aprovada |

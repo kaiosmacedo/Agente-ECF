@@ -10,7 +10,7 @@ context: |
   Nesta fase o agente apenas valida o arquivo, sob demanda, a cada envio. É um dos agentes da
   Sofia INFIS (orquestradora), que o aciona por A2A; também é usado pelos endpoints REST.
 
-  Fonte normativa: openspec/constitution.md (v1.3.0; ratificada em 2026-10-29). Ler antes de
+  Fonte normativa: openspec/constitution.md (v1.3.1; ratificada em 2026-10-29). Ler antes de
   produzir qualquer artefato.
   Em conflito, a constitution prevalece. Desvios exigem registro em docs/governanca/desvios.md.
   ADRs ficam em docs/adr/.

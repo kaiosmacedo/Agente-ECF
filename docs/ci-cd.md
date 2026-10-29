@@ -8,7 +8,7 @@ Pipeline de integração e entrega, conforme a [constitution](../openspec/consti
 | --- | --- | --- |
 | CI de especificação | Ativo | Job `OpenSpec` em `.github/workflows/ci.yml` |
 | CI .NET: formatação, build com avisos como erros, testes, pacotes vulneráveis e contêineres | Ativo | Job `.NET` no mesmo workflow |
-| CD em produção no Vercel | Pronto; depende da configuração do Vercel (seção abaixo) | `.github/workflows/cd.yml` |
+| CD em produção no Vercel | Ativo desde 2026-10-29 | `.github/workflows/cd.yml` |
 | Atualização de dependências | Ativo para GitHub Actions, NuGet e imagens Docker | `.github/dependabot.yml` |
 
 ## Integração contínua
@@ -46,8 +46,8 @@ Configuração feita em 2026-10-29 no time **`agent-ecf`** (plano Hobby), com a 
 | Variáveis de Production | `PORT=8080` e `ASPNETCORE_ENVIRONMENT=Production`, tipo Config (`vercel env add ... --no-sensitive`). |
 | Integração Git | Não conectada: o deploy é feito pelo `cd.yml`. Se for conectada, o `vercel.json` impede deploys automáticos. |
 | Segredos `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID_AGENTE`, `VERCEL_PROJECT_ID_RAG` | Cadastrados no Environment `producao` (identificadores, não credenciais). |
-| Variáveis `VERCEL_URL_AGENTE`, `VERCEL_URL_RAG` | `https://agente-ecf-agente.vercel.app` e `https://agente-ecf-rag.vercel.app`, a confirmar no primeiro deploy. |
-| Segredo `VERCEL_TOKEN` | Criado e cadastrado pelo responsável (passos abaixo). |
+| Variáveis `VERCEL_URL_AGENTE`, `VERCEL_URL_RAG` | `https://agente-ecf-agente.vercel.app` e `https://agente-ecf-rag.vercel.app`, confirmadas no primeiro deploy (2026-10-29). |
+| Segredo `VERCEL_TOKEN` | Cadastrado por Kaio Macedo em 2026-10-29 (passos abaixo, para rotação ou recriação). |
 
 **Token (responsável):**
 
