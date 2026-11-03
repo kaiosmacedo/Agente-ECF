@@ -1,4 +1,5 @@
 using Api.RAG.Endpoints;
+using Api.RAG.Infraestrutura.Autenticacao;
 using Api.RAG.Infraestrutura.Configuracao;
 using Api.RAG.Infraestrutura.Hospedagem;
 using Api.RAG.Infraestrutura.Observabilidade;
@@ -9,10 +10,13 @@ builder.WebHost.UseUrls(EnderecoDeEscuta.Resolver(builder.Configuration["PORT"])
 builder.Services.AdicionarOpcoesValidadas<OpcoesObservabilidade>(builder.Configuration, OpcoesObservabilidade.Secao);
 builder.AdicionarObservabilidade(IdentidadeServico.De("Api.RAG", typeof(Program).Assembly));
 builder.Services.AddHealthChecks();
+builder.Services.AdicionarAutenticacao(builder.Configuration);
 
 var app = builder.Build();
 
 app.UseMiddleware<CorrelacaoMiddleware>();
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapearSaude();
 
 app.Run();

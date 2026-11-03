@@ -15,13 +15,13 @@ internal static class SaudeEndpoints
         {
             Predicate = _ => false,
             ResponseWriter = EscreverEstado,
-        });
+        }).AllowAnonymous();
 
         rotas.MapHealthChecks("/health/ready", new HealthCheckOptions
         {
             Predicate = registro => registro.Tags.Contains(TagProntidao),
             ResponseWriter = EscreverEstado,
-        });
+        }).AllowAnonymous();
 
         return rotas;
     }
