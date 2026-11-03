@@ -1,6 +1,6 @@
 # Proposal: Autenticação e autorização
 
-> **Estado:** especificação aprovada por Kaio Macedo em 2026-10-29 (roteiro, mudança 02; PR #4). Esclarecimentos respondidos em 2026-11-01. Os requisitos REQ-AUTH-002 e REQ-AUTH-003 foram ajustados e REQ-AUTH-007 e REQ-AUTH-008 foram incluídos a partir das respostas; esses ajustes e as recomendações R1 a R5 aguardam a confirmação de Kaio Macedo. Plano técnico e tarefas só depois disso.
+> **Estado:** especificação aprovada por Kaio Macedo em 2026-10-29 (PR #4); esclarecimentos respondidos em 2026-11-01; ajustes de requisitos e recomendações R1 a R5 confirmados por Kaio Macedo em 2026-11-03. Plano técnico e tarefas aguardam aprovação.
 
 ## Why
 
@@ -30,13 +30,14 @@ Os principais chamadores serão agentes: a Sofia INFIS, por A2A, e, futuramente,
 | ID | Pergunta | Resposta | Fonte ou responsável | Data | Bloqueante |
 | --- | --- | --- | --- | --- | --- |
 | E01 | Quem chama o agente e qual provedor de identidade a INFIS usa? | Principalmente a Sofia INFIS, por A2A, com base no cartão do agente. Também haverá endpoints para outros usos, e futuramente a Maia vai acionar e controlar o agente como o orquestrador. O provedor de identidade não foi definido: ver E06 e R1. | Kaio Macedo | 2026-11-01 | Não (respondido) |
-| E02 | Como a Sofia INFIS se autentica ao chamar o agente? | A decidir. Recomendação R2. | Kaio Macedo | 2026-11-01 | Sim, junto com E06 |
+| E02 | Como a Sofia INFIS se autentica ao chamar o agente? | OAuth client credentials, com registro de aplicação próprio (R2, confirmada). | Kaio Macedo | 2026-11-03 | Não (respondido) |
 | E03 | Existe organização a isolar? Um usuário pode atuar em mais de uma? | Sim: o objetivo é atender várias organizações clientes da INFIS, isoladas entre si; um usuário provavelmente atuará em mais de uma. Consequência: ajuste de REQ-AUTH-003 (organização autorizada por requisição) e recomendação R4. | Kaio Macedo | 2026-11-01 | Não (respondido) |
 | E04 | Há perfis além de administrador da base e usuário de análise? | Sim: quem cuida da orquestradora (Sofia INFIS) e o desenvolvedor do agente (Kaio Macedo). Consequência: REQ-AUTH-007 e recomendação R5. | Kaio Macedo | 2026-11-01 | Não (respondido) |
-| E05 | A Api.Agente se autentica na Api.RAG pelo mesmo provedor ou por chave de serviço? | Sem decisão do responsável; o ADR decide. Recomendação R3. | Kaio Macedo | 2026-11-01 | Não |
-| E06 | Confirma a recomendação R1 para o provedor de identidade? | — | Kaio Macedo | — | Sim |
-| E07 | Confirma a regra de organização por requisição da recomendação R4? | — | Kaio Macedo | — | Sim |
-| E08 | O que o operador da orquestradora pode fazer (recomendação R5)? | — | Kaio Macedo | — | Não; o perfil nasce restrito |
+| E05 | A Api.Agente se autentica na Api.RAG pelo mesmo provedor ou por chave de serviço? | Pelo mesmo provedor, com client credentials (R3, confirmada). | Kaio Macedo | 2026-11-03 | Não (respondido) |
+| E06 | Confirma a recomendação R1 para o provedor de identidade? | Sim: OAuth 2.0/OIDC com Microsoft Entra ID. | Kaio Macedo | 2026-11-03 | Não (respondido) |
+| E07 | Confirma a regra de organização por requisição da recomendação R4? | Sim: organização por requisição, aceita só se autorizada; autorizações em configuração no início. | Kaio Macedo | 2026-11-03 | Não (respondido) |
+| E08 | O que o operador da orquestradora pode fazer (recomendação R5)? | Acompanhar execuções e falhas das organizações atendidas pela Sofia, sem criar análises nem administrar a base (R5, confirmada). | Kaio Macedo | 2026-11-03 | Não (respondido) |
+| E09 | Qual identificador usar para cada organização (código interno do cliente na INFIS, CNPJ ou outro)? | Aberto. O desenho aceita um identificador opaco e não depende da escolha. | Kaio Macedo | — | Não |
 
 ## Recomendações para decisão
 
@@ -74,4 +75,4 @@ Não se aplica: sem regras de domínio fiscal.
 
 ## Aprovação
 
-Especificação aprovada por Kaio Macedo em 2026-10-29 (PR #4). Ajustes de 2026-11-01 (REQ-AUTH-002, REQ-AUTH-003, REQ-AUTH-007 e REQ-AUTH-008) e recomendações R1 a R5 aguardam a confirmação de Kaio Macedo.
+Especificação aprovada por Kaio Macedo em 2026-10-29 (PR #4). Ajustes de 2026-11-01 (REQ-AUTH-002, REQ-AUTH-003, REQ-AUTH-007 e REQ-AUTH-008) e recomendações R1 a R5 confirmados por Kaio Macedo em 2026-11-03. Plano técnico e tarefas aguardam aprovação.
