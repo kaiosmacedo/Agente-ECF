@@ -4,7 +4,6 @@ using Api.Agente.Tests.Infra;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -52,23 +51,12 @@ public sealed class ConfiguracaoTests
         Assert.ThrowsAny<Exception>(() => fabrica.CreateClient());
     }
 
-    // Host isolado com o mesmo registro de opções do serviço: o erro de validação chega intacto,
-    // sem a corrida de descarte do servidor de testes quando a inicialização falha.
-    private static async Task<OptionsValidationException> IniciarHost(
-        Action<IServiceCollection, IConfiguration> registrar, (string Chave, string? Valor) opcao, ProvedorDeLogEmMemoria logs)
-    {
-        var builder = Host.CreateApplicationBuilder();
-        builder.Logging.ClearProviders();
-        builder.Logging.AddProvider(logs);
-        if (opcao.Valor is not null)
-        {
-            builder.Configuration.AddInMemoryCollection([new KeyValuePair<string, string?>(opcao.Chave, opcao.Valor)]);
-        }
-
-        registrar(builder.Services, builder.Configuration);
-        using var host = builder.Build();
-        return await Assert.ThrowsAsync<OptionsValidationException>(() => host.StartAsync(TestContext.Current.CancellationToken));
-    }
+    private static Task<OptionsValidationException> IniciarHost(
+        Action<IServiceCollection, IConfiguration> registrar, (string Chave, string? Valor) opcao, ProvedorDeLogEmMemoria logs) =>
+        HostIsolado.FalharAoIniciar(
+            registrar,
+            opcao.Valor is null ? [] : [new KeyValuePair<string, string?>(opcao.Chave, opcao.Valor)],
+            logs);
 
     private static void ConfigurarExemplo(IServiceCollection servicos, IConfiguration configuracao) =>
         servicos.AdicionarOpcoesValidadas<OpcoesDeExemplo>(configuracao, "Exemplo");
