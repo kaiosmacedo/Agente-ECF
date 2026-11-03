@@ -45,6 +45,7 @@ Não se aplica: o contrato não contém regras fiscais. As regras que produzem a
 - **Princípios:** P03, P04, P05, P06, P08, P09, P12, P13, P19; GD-01 a GD-05.
 - **Decisões pendentes:** resolve DP-07, DP-08 e DP-25; depende de DP-11 para dados reais; DP-15 e DP-23 podem ser resolvidas aqui ou adiadas para as mudanças 10 e posteriores.
 - **Depende de:** 01 `fundacao-solucao` e 02 `autenticacao-autorizacao`.
+- **Herdado da mudança 02:** o `tasks.md` desta mudança MUST incluir o teste HTTP de REQ-AUTH-004: uma execução registrada para `org-a`, consultada por identidade autorizada somente para `org-b`, responde 404 sem revelar que existe. A regra já está em `IdentidadeChamador.PodeAcessar`; o endpoint usa o resolvedor de organização com a organização obrigatória.
 - **Skills:** `testes-agentes-ia`, `github-versionamento`.
 
 ## Fora do escopo

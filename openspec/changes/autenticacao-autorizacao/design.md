@@ -1,6 +1,6 @@
 # Design: Autenticação e autorização
 
-> **Estado:** rascunho aguardando aprovação de Kaio Macedo, junto com as tarefas. As decisões R1 a R5 da proposta foram confirmadas em 2026-11-03 e estão formalizadas no ADR 0003.
+> **Estado:** aprovado por Kaio Macedo em 2026-11-03, junto com as tarefas. As decisões R1 a R5 da proposta estão formalizadas no ADR 0003.
 
 ## Context
 
@@ -28,8 +28,9 @@ A fundação entregou os dois serviços sem autenticação: só existem `/health
 ### D1. Validação de tokens JWT (ADR 0003)
 
 - Pacote oficial `Microsoft.AspNetCore.Authentication.JwtBearer` nos dois serviços.
-- Opções `Autenticacao`, validadas na inicialização: `Autoridade` (por exemplo, `https://login.microsoftonline.com/<tenant>/v2.0`), `Audiencia` (Application ID URI da API) e `EmissoresValidos` (opcional). O código não usa bibliotecas específicas do Entra; trocar de provedor é configuração.
-- Tokens v2 do Entra (`accessTokenAcceptedVersion = 2` nos registros de aplicação).
+- Opções `Autenticacao`, validadas na inicialização: `Autoridade` (por exemplo, `https://login.microsoftonline.com/<tenant>/v2.0`), `Audiencia` (valor da claim `aud`: em tokens v2 do Entra, o ID do aplicativo, ou client ID, do registro da API) e `EmissoresValidos` (opcional). O código não usa bibliotecas específicas do Entra; trocar de provedor é configuração.
+- Tokens v2 do Entra (`api.requestedAccessTokenVersion = 2` no manifesto dos registros de aplicação; `accessTokenAcceptedVersion` no formato antigo).
+- **Correção na implementação (2026-11-03):** a versão aprovada indicava o Application ID URI como audiência. A referência de claims de token de acesso da Microsoft estabelece que, em tokens v2, `aud` é sempre o client ID da API; o Application ID URI só compõe o escopo pedido pelo cliente (`api://<id>/.default`). O código não muda; muda o valor configurado (`docs/autenticacao.md`).
 - **Alternativa:** `Microsoft.Identity.Web`. Descartada: amarra ao Entra e acrescenta dependências que esta mudança não usa.
 
 ### D2. Segurança por padrão (REQ-AUTH-001)

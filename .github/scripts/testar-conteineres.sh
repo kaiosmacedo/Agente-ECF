@@ -1,9 +1,15 @@
 #!/usr/bin/env bash
-# Constrói e testa a imagem de cada serviço (REQ-ENTREGA-001 a 003, REQ-OBSERV-002).
+# Constrói e testa a imagem de cada serviço (REQ-ENTREGA-001 a 003, REQ-OBSERV-002, REQ-AUTH-001).
 # Uso no CI: VERSAO=<sha> bash .github/scripts/testar-conteineres.sh
 set -euo pipefail
 
 VERSAO="${VERSAO:-local}"
+
+# Opções de autenticação de teste: a saúde é anônima, então nenhum metadado do provedor é buscado.
+AUTENTICACAO=(
+  -e "Autenticacao__Autoridade=https://login.microsoftonline.com/00000000-0000-0000-0000-000000000000/v2.0"
+  -e "Autenticacao__Audiencia=api://agente-ecf-ci"
+)
 
 esperar_saude() {
   local url="$1" limite="$2" inicio=$SECONDS
@@ -31,7 +37,7 @@ for servico in Api.Agente Api.RAG; do
   docker build --build-arg VERSAO="$VERSAO" -t "$imagem" "src/$servico"
 
   # Sem PORT: porta 8080, vivacidade em até 30 s e logs em JSON com correlação.
-  id=$(docker run -d -p 8080:8080 "$imagem")
+  id=$(docker run -d -p 8080:8080 "${AUTENTICACAO[@]}" "$imagem")
   esperar_saude "http://localhost:8080/health/live" 30 || falhar "$id" "$servico não respondeu na porta 8080 em 30 s."
   curl -fsS -H "X-Correlation-Id: ci-conteiner" "http://localhost:8080/health/live" > /dev/null
   sleep 1
@@ -42,8 +48,17 @@ for servico in Api.Agente Api.RAG; do
   docker rm -f "$id" > /dev/null
 
   # Com PORT=3000: a porta informada pela plataforma é respeitada.
-  id=$(docker run -d -e PORT=3000 -p 3000:3000 "$imagem")
+  id=$(docker run -d -e PORT=3000 -p 3000:3000 "${AUTENTICACAO[@]}" "$imagem")
   esperar_saude "http://localhost:3000/health/live" 30 || falhar "$id" "$servico não respondeu na porta 3000 com PORT=3000."
+  docker rm -f "$id" > /dev/null
+
+  # Sem as opções de autenticação, o serviço não inicia e cita a opção ausente.
+  id=$(docker run -d "$imagem")
+  codigo=$(timeout 30 docker wait "$id" || echo "em-execucao")
+  logs=$(docker logs "$id" 2>&1 || true)
+  if [ "$codigo" = "em-execucao" ] || [ "$codigo" = "0" ] || ! grep -q "Autenticacao:Autoridade" <<< "$logs"; then
+    falhar "$id" "$servico iniciou sem as opções de autenticação ou não citou a opção ausente."
+  fi
   docker rm -f "$id" > /dev/null
 
   # Conteúdo da aplicação na imagem: sem segredos, testes, specs ou histórico do repositório.

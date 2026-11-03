@@ -1,6 +1,6 @@
 # Proposal: Autenticação e autorização
 
-> **Estado:** especificação aprovada por Kaio Macedo em 2026-10-29 (PR #4); esclarecimentos respondidos em 2026-11-01; ajustes de requisitos e recomendações R1 a R5 confirmados por Kaio Macedo em 2026-11-03. Plano técnico e tarefas aguardam aprovação.
+> **Estado:** especificação aprovada por Kaio Macedo em 2026-10-29 (PR #4); esclarecimentos respondidos em 2026-11-01; ajustes de requisitos e recomendações R1 a R5 confirmados por Kaio Macedo em 2026-11-03. Plano técnico e tarefas aprovados por Kaio Macedo em 2026-11-03.
 
 ## Why
 
@@ -75,4 +75,4 @@ Não se aplica: sem regras de domínio fiscal.
 
 ## Aprovação
 
-Especificação aprovada por Kaio Macedo em 2026-10-29 (PR #4). Ajustes de 2026-11-01 (REQ-AUTH-002, REQ-AUTH-003, REQ-AUTH-007 e REQ-AUTH-008) e recomendações R1 a R5 confirmados por Kaio Macedo em 2026-11-03. Plano técnico e tarefas aguardam aprovação.
+Especificação aprovada por Kaio Macedo em 2026-10-29 (PR #4). Ajustes de 2026-11-01 (REQ-AUTH-002, REQ-AUTH-003, REQ-AUTH-007 e REQ-AUTH-008) e recomendações R1 a R5 confirmados por Kaio Macedo em 2026-11-03. Plano técnico e tarefas aprovados por Kaio Macedo em 2026-11-03.
