@@ -42,22 +42,24 @@ Cada mudança segue o fluxo da constitution (6.1): especificação → esclareci
 | 12 | `memoria-conversacional` | `agente/memoria-conversacional` | 10 | 01, 11 | `memoria-mongodb`, `testes-agentes-ia` | Especificação aprovada |
 | 13 | `servidor-a2a` | `integracao/servidor-a2a`, `integracao/contrato-sofia`, `integracao/cors` | 01 | 09, 16 | `sofia-a2a-contrato`, `sofia-a2a-implementacao`, `sofia-cors-rest-a2a`, `vercel-dotnet-pgvector-atlas`, `testes-agentes-ia` | Esqueleto em produção |
 | 14 | `telemetria-servicos` | `plataforma/observabilidade` | 01 | — | `testes-agentes-ia` | Em produção desde 2026-11-05 (PR #13); a arquivar |
+| 15 | `classificacao-e-veredito` | `agente/contrato-resultado` | 03 | 07, 08 | `sofia-a2a-contrato`, `testes-agentes-ia` | Pedida por Kaio Macedo em 2026-11-05; especificação em andamento |
 
 `github-versionamento` vale para todas as mudanças. As mudanças 05 a 09 podem avançar em paralelo com 04 quando suas dependências estiverem mescladas.
 
 ## Ordem de execução
 
-A numeração é estável. A ordem foi revista em 2026-11-05, com as skills da turma e a análise do projeto `SofiaInfis` (`docs/base-sofiainfis.md`). Depois, Kaio Macedo pediu para colocar a base de conhecimento antes da recepção de arquivos, com as fontes oficiais já localizadas em `docs/fontes-oficiais.md`.
+A numeração é estável. A ordem foi revista em 2026-11-05, com as skills da turma e a análise do projeto `SofiaInfis` (`docs/base-sofiainfis.md`). Depois, Kaio Macedo aprovou colocar a base de conhecimento antes da recepção de arquivos, com as fontes oficiais em `docs/fontes-oficiais.md`, e pediu a classificação das regras e o veredito (mudança 15).
 
 1. **13, esqueleto:** feito. A Sofia alcança o agente e recebe uma resposta válida, com status `parcial`.
 2. **14, telemetria:** feito. Traces e métricas, sem dependência externa, deixam as próximas mudanças observáveis.
 3. **03, execução e resultado:** registro das nove etapas, status, contrato de resultado e banco.
-4. **04, 05 e 06, consumo e base de conhecimento:** popula o RAG com o Manual da ECF, leiaute 12, e deixa o agente consultá-lo. Aceleradas pelo RAG do `SofiaInfis`. O PDF tem 6,5 MB, acima do limite do Vercel, de cerca de 4,5 MB, então a 05 precisa decidir como a ingestão recebe o arquivo.
-5. **07, recepção e leiaute:** o maior risco, agora com a experiência da 05. Decide o que fazer com o limite do Vercel e com o corte de 20.000 caracteres da Sofia, o que pode exigir novo host (novo ADR).
-6. **08 e 09, validações:** as regras do manual viram validadores determinísticos, cada um com a fonte oficial (P02). É aqui que o agente passa a apontar o que está incorreto e o que corrigir.
-7. **10, análise com LLM:** depende de 04, 06 e 08. Com ela, o status pode chegar a `concluido`, porque as nove etapas passam a existir.
-8. **11 e 12, ferramentas e memória:** se ainda fizerem sentido no fluxo da Sofia. O contrato v1.0 não tem identificador de conversa.
-9. **02, autenticação:** só se o responsável decidir adotá-la; não depende dos passos anteriores.
+4. **15, classificação e veredito:** define o que a resposta diz: regras impeditivas, graves e em observação, um veredito claro e o detalhe de cada erro. Vem antes porque as validações já nascem nesse formato, e a Sofia conhece a resposta cedo.
+5. **04, 05 e 06, consumo e base de conhecimento:** popula o RAG com os manuais dos leiautes 7 a 12 e deixa o agente consultá-los. Aceleradas pelo RAG do `SofiaInfis`. Os PDFs têm cerca de 6,5 MB, acima do limite do Vercel, de cerca de 4,5 MB, então a 05 precisa decidir como a ingestão recebe o arquivo.
+6. **07, recepção e leiaute:** o maior risco, agora com a experiência da 05. Decide o que fazer com o limite do Vercel e com o corte de 20.000 caracteres da Sofia, o que pode exigir novo host (novo ADR).
+7. **08 e 09, validações:** as regras do manual viram validadores determinísticos, cada um com a fonte oficial (P02). É aqui que o agente passa a apontar o que está incorreto e o que corrigir.
+8. **10, análise com LLM:** depende de 04, 06 e 08. Com ela, o status pode chegar a `concluido`, porque as nove etapas passam a existir.
+9. **11 e 12, ferramentas e memória:** se ainda fizerem sentido no fluxo da Sofia. O contrato v1.0 não tem identificador de conversa.
+10. **02, autenticação:** só se o responsável decidir adotá-la; não depende dos passos anteriores.
 
 ### O que o agente entrega ao final
 
@@ -66,6 +68,7 @@ Receber uma ECF, por exemplo da Sofia, e responder se ela está correta e, se n�
 | Parte | Mudança |
 | --- | --- |
 | Registro da análise e resultado | 03 |
+| Classificação das regras, veredito e detalhe de cada erro | 15 |
 | Manual pesquisável, para consultar e citar | 04, 05 e 06 |
 | Recepção do arquivo e identificação do leiaute | 07 |
 | **A validação em si:** regras do manual em código, com a localização de cada uma | 08 e 09 |
@@ -73,7 +76,7 @@ Receber uma ECF, por exemplo da Sofia, e responder se ela está correta e, se n�
 
 - **O RAG não valida sozinho:** ele localiza e cita o manual. Quem decide se uma regra foi violada são os validadores (P02).
 - **"Incorreto" vem antes de "correto":** uma regra violada já basta para apontar um erro, a partir da 08. "Correto" exige todas as validações obrigatórias concluídas (P05), então só é possível depois da 10.
-- **Falta um campo de veredito:** o contrato tem status e achados, mas nenhum campo que diga "correto" ou "incorreto", e `concluido` não significa "conforme". A resposta precisa ser calculada pelo sistema, e o texto deve deixar claro que vale para as validações realizadas e que o resultado é apoio à conferência (seção 1.3). A definir nos esclarecimentos da 08.
+- **Janela de anos:** o agente cobre os anos que ainda podem ser retificados, hoje de 2020 a 2025, com os leiautes 7 a 12 (`docs/fontes-oficiais.md`). O catálogo começa pelo 12 e registra as diferenças dos anteriores.
 
 ## Autenticação adiada (SQ-12)
 
