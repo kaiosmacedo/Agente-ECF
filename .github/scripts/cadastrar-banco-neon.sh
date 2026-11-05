@@ -49,7 +49,7 @@ if vercel integration list --all 2>&1 | grep -q "$BANCO"; then
   echo "2/4 O banco $BANCO já existe; mantido."
 else
   echo "2/4 Criando o banco $BANCO: plano Free, região iad1, sem Auth e sem Realtime."
-  echo "    Leia e aceite os termos do Neon quando forem pedidos, aqui ou no navegador."
+  echo "    Leia os termos do Neon quando forem pedidos. Para aceitar, responda y: Enter sozinho recusa."
   vercel integration add neon --name "$BANCO" --billing-plan free_v3 \
     --meta region=iad1 --meta auth=false --meta realtime=false \
     --environment production --no-env-pull \
