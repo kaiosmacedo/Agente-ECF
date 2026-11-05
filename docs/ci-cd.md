@@ -93,6 +93,14 @@ Host=<host>;Database=<banco>;Username=<usuario>;Password=<senha>;SSL Mode=Verify
 
 A integração do Neon com o Vercel também cria `DATABASE_URL` e variáveis parecidas no projeto. O serviço não as lê: elas só mostram os valores que entram no formato acima.
 
+**Criar e cadastrar:** o responsável pelas contas roda `.github/scripts/cadastrar-banco-neon.sh`. O script cria o banco, pedindo o aceite dos termos do Neon, monta as duas conexões e as cadastra sem exibir os valores. Roda de novo depois de uma troca de senha. No PowerShell, `bash` pode abrir o WSL, então use o do Git:
+
+```powershell
+& "C:\Program Files\Git\bin\bash.exe" .github/scripts/cadastrar-banco-neon.sh
+```
+
+**Cadastro manual:** crie o banco em **Storage → Create Database → Neon**, com o plano Free, a região `iad1` e o ambiente Production. Depois monte as conexões com `PGHOST` ou `PGHOST_UNPOOLED`, `PGDATABASE`, `PGUSER` e `PGPASSWORD`, e cadastre-as onde a tabela indica.
+
 O banco fica na região `aws-us-east-1`, perto das funções do Vercel, em `iad1`. Só dados sintéticos ou anonimizados por enquanto (SQ-12; DP-11 antes de dados reais).
 
 **Rollback:** promover o deploy anterior no Vercel. Migrações só acrescentam, então a versão anterior continua funcionando.

@@ -86,6 +86,11 @@ public sealed class PersistenciaTests(BancoDeTeste banco) : IClassFixture<BancoD
 
         Assert.Equal(SslMode.VerifyFull, conexao.SslMode);
         Assert.Equal(ChannelBinding.Require, conexao.ChannelBinding);
+
+        var script = File.ReadAllText(Repositorio.Caminho(".github", "scripts", "cadastrar-banco-neon.sh"));
+        var noScript = formato.Replace("<host>", "%s", StringComparison.Ordinal).Replace("<banco>", "%s", StringComparison.Ordinal)
+            .Replace("<usuario>", "%s", StringComparison.Ordinal).Replace("<senha>", "%s", StringComparison.Ordinal);
+        Assert.Contains(noScript, script, StringComparison.Ordinal);
     }
 
     [Fact(DisplayName = "REQ-CONFIG-002 Conexão em formato de URI impede a inicialização e não revela a senha")]
