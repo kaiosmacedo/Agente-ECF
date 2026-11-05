@@ -28,7 +28,7 @@ As etapas 1 a 3 do fluxo (P03) recebem o arquivo, validam tamanho, formato e con
 | ID | Pergunta | Resposta | Fonte ou responsável | Data | Bloqueante |
 | --- | --- | --- | --- | --- | --- |
 | E01 | Quais formatos aceitar: o arquivo texto da ECF, compactado (ZIP), outros (DP-05)? Pela Sofia, o documento já chega como texto (`documentos[].texto`), sem binário; o `POST /analises` direto segue valendo para outros usos? | — | Kaio Macedo | — | Sim |
-| E02 | Qual o tamanho máximo esperado de um arquivo ECF real (MB) (DP-05)? Isso precisa caber no corpo JSON aceito pelo Vercel. E, se a Sofia enviar vários documentos, como tratar os que não forem ECF? | — | Kaio Macedo | — | Sim |
+| E02 | Qual o tamanho máximo esperado de um arquivo ECF real (MB) (DP-05)? O Vercel recusa corpo acima de cerca de 4,5 MB (medido em 2026-11-05, HTTP 413); na rede Docker esse limite não existe. Um arquivo real caberia, ou é preciso outro host (novo ADR)? E, se a Sofia enviar vários documentos, como tratar os que não forem ECF? | — | Kaio Macedo | — | Sim |
 | E03 | A análise responde na mesma requisição ou de forma assíncrona, com consulta posterior (DP-22)? O limite de duração das funções do Vercel pesa nessa escolha. | — | Kaio Macedo | — | Sim |
 | E04 | O arquivo recebido deve ser guardado? Por quanto tempo e onde (DP-11, GD-06)? | — | Kaio Macedo | — | Sim, para dados reais |
 | E05 | Registro e campos do Manual da ECF, leiaute 12, que identificam o tipo e a versão do leiaute, e a codificação de caracteres do arquivo. A extração é feita do manual e validada por Kaio Macedo (P01). | — | Extração do manual, validação de Kaio Macedo | — | Sim |
