@@ -73,6 +73,20 @@ Se o primeiro deploy atribuir outro domínio de produção, atualizar a variáve
 
 No painel do Vercel, abrir o projeto afetado → Deployments → escolher a publicação anterior saudável → **Promote to Production**. Pela CLI, com o projeto vinculado localmente (`vercel link`), `vercel rollback` faz o mesmo. Depois, corrigir a causa num PR; o próximo merge publica a correção.
 
+## Telemetria
+
+Os dois serviços geram traces e métricas com OpenTelemetry (REQ-OBSERV-004 a 007). Os logs continuam em JSON na saída padrão.
+
+| Opção (variável de ambiente) | Padrão | Uso |
+| --- | --- | --- |
+| `Telemetria:Endpoint` (`Telemetria__Endpoint`) | Vazio: nada é exportado | Endereço base de um destino OTLP/HTTP, como `http://coletor:4318` |
+
+Em produção, não há destino configurado. Para ver os dados localmente, suba o painel gratuito do `compose.yaml` e abra `http://localhost:18888`:
+
+```bash
+TELEMETRIA_ENDPOINT=http://painel:18890 docker compose --profile observabilidade up --build
+```
+
 ## Rodar localmente
 
 ```bash

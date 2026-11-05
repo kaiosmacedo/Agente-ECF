@@ -1,6 +1,8 @@
 # Agente-ECF na rede da Sofia (skill sofia-cors-rest-a2a). A rede é criada pelo compose do projeto SofiaInfis;
 # sem ele no ar, crie uma vez: docker network create sofia-infis_sofia_network
 # Na rede, a Sofia alcança o agente pelo nome do serviço, não por localhost. Só dados sintéticos ou anonimizados (SQ-12).
+# Painel local de traces e métricas, em http://localhost:18888:
+#   TELEMETRIA_ENDPOINT=http://painel:18890 docker compose --profile observabilidade up --build
 name: agente-ecf
 
 services:
@@ -9,8 +11,20 @@ services:
       context: src/Api.Agente
     environment:
       A2A__UrlPublica: ${A2A_URL_PUBLICA:-http://agente-ecf:8080/a2a}
+      Telemetria__Endpoint: ${TELEMETRIA_ENDPOINT:-}
     ports:
       - "8085:8080"
+    networks:
+      - sofia_network
+
+  painel:
+    image: mcr.microsoft.com/dotnet/aspire-dashboard:9.5
+    profiles:
+      - observabilidade
+    environment:
+      ASPIRE_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS: "true"
+    ports:
+      - "127.0.0.1:18888:18888"
     networks:
       - sofia_network
 
