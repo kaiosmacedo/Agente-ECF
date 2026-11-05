@@ -8,9 +8,10 @@ internal sealed class OpcoesA2A
 {
     public const string Secao = "A2A";
 
-    /// <summary>Endereço do endpoint A2A anunciado no cartão. Sem ele, vale o endereço da requisição.</summary>
+    /// <summary>Endereço do endpoint A2A anunciado no cartão, como a Sofia o enxerga.</summary>
+    [Required]
     [Url]
-    public string? UrlPublica { get; init; }
+    public string UrlPublica { get; init; } = "http://localhost:8080/a2a";
 
     /// <summary>Limite do texto somado dos documentos. O padrão vale até DP-05 ser resolvida na mudança 07.</summary>
     [Required]

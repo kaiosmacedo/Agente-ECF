@@ -19,7 +19,7 @@ public sealed class CorsTests
         var requisicao = new HttpRequestMessage(HttpMethod.Options, new Uri(caminho, UriKind.Relative));
         requisicao.Headers.Add("Origin", origem);
         requisicao.Headers.Add("Access-Control-Request-Method", "POST");
-        requisicao.Headers.Add("Access-Control-Request-Headers", "content-type");
+        requisicao.Headers.Add("Access-Control-Request-Headers", "content-type,a2a-version");
         return requisicao;
     }
 
@@ -36,6 +36,7 @@ public sealed class CorsTests
         Assert.Equal(OrigemAutorizada, Assert.Single(resposta.Headers.GetValues("Access-Control-Allow-Origin")));
         Assert.Contains("POST", string.Join(',', resposta.Headers.GetValues("Access-Control-Allow-Methods")), StringComparison.Ordinal);
         Assert.Contains("content-type", string.Join(',', resposta.Headers.GetValues("Access-Control-Allow-Headers")), StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("a2a-version", string.Join(',', resposta.Headers.GetValues("Access-Control-Allow-Headers")), StringComparison.OrdinalIgnoreCase);
         Assert.False(resposta.Headers.Contains("Access-Control-Allow-Credentials"));
     }
 
@@ -80,9 +81,9 @@ public sealed class CorsTests
     {
         using var fabrica = new FabricaApi();
 
-        using var resposta = await ContratoDeTeste.ChamarJsonRpc(fabrica.CreateClient(), "message/send", ContratoDeTeste.MessageSend(ContratoDeTeste.Solicitacao()));
+        using var resposta = await ContratoDeTeste.ChamarJsonRpc(fabrica.CreateClient(), "SendMessage", ContratoDeTeste.SendMessage(ContratoDeTeste.Solicitacao()));
 
-        Assert.Equal("completed", resposta.RootElement.GetProperty("result").GetProperty("status").GetProperty("state").GetString());
+        Assert.Equal("TASK_STATE_COMPLETED", resposta.RootElement.GetProperty("result").GetProperty("task").GetProperty("status").GetProperty("state").GetString());
     }
 
     [Fact(DisplayName = "REQ-CORS-002 Sem origens configuradas, nenhum navegador recebe permissão")]

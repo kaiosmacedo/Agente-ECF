@@ -1,4 +1,5 @@
 using System.Net;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using A2A;
@@ -16,16 +17,20 @@ public sealed class ServidorA2ATests
         return JsonDocument.Parse(await resposta.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
     }
 
-    [Fact(DisplayName = "REQ-A2A-001 Cartão declara o perfil da turma e somente a skill especificada")]
+    private static string EnderecoDoCartao(JsonDocument cartao) =>
+        cartao.RootElement.GetProperty("supportedInterfaces")[0].GetProperty("url").GetString()!;
+
+    [Fact(DisplayName = "REQ-A2A-001 Cartão declara o protocolo 1.0 e somente a skill especificada")]
     public async Task CartaoComAsCapacidadesEspecificadas()
     {
         using var fabrica = new FabricaApi();
 
         using var cartao = await LerCartao(fabrica);
         var raiz = cartao.RootElement;
+        var interfaceA2A = Assert.Single(raiz.GetProperty("supportedInterfaces").EnumerateArray());
 
-        Assert.Equal("0.3.0", raiz.GetProperty("protocolVersion").GetString());
-        Assert.Equal("JSONRPC", raiz.GetProperty("preferredTransport").GetString());
+        Assert.Equal("1.0", interfaceA2A.GetProperty("protocolVersion").GetString());
+        Assert.Equal("JSONRPC", interfaceA2A.GetProperty("protocolBinding").GetString());
         Assert.False(raiz.GetProperty("capabilities").GetProperty("streaming").GetBoolean());
         Assert.False(raiz.GetProperty("capabilities").GetProperty("pushNotifications").GetBoolean());
         var skill = Assert.Single(raiz.GetProperty("skills").EnumerateArray());
@@ -52,8 +57,8 @@ public sealed class ServidorA2ATests
 
         var publicado = JsonNode.Parse(servido.RootElement.GetRawText())!.AsObject();
         var versionado = JsonNode.Parse(File.ReadAllText(Repositorio.Caminho("docs", "contratos", "agent-card.json")))!.AsObject();
-        publicado.Remove("url");
-        versionado.Remove("url");
+        publicado["supportedInterfaces"]![0]!["url"] = "omitido";
+        versionado["supportedInterfaces"]![0]!["url"] = "omitido";
 
         Assert.True(JsonNode.DeepEquals(versionado, publicado), publicado.ToJsonString());
     }
@@ -65,7 +70,7 @@ public sealed class ServidorA2ATests
 
         using var cartao = await LerCartao(fabrica);
 
-        Assert.Equal("https://agente.exemplo.teste/a2a", cartao.RootElement.GetProperty("url").GetString());
+        Assert.Equal("https://agente.exemplo.teste/a2a", EnderecoDoCartao(cartao));
     }
 
     [Fact(DisplayName = "REQ-A2A-001 Em produção, o cartão anuncia o endereço público")]
@@ -75,7 +80,7 @@ public sealed class ServidorA2ATests
 
         using var cartao = await LerCartao(fabrica);
 
-        Assert.Equal("https://agente-ecf-agente.vercel.app/a2a", cartao.RootElement.GetProperty("url").GetString());
+        Assert.Equal("https://agente-ecf-agente.vercel.app/a2a", EnderecoDoCartao(cartao));
     }
 
     [Fact(DisplayName = "REQ-A2A-003 Cliente A2A real descobre o agente e recebe o resultado, sem credencial")]
@@ -86,128 +91,128 @@ public sealed class ServidorA2ATests
         var cancelamento = TestContext.Current.CancellationToken;
 
         var cartao = await new A2ACardResolver(http.BaseAddress!, http).GetAgentCardAsync(cancelamento);
-        var cliente = new A2AClient(new Uri(cartao.Url), http);
+        var cliente = new A2AClient(new Uri(cartao.SupportedInterfaces[0].Url), http);
         var resposta = await cliente.SendMessageAsync(
-            new MessageSendParams
+            new SendMessageRequest
             {
-                Message = new AgentMessage
+                Message = new Message
                 {
-                    Role = MessageRole.User,
+                    Role = Role.User,
                     MessageId = Guid.NewGuid().ToString(),
-                    Parts = [new TextPart { Text = ContratoDeTeste.Fixture("solicitacao-exemplo.json") }],
+                    Parts = [Part.FromText(ContratoDeTeste.Fixture("solicitacao-exemplo.json"))],
                 },
             },
             cancelamento);
 
-        var tarefa = Assert.IsType<AgentTask>(resposta);
+        var tarefa = Assert.IsType<AgentTask>(resposta.Task);
         Assert.Equal(TaskState.Completed, tarefa.Status.State);
         var artefato = Assert.Single(tarefa.Artifacts!);
         Assert.Equal("analise-sofia-v1", artefato.Name);
-        using var resultado = JsonDocument.Parse(Assert.IsType<TextPart>(Assert.Single(artefato.Parts)).Text);
+        using var resultado = JsonDocument.Parse(Assert.Single(artefato.Parts).Text!);
         Assert.Equal(ContratoDeTeste.IdExecucao, resultado.RootElement.GetProperty("idExecucao").GetString());
         Assert.Equal(ContratoDeTeste.IdSolicitacao, resultado.RootElement.GetProperty("idSolicitacao").GetString());
         Assert.Equal("parcial", resultado.RootElement.GetProperty("status").GetString());
     }
 
-    [Fact(DisplayName = "REQ-A2A-005 message/send no envelope do exemplo da turma devolve Task completed com Artifact")]
-    public async Task EnvelopeDoExemplo()
+    [Fact(DisplayName = "REQ-A2A-005 SendMessage no envelope da v1.0 devolve Task concluída com Artifact")]
+    public async Task EnvelopeDaV1()
     {
         using var fabrica = new FabricaApi();
 
-        using var resposta = await ContratoDeTeste.ChamarJsonRpc(fabrica.CreateClient(), "message/send", ContratoDeTeste.MessageSend(ContratoDeTeste.Solicitacao()));
-        var tarefa = resposta.RootElement.GetProperty("result");
+        using var resposta = await ContratoDeTeste.ChamarJsonRpc(fabrica.CreateClient(), "SendMessage", ContratoDeTeste.SendMessage(ContratoDeTeste.Solicitacao()));
+        var tarefa = resposta.RootElement.GetProperty("result").GetProperty("task");
 
         Assert.Equal("2.0", resposta.RootElement.GetProperty("jsonrpc").GetString());
         Assert.Equal("rpc-001", resposta.RootElement.GetProperty("id").GetString());
-        Assert.Equal("task", tarefa.GetProperty("kind").GetString());
         Assert.False(string.IsNullOrWhiteSpace(tarefa.GetProperty("id").GetString()));
         Assert.False(string.IsNullOrWhiteSpace(tarefa.GetProperty("contextId").GetString()));
-        Assert.Equal("completed", tarefa.GetProperty("status").GetProperty("state").GetString());
-        Assert.Equal("text", tarefa.GetProperty("artifacts")[0].GetProperty("parts")[0].GetProperty("kind").GetString());
+        Assert.Equal("TASK_STATE_COMPLETED", tarefa.GetProperty("status").GetProperty("state").GetString());
+        Assert.False(string.IsNullOrWhiteSpace(tarefa.GetProperty("artifacts")[0].GetProperty("parts")[0].GetProperty("text").GetString()));
     }
 
-    [Fact(DisplayName = "REQ-A2A-005 Resultado com status erro continua em Task completed")]
-    public async Task ErroDeNegocioEmTaskCompleted()
+    [Fact(DisplayName = "REQ-A2A-005 Resultado com status erro continua em Task concluída")]
+    public async Task ErroDeNegocioEmTaskConcluida()
     {
         using var fabrica = new FabricaApi();
         var solicitacao = ContratoDeTeste.Solicitacao(s => s.Remove("pergunta"));
 
-        using var resposta = await ContratoDeTeste.ChamarJsonRpc(fabrica.CreateClient(), "message/send", ContratoDeTeste.MessageSend(solicitacao));
-        var tarefa = resposta.RootElement.GetProperty("result");
+        using var resposta = await ContratoDeTeste.ChamarJsonRpc(fabrica.CreateClient(), "SendMessage", ContratoDeTeste.SendMessage(solicitacao));
+        var tarefa = resposta.RootElement.GetProperty("result").GetProperty("task");
         using var resultado = ContratoDeTeste.ResultadoDoArtefato(tarefa);
 
-        Assert.Equal("completed", tarefa.GetProperty("status").GetProperty("state").GetString());
+        Assert.Equal("TASK_STATE_COMPLETED", tarefa.GetProperty("status").GetProperty("state").GetString());
         Assert.Equal("erro", resultado.RootElement.GetProperty("status").GetString());
         Assert.Equal(ContratoDeTeste.IdSolicitacao, resultado.RootElement.GetProperty("idSolicitacao").GetString());
     }
 
-    [Theory(DisplayName = "REQ-A2A-005 Mensagem sem correlação possível termina em Task failed, sem Artifact")]
+    [Theory(DisplayName = "REQ-A2A-005 Mensagem sem correlação possível termina em Task com falha, sem Artifact")]
     [InlineData("isto não é JSON")]
     [InlineData("""{"idExecucao":"teste","idSolicitacao":"teste-1"}""")]
     public async Task MensagemSemCorrelacao(string texto)
     {
         using var fabrica = new FabricaApi();
 
-        using var resposta = await ContratoDeTeste.ChamarJsonRpc(fabrica.CreateClient(), "message/send", ContratoDeTeste.MessageSend(texto));
-        var tarefa = resposta.RootElement.GetProperty("result");
+        using var resposta = await ContratoDeTeste.ChamarJsonRpc(fabrica.CreateClient(), "SendMessage", ContratoDeTeste.SendMessage(texto));
+        var tarefa = resposta.RootElement.GetProperty("result").GetProperty("task");
 
-        Assert.Equal("failed", tarefa.GetProperty("status").GetProperty("state").GetString());
+        Assert.Equal("TASK_STATE_FAILED", tarefa.GetProperty("status").GetProperty("state").GetString());
         Assert.False(tarefa.TryGetProperty("artifacts", out var artefatos) && artefatos.ValueKind == JsonValueKind.Array && artefatos.GetArrayLength() > 0);
     }
 
-    [Fact(DisplayName = "REQ-A2A-005 Mensagem sem TextPart termina em Task failed")]
+    [Fact(DisplayName = "REQ-A2A-005 Mensagem sem parte de texto termina em Task com falha")]
     public async Task MensagemSemTexto()
     {
         using var fabrica = new FabricaApi();
-        var parametros = ContratoDeTeste.MessageSend(string.Empty);
-        parametros["message"]!["parts"] = new JsonArray(new JsonObject { ["kind"] = "data", ["data"] = new JsonObject() });
+        var parametros = ContratoDeTeste.SendMessage(string.Empty);
+        parametros["message"]!["parts"] = new JsonArray(new JsonObject { ["data"] = new JsonObject() });
 
-        using var resposta = await ContratoDeTeste.ChamarJsonRpc(fabrica.CreateClient(), "message/send", parametros);
+        using var resposta = await ContratoDeTeste.ChamarJsonRpc(fabrica.CreateClient(), "SendMessage", parametros);
 
-        Assert.Equal("failed", resposta.RootElement.GetProperty("result").GetProperty("status").GetProperty("state").GetString());
+        Assert.Equal("TASK_STATE_FAILED", resposta.RootElement.GetProperty("result").GetProperty("task").GetProperty("status").GetProperty("state").GetString());
     }
 
-    [Fact(DisplayName = "REQ-A2A-006 Resposta de message/send é final mesmo sem bloqueio pedido")]
-    public async Task RespostaFinalSemBloqueio()
+    [Fact(DisplayName = "REQ-A2A-006 Resposta de SendMessage é final mesmo com returnImmediately")]
+    public async Task RespostaFinalComRetornoImediato()
     {
         using var fabrica = new FabricaApi();
 
         using var resposta = await ContratoDeTeste.ChamarJsonRpc(
-            fabrica.CreateClient(), "message/send", ContratoDeTeste.MessageSend(ContratoDeTeste.Solicitacao(), new JsonObject { ["acceptedOutputModes"] = new JsonArray("text"), ["blocking"] = false }));
+            fabrica.CreateClient(), "SendMessage", ContratoDeTeste.SendMessage(ContratoDeTeste.Solicitacao(), new JsonObject { ["returnImmediately"] = true }));
+        var tarefa = resposta.RootElement.GetProperty("result").GetProperty("task");
 
-        Assert.Equal("completed", resposta.RootElement.GetProperty("result").GetProperty("status").GetProperty("state").GetString());
+        Assert.Equal("TASK_STATE_COMPLETED", tarefa.GetProperty("status").GetProperty("state").GetString());
     }
 
-    [Fact(DisplayName = "REQ-A2A-006 tasks/get devolve a tarefa concluída com o mesmo resultado")]
+    [Fact(DisplayName = "REQ-A2A-006 GetTask devolve a tarefa concluída com o mesmo resultado")]
     public async Task ConsultaDaTarefa()
     {
         using var fabrica = new FabricaApi();
         using var http = fabrica.CreateClient();
-        using var enviada = await ContratoDeTeste.ChamarJsonRpc(http, "message/send", ContratoDeTeste.MessageSend(ContratoDeTeste.Solicitacao()));
-        var id = enviada.RootElement.GetProperty("result").GetProperty("id").GetString();
+        using var enviada = await ContratoDeTeste.ChamarJsonRpc(http, "SendMessage", ContratoDeTeste.SendMessage(ContratoDeTeste.Solicitacao()));
+        var id = enviada.RootElement.GetProperty("result").GetProperty("task").GetProperty("id").GetString();
 
-        using var consultada = await ContratoDeTeste.ChamarJsonRpc(http, "tasks/get", new JsonObject { ["id"] = id });
+        using var consultada = await ContratoDeTeste.ChamarJsonRpc(http, "GetTask", new JsonObject { ["id"] = id });
         using var resultado = ContratoDeTeste.ResultadoDoArtefato(consultada.RootElement.GetProperty("result"));
 
         Assert.Equal(ContratoDeTeste.IdSolicitacao, resultado.RootElement.GetProperty("idSolicitacao").GetString());
     }
 
-    [Fact(DisplayName = "REQ-A2A-006 tasks/cancel em tarefa terminada responde -32002")]
+    [Fact(DisplayName = "REQ-A2A-006 CancelTask em tarefa terminada responde -32002")]
     public async Task CancelarTarefaTerminada()
     {
         using var fabrica = new FabricaApi();
         using var http = fabrica.CreateClient();
-        using var enviada = await ContratoDeTeste.ChamarJsonRpc(http, "message/send", ContratoDeTeste.MessageSend(ContratoDeTeste.Solicitacao()));
-        var id = enviada.RootElement.GetProperty("result").GetProperty("id").GetString();
+        using var enviada = await ContratoDeTeste.ChamarJsonRpc(http, "SendMessage", ContratoDeTeste.SendMessage(ContratoDeTeste.Solicitacao()));
+        var id = enviada.RootElement.GetProperty("result").GetProperty("task").GetProperty("id").GetString();
 
-        using var resposta = await ContratoDeTeste.ChamarJsonRpc(http, "tasks/cancel", new JsonObject { ["id"] = id });
+        using var resposta = await ContratoDeTeste.ChamarJsonRpc(http, "CancelTask", new JsonObject { ["id"] = id });
 
         Assert.Equal(-32002, resposta.RootElement.GetProperty("error").GetProperty("code").GetInt32());
     }
 
     [Theory(DisplayName = "REQ-A2A-006 Tarefa inexistente responde -32001")]
-    [InlineData("tasks/get")]
-    [InlineData("tasks/cancel")]
+    [InlineData("GetTask")]
+    [InlineData("CancelTask")]
     public async Task TarefaInexistente(string metodo)
     {
         using var fabrica = new FabricaApi();
@@ -217,59 +222,97 @@ public sealed class ServidorA2ATests
         Assert.Equal(-32001, resposta.RootElement.GetProperty("error").GetProperty("code").GetInt32());
     }
 
-    [Fact(DisplayName = "REQ-A2A-006 Método desconhecido responde -32601")]
-    public async Task MetodoDesconhecido()
+    [Theory(DisplayName = "REQ-A2A-006 Método desconhecido ou da v0.3 responde -32601")]
+    [InlineData("metodo/inexistente")]
+    [InlineData("message/send")]
+    public async Task MetodoDesconhecido(string metodo)
     {
         using var fabrica = new FabricaApi();
 
-        using var resposta = await ContratoDeTeste.ChamarJsonRpc(fabrica.CreateClient(), "metodo/inexistente", new JsonObject());
+        using var resposta = await ContratoDeTeste.ChamarJsonRpc(fabrica.CreateClient(), metodo, ContratoDeTeste.SendMessage(ContratoDeTeste.Solicitacao()));
 
         Assert.Equal(-32601, resposta.RootElement.GetProperty("error").GetProperty("code").GetInt32());
-    }
-
-    [Theory(DisplayName = "REQ-A2A-006 Streaming não é oferecido e responde -32004")]
-    [InlineData("message/stream")]
-    [InlineData("tasks/resubscribe")]
-    public async Task StreamingNaoSuportado(string metodo)
-    {
-        using var fabrica = new FabricaApi();
-        var parametros = metodo == "message/stream" ? ContratoDeTeste.MessageSend(ContratoDeTeste.Solicitacao()) : new JsonObject { ["id"] = "qualquer" };
-
-        using var resposta = await ContratoDeTeste.ChamarJsonRpc(fabrica.CreateClient(), metodo, parametros);
-
-        Assert.Equal("rpc-001", resposta.RootElement.GetProperty("id").GetString());
-        Assert.Equal(-32004, resposta.RootElement.GetProperty("error").GetProperty("code").GetInt32());
     }
 
     [Fact(DisplayName = "REQ-A2A-006 Corpo que não é JSON responde -32700")]
     public async Task CorpoQueNaoEhJson()
     {
         using var fabrica = new FabricaApi();
-        using var conteudo = new StringContent("isto não é JSON", System.Text.Encoding.UTF8, "application/json");
+        using var conteudo = new StringContent("isto não é JSON", Encoding.UTF8, "application/json");
 
         using var resposta = await fabrica.CreateClient().PostAsync(new Uri("/a2a", UriKind.Relative), conteudo, TestContext.Current.CancellationToken);
         using var json = JsonDocument.Parse(await resposta.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
 
         Assert.Equal(-32700, json.RootElement.GetProperty("error").GetProperty("code").GetInt32());
-        Assert.Equal(JsonValueKind.Null, json.RootElement.GetProperty("id").ValueKind);
+    }
+
+    [Fact(DisplayName = "REQ-A2A-006 Versão de protocolo não suportada responde -32009")]
+    public async Task VersaoDeProtocoloNaoSuportada()
+    {
+        using var fabrica = new FabricaApi();
+        using var requisicao = new HttpRequestMessage(HttpMethod.Post, new Uri("/a2a", UriKind.Relative))
+        {
+            Content = new StringContent(
+                new JsonObject { ["jsonrpc"] = "2.0", ["id"] = "rpc-001", ["method"] = "SendMessage", ["params"] = ContratoDeTeste.SendMessage(ContratoDeTeste.Solicitacao()) }.ToJsonString(),
+                Encoding.UTF8,
+                "application/json"),
+        };
+        requisicao.Headers.Add("A2A-Version", "9.9");
+
+        using var resposta = await fabrica.CreateClient().SendAsync(requisicao, TestContext.Current.CancellationToken);
+        using var json = JsonDocument.Parse(await resposta.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+
+        Assert.Equal(-32009, json.RootElement.GetProperty("error").GetProperty("code").GetInt32());
+    }
+
+    [Fact(DisplayName = "REQ-A2A-006 Streaming não é oferecido e responde -32004")]
+    public async Task StreamingNaoSuportado()
+    {
+        using var fabrica = new FabricaApi();
+
+        using var resposta = await ContratoDeTeste.ChamarJsonRpc(fabrica.CreateClient(), "SendStreamingMessage", ContratoDeTeste.SendMessage(ContratoDeTeste.Solicitacao()));
+
+        Assert.Equal("rpc-001", resposta.RootElement.GetProperty("id").GetString());
+        Assert.Equal(-32004, resposta.RootElement.GetProperty("error").GetProperty("code").GetInt32());
+    }
+
+    [Fact(DisplayName = "REQ-A2A-006 Assinar uma tarefa terminada responde -32004")]
+    public async Task AssinaturaNaoSuportada()
+    {
+        using var fabrica = new FabricaApi();
+        using var http = fabrica.CreateClient();
+        using var enviada = await ContratoDeTeste.ChamarJsonRpc(http, "SendMessage", ContratoDeTeste.SendMessage(ContratoDeTeste.Solicitacao()));
+        var id = enviada.RootElement.GetProperty("result").GetProperty("task").GetProperty("id").GetString();
+
+        using var resposta = await ContratoDeTeste.ChamarJsonRpc(http, "SubscribeToTask", new JsonObject { ["id"] = id });
+
+        Assert.Equal(-32004, resposta.RootElement.GetProperty("error").GetProperty("code").GetInt32());
     }
 
     [Fact(DisplayName = "REQ-A2A-006 Notificações não são oferecidas e respondem -32003")]
     public async Task NotificacoesNaoSuportadas()
     {
         using var fabrica = new FabricaApi();
-        var parametros = new JsonObject
-        {
-            ["taskId"] = "qualquer",
-            ["pushNotificationConfig"] = new JsonObject { ["url"] = "https://exemplo.teste/retorno" },
-        };
+        var parametros = new JsonObject { ["taskId"] = "qualquer", ["url"] = "https://exemplo.teste/retorno" };
 
-        using var resposta = await ContratoDeTeste.ChamarJsonRpc(fabrica.CreateClient(), "tasks/pushNotificationConfig/set", parametros);
+        using var resposta = await ContratoDeTeste.ChamarJsonRpc(fabrica.CreateClient(), "CreateTaskPushNotificationConfig", parametros);
 
         Assert.Equal(-32003, resposta.RootElement.GetProperty("error").GetProperty("code").GetInt32());
     }
 
-    [Fact(DisplayName = "REQ-SOFIA-005 Nome, pergunta e documento ficam fora dos logs, da resposta e de tasks/get")]
+    [Fact(DisplayName = "REQ-A2A-006 ListTasks não revela tarefas de outros chamadores")]
+    public async Task ListaDeTarefasVazia()
+    {
+        using var fabrica = new FabricaApi();
+        using var http = fabrica.CreateClient();
+        using var enviada = await ContratoDeTeste.ChamarJsonRpc(http, "SendMessage", ContratoDeTeste.SendMessage(ContratoDeTeste.Solicitacao()));
+
+        using var resposta = await ContratoDeTeste.ChamarJsonRpc(http, "ListTasks", new JsonObject());
+
+        Assert.Empty(resposta.RootElement.GetProperty("result").GetProperty("tasks").EnumerateArray());
+    }
+
+    [Fact(DisplayName = "REQ-SOFIA-005 Nome, pergunta e documento ficam fora dos logs, da resposta e de GetTask")]
     public async Task DadosSensiveisForaDosLogsEDaMemoria()
     {
         const string nome = "Maria Oliveira";
@@ -283,9 +326,9 @@ public sealed class ServidorA2ATests
             s["documentos"]![0]!["texto"] = texto;
         });
 
-        using var enviada = await ContratoDeTeste.ChamarJsonRpc(http, "message/send", ContratoDeTeste.MessageSend(solicitacao));
-        var id = enviada.RootElement.GetProperty("result").GetProperty("id").GetString();
-        using var consultada = await ContratoDeTeste.ChamarJsonRpc(http, "tasks/get", new JsonObject { ["id"] = id });
+        using var enviada = await ContratoDeTeste.ChamarJsonRpc(http, "SendMessage", ContratoDeTeste.SendMessage(solicitacao));
+        var id = enviada.RootElement.GetProperty("result").GetProperty("task").GetProperty("id").GetString();
+        using var consultada = await ContratoDeTeste.ChamarJsonRpc(http, "GetTask", new JsonObject { ["id"] = id });
 
         foreach (var sensivel in new[] { nome, pergunta, texto })
         {
@@ -301,7 +344,7 @@ public sealed class ServidorA2ATests
         using var fabrica = new FabricaApi();
 
         using var resposta = await ContratoDeTeste.ChamarJsonRpc(
-            fabrica.CreateClient(), "message/send", ContratoDeTeste.MessageSend(ContratoDeTeste.Solicitacao()), correlacao: "sofia-123");
+            fabrica.CreateClient(), "SendMessage", ContratoDeTeste.SendMessage(ContratoDeTeste.Solicitacao()), correlacao: "sofia-123");
 
         Assert.Contains(fabrica.Logs.Registros, registro =>
             registro.Mensagem.Contains(ContratoDeTeste.IdSolicitacao, StringComparison.Ordinal)

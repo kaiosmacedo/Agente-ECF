@@ -5,7 +5,7 @@ using System.Text.Json.Nodes;
 
 namespace Api.Agente.Tests.Infra;
 
-/// <summary>Fixtures sintéticas do contrato SOFIA v1.0 (skill sofia-a2a-contrato) e chamadas JSON-RPC cruas.</summary>
+/// <summary>Fixtures sintéticas do contrato SOFIA v1.0 (skill sofia-a2a-contrato) e chamadas JSON-RPC cruas do A2A v1.0.</summary>
 internal static class ContratoDeTeste
 {
     public const string IdExecucao = "8b2f0ad6-c2e4-4a68-8bdd-20f785bc798e";
@@ -21,16 +21,15 @@ internal static class ContratoDeTeste
         return solicitacao.ToJsonString();
     }
 
-    public static JsonObject MessageSend(string textoDaMensagem, JsonObject? configuracao = null)
+    public static JsonObject SendMessage(string textoDaMensagem, JsonObject? configuracao = null)
     {
         var parametros = new JsonObject
         {
             ["message"] = new JsonObject
             {
-                ["kind"] = "message",
-                ["role"] = "user",
+                ["role"] = "ROLE_USER",
                 ["messageId"] = Guid.NewGuid().ToString(),
-                ["parts"] = new JsonArray(new JsonObject { ["kind"] = "text", ["text"] = textoDaMensagem }),
+                ["parts"] = new JsonArray(new JsonObject { ["text"] = textoDaMensagem }),
             },
         };
         if (configuracao is not null)
@@ -47,6 +46,7 @@ internal static class ContratoDeTeste
         {
             Content = JsonContent.Create(new JsonObject { ["jsonrpc"] = "2.0", ["id"] = "rpc-001", ["method"] = metodo, ["params"] = parametros }),
         };
+        requisicao.Headers.Add("A2A-Version", "1.0");
         if (correlacao is not null)
         {
             requisicao.Headers.Add("X-Correlation-Id", correlacao);
@@ -56,7 +56,7 @@ internal static class ContratoDeTeste
         return JsonDocument.Parse(await resposta.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
     }
 
-    /// <summary>O resultado do contrato que veio no Artifact de uma resposta <c>message/send</c> ou <c>tasks/get</c>.</summary>
+    /// <summary>O resultado do contrato no Artifact de uma tarefa.</summary>
     public static JsonDocument ResultadoDoArtefato(JsonElement tarefa) =>
         JsonDocument.Parse(tarefa.GetProperty("artifacts")[0].GetProperty("parts")[0].GetProperty("text").GetString()!);
 }

@@ -1,5 +1,5 @@
-using System.Text.Json.Serialization;
 using A2A;
+using A2A.AspNetCore;
 using Api.Agente.Aplicacao.ContratoSofia;
 using Api.Agente.Infraestrutura.Configuracao;
 using Microsoft.Extensions.Options;
@@ -13,19 +13,11 @@ internal static class ServidorA2A
     {
         servicos.AdicionarOpcoesValidadas<OpcoesA2A>(configuracao, OpcoesA2A.Secao);
         servicos.AddSingleton(provedor => new ProcessadorDeSolicitacoes(provedor.GetRequiredService<IOptions<OpcoesA2A>>().Value.TamanhoMaximo));
-        // Campos opcionais sem valor ficam fora do cartão, como no exemplo do perfil da turma.
-        servicos.ConfigureHttpJsonOptions(json => json.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull);
         servicos.AddSingleton<ITaskStore, ArmazemDeTarefas>();
-        servicos.AddSingleton<AgenteA2A>();
-        servicos.AddSingleton<ITaskManager>(provedor =>
-        {
-            var agente = provedor.GetRequiredService<AgenteA2A>();
-            return new TaskManager(taskStore: provedor.GetRequiredService<ITaskStore>())
-            {
-                OnTaskCreated = agente.AoCriarTarefa,
-                OnAgentCardQuery = agente.AoConsultarCartao,
-            };
-        });
+
+        // O SDK lê as capacidades deste cartão; o endereço real vem das opções validadas, abaixo.
+        servicos.AddA2AAgent<AgenteA2A>(AgenteA2A.Cartao(new OpcoesA2A().UrlPublica));
+        servicos.AddSingleton(provedor => AgenteA2A.Cartao(provedor.GetRequiredService<IOptions<OpcoesA2A>>().Value.UrlPublica));
         return servicos;
     }
 }

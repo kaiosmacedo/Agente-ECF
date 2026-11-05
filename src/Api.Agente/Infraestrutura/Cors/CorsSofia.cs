@@ -46,7 +46,7 @@ internal static class CorsSofia
         servicos.AddOptions<CorsOptions>().Configure<IOptions<OpcoesCors>>((cors, opcoes) => cors.AddPolicy(Politica, politica => politica
             .WithOrigins(opcoes.Value.AllowedOrigins)
             .WithMethods(HttpMethods.Get, HttpMethods.Post, HttpMethods.Options)
-            .WithHeaders("Content-Type", "Authorization", CorrelacaoMiddleware.Cabecalho)
+            .WithHeaders("Content-Type", "Authorization", "A2A-Version", CorrelacaoMiddleware.Cabecalho)
             .WithExposedHeaders(CorrelacaoMiddleware.Cabecalho)));
         return servicos;
     }

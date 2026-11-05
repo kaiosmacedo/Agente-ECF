@@ -24,7 +24,7 @@ Implementar uma integração **A2A real**, em que a Sofia é cliente e orquestra
 
 1. Inspecionar `openspec/`, a constitution, as specs, o código e os testes. Não sobrescrever especificações nem convenções existentes.
 2. Manter na constitution (RA-07) interoperabilidade, segurança de documentos, evolução versionada, rastreabilidade e testes de contrato.
-3. Especificar: Agent Card público ou autenticado conforme a arquitetura, `message/send`, transporte JSON-RPC, análise de documento em texto, retorno da análise, propagação de IDs, tratamento de erros e timeout.
+3. Especificar: Agent Card público ou autenticado conforme a arquitetura, `SendMessage`, transporte JSON-RPC, análise de documento em texto, retorno da análise, propagação de IDs, tratamento de erros e timeout.
 4. No `design.md`, descrever camadas (`Endpoints`, `Aplicacao`, `Dominio`, `Infraestrutura`), adaptador A2A, autenticação, logs e observabilidade.
 5. Decompor em tarefas verificáveis e implementar por etapas: publicação do cartão, servidor, DTOs de negócio, mapeamento A2A, testes e documentação.
 6. Executar testes unitários, de contrato e ponta a ponta com um cliente A2A real. Entregar evidências: requisições, respostas e logs sanitizados.

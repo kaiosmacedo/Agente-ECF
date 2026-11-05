@@ -24,16 +24,16 @@ falhar() {
   exit 1
 }
 
-# Cartão e message/send com dados sintéticos: Task completed, com o resultado do contrato no Artifact.
+# Cartão e SendMessage com dados sintéticos: Task concluída, com o resultado do contrato no Artifact.
 testar_a2a() {
   local id="$1" corpo resposta
-  curl -fsS "http://localhost:8080/.well-known/agent-card.json" | jq -e '.protocolVersion == "0.3.0" and .skills[0].id == "analisar_documentos"' > /dev/null \
+  curl -fsS "http://localhost:8080/.well-known/agent-card.json" | jq -e '.supportedInterfaces[0].protocolVersion == "1.0" and .skills[0].id == "analisar_documentos"' > /dev/null \
     || falhar "$id" "Cartão do agente inválido."
   corpo=$(jq -n --arg texto '{"versaoContrato":"1.0","idExecucao":"8b2f0ad6-c2e4-4a68-8bdd-20f785bc798e","idSolicitacao":"e1b3a4cb-d729-4bd4-b796-b9c94be07b46","usuario":{"nome":"Usuario Teste"},"pergunta":"Analise o documento","documentos":[{"idDocumento":"doc-001","nome":"teste.txt","texto":"Documento sintetico."}]}' \
-    '{jsonrpc:"2.0",id:"ci",method:"message/send",params:{message:{kind:"message",role:"user",messageId:"5f92c2ba-6870-4862-87ba-1ae8669a77f4",parts:[{kind:"text",text:$texto}]}}}')
-  resposta=$(curl -fsS -X POST "http://localhost:8080/a2a" -H "Content-Type: application/json" -d "$corpo")
-  echo "$resposta" | jq -e '.result.status.state == "completed" and (.result.artifacts[0].parts[0].text | fromjson | .status == "parcial" and .idSolicitacao == "e1b3a4cb-d729-4bd4-b796-b9c94be07b46")' > /dev/null \
-    || falhar "$id" "message/send não devolveu o resultado do contrato."
+    '{jsonrpc:"2.0",id:"ci",method:"SendMessage",params:{message:{role:"ROLE_USER",messageId:"5f92c2ba-6870-4862-87ba-1ae8669a77f4",parts:[{text:$texto}]}}}')
+  resposta=$(curl -fsS -X POST "http://localhost:8080/a2a" -H "Content-Type: application/json" -H "A2A-Version: 1.0" -d "$corpo")
+  echo "$resposta" | jq -e '.result.task.status.state == "TASK_STATE_COMPLETED" and (.result.task.artifacts[0].parts[0].text | fromjson | .status == "parcial" and .idSolicitacao == "e1b3a4cb-d729-4bd4-b796-b9c94be07b46")' > /dev/null \
+    || falhar "$id" "SendMessage não devolveu o resultado do contrato."
 }
 
 for servico in Api.Agente Api.RAG; do

@@ -4,8 +4,9 @@ using Microsoft.Extensions.Caching.Memory;
 namespace Api.Agente.Infraestrutura.Integracao;
 
 /// <summary>
-/// Tarefas em memória, limitadas em quantidade e tempo. Guarda só status e resultado, sem documentos (SQ-04).
-/// Em instâncias que não duram, <c>tasks/get</c> não é garantido: a resposta de <c>message/send</c> já é final.
+/// Tarefas em memória, limitadas em quantidade e tempo, só com status e resultado: o histórico, que traria
+/// documentos e o nome do usuário, nunca é guardado (SQ-04). Em instâncias que não duram, <c>GetTask</c> não é
+/// garantido: a resposta de <c>SendMessage</c> já é final.
 /// </summary>
 internal sealed class ArmazemDeTarefas : ITaskStore, IDisposable
 {
@@ -16,32 +17,22 @@ internal sealed class ArmazemDeTarefas : ITaskStore, IDisposable
     public Task<AgentTask?> GetTaskAsync(string taskId, CancellationToken cancellationToken = default) =>
         Task.FromResult(tarefas.Get<AgentTask>(taskId));
 
-    public Task SetTaskAsync(AgentTask task, CancellationToken cancellationToken = default)
+    public Task SaveTaskAsync(string taskId, AgentTask task, CancellationToken cancellationToken = default)
     {
-        tarefas.Set(task.Id, task, new MemoryCacheEntryOptions { Size = 1, AbsoluteExpirationRelativeToNow = Retencao });
+        var guardada = new AgentTask { Id = task.Id, ContextId = task.ContextId, Status = task.Status, Artifacts = task.Artifacts };
+        tarefas.Set(taskId, guardada, new MemoryCacheEntryOptions { Size = 1, AbsoluteExpirationRelativeToNow = Retencao });
         return Task.CompletedTask;
     }
 
-    public async Task<AgentTaskStatus> UpdateStatusAsync(string taskId, TaskState status, AgentMessage? message = null, CancellationToken cancellationToken = default)
+    public Task DeleteTaskAsync(string taskId, CancellationToken cancellationToken = default)
     {
-        var tarefa = await GetTaskAsync(taskId, cancellationToken)
-            ?? throw new A2AException("Tarefa não encontrada.", A2AErrorCode.TaskNotFound);
-        tarefa.Status = new AgentTaskStatus { State = status, Message = message, Timestamp = DateTimeOffset.UtcNow };
-        await SetTaskAsync(tarefa, cancellationToken);
-        return tarefa.Status;
+        tarefas.Remove(taskId);
+        return Task.CompletedTask;
     }
 
-    public Task<TaskPushNotificationConfig?> GetPushNotificationAsync(string taskId, string notificationConfigId, CancellationToken cancellationToken = default) =>
-        throw NotificacoesNaoSuportadas();
-
-    public Task SetPushNotificationConfigAsync(TaskPushNotificationConfig pushNotificationConfig, CancellationToken cancellationToken = default) =>
-        throw NotificacoesNaoSuportadas();
-
-    public Task<IEnumerable<TaskPushNotificationConfig>> GetPushNotificationsAsync(string taskId, CancellationToken cancellationToken = default) =>
-        throw NotificacoesNaoSuportadas();
+    /// <summary>Sem identidade verificada (SQ-12), nenhum chamador pode ver as tarefas dos outros: a lista é sempre vazia.</summary>
+    public Task<ListTasksResponse> ListTasksAsync(ListTasksRequest request, CancellationToken cancellationToken = default) =>
+        Task.FromResult(new ListTasksResponse { Tasks = [], NextPageToken = string.Empty, PageSize = 0, TotalSize = 0 });
 
     public void Dispose() => tarefas.Dispose();
-
-    private static A2AException NotificacoesNaoSuportadas() =>
-        new("Este agente não oferece notificações.", A2AErrorCode.PushNotificationNotSupported);
 }

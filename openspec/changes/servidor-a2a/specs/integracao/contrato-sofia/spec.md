@@ -50,4 +50,4 @@ Os logs MUST NOT conter `usuario.nome`, `pergunta` nem o texto dos documentos. A
 - **GIVEN** uma solicitação do usuário sintético `Maria Oliveira` com o texto `conteudo-sigiloso-123`
 - **WHEN** a tarefa termina
 - **THEN** nenhum registro de log contém `Maria Oliveira` nem `conteudo-sigiloso-123`
-- **AND** a resposta e `tasks/get` não contêm `conteudo-sigiloso-123`
+- **AND** a resposta e `GetTask` não contêm `conteudo-sigiloso-123`
