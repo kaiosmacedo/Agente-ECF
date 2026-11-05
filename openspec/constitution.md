@@ -2,10 +2,10 @@
 
 | Campo | Valor |
 | --- | --- |
-| Versão | 1.3.1 |
-| Estado | Vigente (ratificada na v1.1.0; emendas v1.2.0 e v1.3.0 aprovadas) |
+| Versão | 2.0.0 |
+| Estado | Vigente (ratificada na v1.1.0; emendas v1.2.0, v1.3.0 e v2.0.0 aprovadas) |
 | Criada em | 2026-10-29 |
-| Última alteração | 2026-10-29 |
+| Última alteração | 2026-11-05 |
 | Ratificada em | 2026-10-29, por Kaio Macedo (versão 1.1.0) |
 | Responsáveis pela aprovação | Kaio Macedo, responsável pelo projeto, com aprovação única (DP-19) |
 | Fonte normativa | `openspec/constitution.md` neste repositório |
@@ -474,9 +474,9 @@ Toda execução de análise MUST percorrer as etapas abaixo, respeitando suas de
 | **Api.Agente** | API REST para execução do agente; recepção de arquivos e solicitações de análise; orquestração do fluxo de validação (P03); integração com a OpenAI; consulta à Api.RAG como cliente MCP; Semantic Kernel para integração e execução de ferramentas por Function Calling; memória conversacional; registro de consumo de tokens e custos; validação da resposta estruturada do LLM; servidor A2A. |
 | **Api.RAG** | API REST para administração da base de conhecimento; endpoint POST de ingestão; processamento de documentos, geração de chunks e embeddings; armazenamento e consulta de vetores em PostgreSQL com PgVector; servidor MCP com ferramentas de recuperação de conhecimento. |
 
-**RA-03 — MCP.** A Api.RAG MUST expor a recuperação de conhecimento como ferramentas MCP com contratos versionados (GD-01). Essas ferramentas MUST aceitar filtros de tipo de documento e de versão (P11) e retornar os metadados de referência (P06). A chamada entre serviços MUST ser autenticada (SQ-01).
+**RA-03 — MCP.** A Api.RAG MUST expor a recuperação de conhecimento como ferramentas MCP com contratos versionados (GD-01). Essas ferramentas MUST aceitar filtros de tipo de documento e de versão (P11) e retornar os metadados de referência (P06). A chamada entre serviços MUST ser autenticada (SQ-01), exceto na primeira versão (SQ-12).
 
-**RA-04 — API REST da Api.RAG.** A API REST da Api.RAG destina-se à administração da base de conhecimento e à ingestão. Seu acesso MUST ser restrito a perfis administrativos (SQ-02).
+**RA-04 — API REST da Api.RAG.** A API REST da Api.RAG destina-se à administração da base de conhecimento e à ingestão. Seu acesso MUST ser restrito a perfis administrativos (SQ-02), exceto na primeira versão (SQ-12).
 
 **RA-05 — Persistência.**
 
@@ -590,9 +590,9 @@ A consolidação do consumo da Api.RAG, com embeddings de ingestão e de consult
 
 ## 5. Segurança e qualidade
 
-**SQ-01 — Autenticação.** Todos os pontos de entrada (REST, MCP e A2A) MUST exigir autenticação. Somente verificações de saúde que não exponham dados MAY ser anônimas. O mecanismo é definido em ADR (DP-09).
+**SQ-01 — Autenticação.** Todos os pontos de entrada (REST, MCP e A2A) MUST exigir autenticação. Somente verificações de saúde que não exponham dados MAY ser anônimas. O mecanismo é definido em ADR (DP-09). Suspensa na primeira versão (SQ-12).
 
-**SQ-02 — Autorização.** Cada operação e cada chamada de ferramenta MUST verificar a autorização por usuário e organização, segundo o princípio do menor privilégio. Funções administrativas da Api.RAG MUST exigir perfil administrativo.
+**SQ-02 — Autorização.** Cada operação e cada chamada de ferramenta MUST verificar a autorização por usuário e organização, segundo o princípio do menor privilégio. Funções administrativas da Api.RAG MUST exigir perfil administrativo. Suspensa na primeira versão (SQ-12).
 
 **SQ-03 — Segredos.** Segredos MUST ser obtidos de armazenamento seguro de segredos. Eles MUST NOT aparecer no repositório, em logs, em prompts ou em respostas. A rotação de um segredo MUST NOT exigir alteração de código.
 
@@ -628,6 +628,17 @@ O CI MUST NOT depender de chamadas reais à OpenAI. Os testes automatizados MUST
 **SQ-10 — Dados de teste.** Os dados de teste MUST ser sintéticos ou anonimizados e MUST indicar o requisito e a fonte que representam. Arquivos reais de clientes MUST NOT ser versionados.
 
 **SQ-11 — Dependências.** Os pacotes MUST vir de fontes confiáveis, com versões fixadas, e passar por verificação de vulnerabilidades no CI. Cada nova dependência MUST ser justificada (P16).
+
+**SQ-12 — Primeira versão sem autenticação.** Regra transitória, por decisão do responsável em 2026-11-05: a autenticação será normalizada entre a Sofia INFIS e os demais agentes por uma skill que o professor vai fornecer, e entra na mudança 02 (`autenticacao-autorizacao`). Até essa mudança ser concluída:
+
+- Endpoints REST, MCP e A2A MAY ser implementados e publicados sem autenticação e sem autorização por usuário, organização ou perfil. SQ-01, SQ-02 e as exigências correspondentes de RA-03, RA-04 e DoD-14 ficam suspensas.
+- Usuário e organização MUST vir de um único ponto da camada de aplicação. Eles MAY ser declarados pelo cliente ou assumir valores padrão documentados, e MUST NOT ser tratados como identidade verificada.
+- Os serviços MUST NOT receber arquivos reais de clientes nem outros dados reais: somente dados sintéticos ou anonimizados (SQ-10).
+- Um endpoint publicado que acione provedor pago (LLM ou embeddings) MUST ter limite de uso configurável, ou ficar desativado por configuração.
+- A política de cada ferramenta (P14) e as regras SQ-03 a SQ-11 continuam valendo.
+- Cada exigência adiada MUST constar da seção "Autenticação adiada" de `docs/roteiro.md`, para ser reaplicada na retomada.
+
+A conclusão da mudança 02 MUST encerrar esta regra por emenda.
 
 ---
 
@@ -749,7 +760,7 @@ Uma mudança só é considerada concluída quando todos os itens aplicáveis aba
 
 **Segurança, dados e operação**
 
-- [ ] **DoD-14** Autenticação e autorização testadas para os novos pontos de entrada e ferramentas (SQ-01, SQ-02, P14).
+- [ ] **DoD-14** Autenticação e autorização testadas para os novos pontos de entrada e ferramentas (SQ-01, SQ-02, P14). Na primeira versão (SQ-12), vale só para a política das ferramentas (P14).
 - [ ] **DoD-15** Logs sem dados sensíveis e correlação propagada (SQ-04, SQ-07).
 - [ ] **DoD-16** Consumo registrado para toda chamada a provedor, inclusive retentativas (P17).
 - [ ] **DoD-17** Dados de teste sintéticos ou anonimizados (SQ-10).
@@ -809,6 +820,7 @@ Sínteses desta constitution, como a nota do cofre Obsidian, MUST indicar a vers
 | 1.2.0 | 2026-10-29 | MINOR: delegação ao assistente de IA da validação e do merge de PRs (6.6); branches `ci/` e do Dependabot e checks obrigatórios do CI (6.8); decisões do responsável para DP-17 e DP-18, a formalizar em ADR. Nenhuma especificação existente afetada. | Decisões aprovadas por Kaio Macedo em 2026-10-29; merge por delegação (6.6). |
 | 1.3.0 | 2026-10-29 | MINOR: roteiro em `docs/roteiro.md` e uso obrigatório das skills do projeto indicadas no roteiro e no `tasks.md` (6.1); especificação conjunta de várias mudanças numa branch `docs/roteiro-*` (6.8). Nenhuma especificação vigente afetada. | Aprovada por Kaio Macedo em 2026-10-29 (PR #4). |
 | 1.3.1 | 2026-10-29 | PATCH: DP-17 e DP-18 movidas para as decisões resolvidas, conforme os ADRs 0001 e 0002 aceitos e a mudança `fundacao-solucao` arquivada. Sem efeito normativo. | Registro de decisões aprovadas por Kaio Macedo; merge por delegação (6.6). |
+| 2.0.0 | 2026-11-05 | MAJOR: primeira versão sem autenticação (SQ-12), com SQ-01 e SQ-02 suspensas e RA-03, RA-04, DoD-14 e DP-09 ajustadas. Especificações das mudanças 03 a 13 e `docs/roteiro.md` adequadas no mesmo PR; a mudança 02 fica congelada. | Decisão de Kaio Macedo em 2026-11-05; aprovação do texto pendente no PR. |
 
 ---
 
@@ -826,7 +838,7 @@ As decisões abaixo não estão definidas. Elas MUST NOT ser tratadas como requi
 | DP-06 | Escopo das validações de IRPJ e CSLL, dos cruzamentos entre registros e da comparação com períodos anteriores e com outras escriturações, incluindo a origem desses dados. | Esclarecimentos das mudanças de regras de negócio. | Especificação | Regras de negócio correspondentes. |
 | DP-07 | Escala de severidade e seus critérios. | Especificação do contrato de resultado. | Especificação | Contrato de resultado. |
 | DP-08 | Enumeração dos status de processamento e regra de cálculo. | Especificação do contrato de resultado. | Especificação | Contrato de resultado. |
-| DP-09 | Mecanismo de autenticação e autorização (provedor de identidade, autenticação entre serviços, MCP e A2A) e modelo de organizações. | Antes da primeira mudança que exponha endpoints. | ADR | Exposição de qualquer endpoint. |
+| DP-09 | Mecanismo de autenticação e autorização (provedor de identidade, autenticação entre serviços, MCP e A2A) e modelo de organizações. | Antes de encerrar a regra SQ-12, com a skill de autenticação que o professor vai fornecer. | ADR | Uso com dados reais e encerramento da SQ-12. |
 | DP-10 | Ferramentas externas necessárias, suas fontes e suas políticas de autorização. | Especificação de cada ferramenta. | Especificação | Etapa 6 do fluxo. |
 | DP-11 | Política de retenção e exclusão de arquivos, resultados, memória, logs e consumo, com a base legal (LGPD). | Antes do uso com dados reais. | ADR ou política aprovada | Uso com dados reais. |
 | DP-12 | Política de dados com a OpenAI: retenção no provedor, região, uso para treinamento, minimização e anonimização. | Antes do envio de dados reais ao provedor. | ADR | Envio de dados reais ao LLM. |

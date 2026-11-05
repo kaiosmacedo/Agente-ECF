@@ -43,9 +43,10 @@ Uma falha ao gravar o registro de consumo SHALL gerar log de erro com o identifi
 - **THEN** um log de erro com o identificador de correlação é emitido
 - **AND** a métrica de falhas de registro aumenta
 
-### Requirement: REQ-CONSUMO-005 Consulta agregada restrita
-O serviço SHALL oferecer consulta agregada de consumo por execução, modelo e período somente a perfis autorizados, e a consulta MUST NOT expor prompts, conteúdo de documentos ou credenciais.
+### Requirement: REQ-CONSUMO-005 Consulta agregada
+O serviço SHALL oferecer consulta agregada de consumo por execução, modelo e período, e a consulta MUST NOT expor prompts, conteúdo de documentos ou credenciais. A restrição por perfil entra na retomada da mudança 02 (SQ-12).
 
-#### Scenario: Consulta sem perfil autorizado
-- **WHEN** um usuário de análise consulta o consumo agregado
-- **THEN** a resposta tem status HTTP 403
+#### Scenario: Consulta agregada sem dados sensíveis
+- **WHEN** um cliente consulta o consumo agregado de um período
+- **THEN** a resposta traz os totais por modelo
+- **AND** não contém prompts, conteúdo de documentos nem credenciais

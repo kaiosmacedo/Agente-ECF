@@ -8,7 +8,7 @@ As etapas 1 a 3 do fluxo (P03) recebem o arquivo, validam tamanho, formato e con
 
 ## What Changes
 
-- Cria `POST /analises`, autenticado, que recebe o arquivo, cria a execução e registra o hash (etapa 1).
+- Cria `POST /analises`, sem autenticação na primeira versão (SQ-12), que recebe o arquivo, cria a execução e registra o hash (etapa 1).
 - Valida tamanho, formato e limites de processamento antes de ler o conteúdo completo (etapa 2).
 - Identifica o tipo de documento e a versão do leiaute pelos campos definidos no Manual da ECF (etapa 3).
 - Trata versão não suportada ou identificação ambígua como limitação, sem executar validações dependentes de versão.
@@ -42,7 +42,7 @@ As etapas 1 a 3 do fluxo (P03) recebem o arquivo, validam tamanho, formato e con
 
 ## Princípios, decisões e dependências
 
-- **Princípios:** P01, P03, P05, P08, P10, P19; GD-06; SQ-01, SQ-05.
+- **Princípios:** P01, P03, P05, P08, P10, P19; GD-06; SQ-05, SQ-12.
 - **Decisões pendentes:** resolve DP-05 e DP-22; depende de DP-04 e DP-11; usa DP-25 (mudança 03).
 - **Depende de:** 03 `execucao-e-resultado` (e, por ela, 02).
 - **Skills:** `testes-agentes-ia`, `github-versionamento`.

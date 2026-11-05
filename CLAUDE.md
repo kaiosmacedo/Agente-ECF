@@ -4,6 +4,7 @@
 - O trabalho segue o fluxo SDD com OpenSpec (`/opsx:new`, `/opsx:continue`, `/opsx:apply`, `/opsx:verify`, `/opsx:archive`). Não implemente funcionalidade sem mudança aprovada (P20).
 - Não invente leiautes, registros, regras fiscais, schemas ou critérios de conformidade (P01). Sem fonte oficial, registre o esclarecimento ou a decisão pendente.
 - Decisões pendentes estão na seção 9 da constitution e não são requisitos aprovados; as resolvidas ficam em 9.1.
+- A primeira versão não tem autenticação (SQ-12): a mudança 02 está congelada à espera da skill do professor. Não exija autenticação nas demais mudanças; registre o que ficar adiado em `docs/roteiro.md`.
 - Use `/opsx:new` e `/opsx:continue` (um artefato por vez) para que os esclarecimentos venham antes do `design.md`.
 - Commits, branches e PRs seguem a skill `github-versionamento` (seção 6.8 da constitution).
 - Na implementação, use as skills do projeto conforme o tema: `testes-agentes-ia`, `rag-pgvector`, `mcp-client-server`, `semantic-kernel-tools`, `controle-custos-llm`, `memoria-mongodb` e `vercel-dotnet-pgvector-atlas`. Cada uma declara suas pré-condições (ADRs e decisões pendentes).

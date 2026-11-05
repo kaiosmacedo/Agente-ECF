@@ -19,7 +19,7 @@ Registro das decisões arquiteturais do Agente-ECF, conforme a seção 6.5 da [c
 | --- | --- |
 | DP-01 | Armazenamento da memória conversacional: MongoDB ou Redis. |
 | DP-02 | Modelo de embeddings e dimensão dos vetores. |
-| DP-09 | Autenticação e autorização (REST, MCP, A2A e entre serviços). |
+| DP-09 | Autenticação e autorização (REST, MCP, A2A e entre serviços). Adiada pela regra SQ-12 da constitution. |
 | DP-11 | Retenção e exclusão de dados (LGPD), quando não aprovada como política. |
 | DP-12 | Política de dados com a OpenAI. |
 | DP-25 | Armazenamento das execuções e resultados, quando não resolvido no design. |

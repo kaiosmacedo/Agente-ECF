@@ -28,7 +28,7 @@ Adaptada da skill de mesmo nome do pacote INFIS para Spec Kit. Em conflito, `ope
 ## Fluxo de execução
 
 1. Ler os contratos previstos da Api.RAG, as fontes oficiais registradas, os formatos suportados e os cenários de aceite.
-2. Implementar o endpoint POST de ingestão como função administrativa (RA-04, SQ-02): autenticação, tamanho máximo e validação de MIME e conteúdo (SQ-05).
+2. Implementar o endpoint POST de ingestão como função administrativa (RA-04, SQ-02): autenticação (adiada enquanto valer a SQ-12), tamanho máximo e validação de MIME e conteúdo (SQ-05).
 3. Extrair o texto conforme o formato e segmentar com parâmetros configuráveis. Registrar os metadados de GD-07: documento, emissor, título, tipo, versão, vigência, hash, data de ingestão, estado e, por chunk, localização (página, seção, registro ou campo), hash e modelo e dimensão do embedding.
 4. Garantir ingestão idempotente por hash (GD-07). Reprocessamento e substituição de versão não podem apagar versões necessárias à auditoria.
 5. Criar migrações idempotentes para a extensão `vector`, documentos e chunks, com restrições que impeçam metadados obrigatórios nulos (P11). O índice vetorial e o operador de distância seguem o ADR de embeddings.

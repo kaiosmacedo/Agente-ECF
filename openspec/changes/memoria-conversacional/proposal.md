@@ -37,9 +37,9 @@ Não se aplica: sem regras de domínio fiscal.
 
 ## Princípios, decisões e dependências
 
-- **Princípios:** P10, P18; GD-09, GD-11; SQ-02, SQ-04.
+- **Princípios:** P10, P18; GD-09, GD-11; SQ-04, SQ-12.
 - **Decisões pendentes:** resolve DP-01 (ADR); depende de DP-11.
-- **Depende de:** 02 `autenticacao-autorizacao` e 10 `analise-llm`.
+- **Depende de:** 10 `analise-llm`. O isolamento pela identidade autenticada fica adiado (SQ-12; `docs/roteiro.md`).
 - **Skills:** `memoria-mongodb` (se E01 escolher MongoDB), `testes-agentes-ia`, `github-versionamento`.
 
 ## Fora do escopo

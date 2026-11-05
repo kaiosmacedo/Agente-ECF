@@ -5,7 +5,7 @@ Permitir que administradores consultem e mantenham os documentos da base de conh
 ## ADDED Requirements
 
 ### Requirement: REQ-BASE-001 Listagem de documentos
-A Api.RAG SHALL listar os documentos da base com emissor, título, tipo, versão, vigência, estado (vigente, substituído ou desativado) e data de ingestão, com filtros por tipo e versão, somente para administradores.
+A Api.RAG SHALL listar os documentos da base com emissor, título, tipo, versão, vigência, estado (vigente, substituído ou desativado) e data de ingestão, com filtros por tipo e versão. A restrição a administradores entra na retomada da mudança 02 (SQ-12).
 
 #### Scenario: Filtro por versão
 - **GIVEN** a base com as versões A e B de um manual

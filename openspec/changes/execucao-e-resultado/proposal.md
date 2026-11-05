@@ -11,7 +11,7 @@ As etapas de validação, RAG e LLM das próximas mudanças precisam de uma espi
 - Cria o registro da execução: identificador gerado pelo sistema, identidade, hash do arquivo e estado das nove etapas.
 - Implementa o cálculo determinístico do status e da necessidade de revisão humana.
 - Define o envelope da API e o contrato de achados (categorias, origem, evidências, severidade, limitações), versionados.
-- Expõe a consulta do resultado de uma execução (`GET /analises/{id}`), restrita à organização.
+- Expõe a consulta do resultado de uma execução (`GET /analises/{id}`), sem autenticação na primeira versão (SQ-12).
 - Persiste execuções e resultados no PostgreSQL da Api.Agente (DP-25).
 
 A criação de execuções a partir do envio do arquivo entra na mudança 07; aqui, os testes criam execuções diretamente.
@@ -35,6 +35,7 @@ A criação de execuções a partir do envio do arquivo entra na mudança 07; aq
 | E04 | Uma referência citada pelo LLM que não existe: o item é rejeitado ou reclassificado como ausência de evidências (DP-23)? | — | Kaio Macedo | — | Não; vale a partir da mudança 10 |
 | E05 | Por quanto tempo guardar execuções e resultados (DP-11)? | — | Kaio Macedo | — | Não, para dados sintéticos |
 | E06 | Qual provedor de PostgreSQL gerenciado usar com o Vercel (por exemplo, Neon ou Supabase), como no DIMP? | — | Kaio Macedo | — | Sim, para persistir |
+| E07 | Como a primeira versão obtém usuário e organização, sem autenticação (SQ-12)? Por exemplo, cabeçalhos opcionais declarados pelo cliente, com valor padrão quando ausentes. | — | Kaio Macedo | — | Sim |
 
 ## Fontes oficiais
 
@@ -42,9 +43,9 @@ Não se aplica: o contrato não contém regras fiscais. As regras que produzem a
 
 ## Princípios, decisões e dependências
 
-- **Princípios:** P03, P04, P05, P06, P08, P09, P12, P13, P19; GD-01 a GD-05.
+- **Princípios:** P03, P04, P05, P06, P08, P09, P12, P13, P19; GD-01 a GD-05; SQ-12.
 - **Decisões pendentes:** resolve DP-07, DP-08 e DP-25; depende de DP-11 para dados reais; DP-15 e DP-23 podem ser resolvidas aqui ou adiadas para as mudanças 10 e posteriores.
-- **Depende de:** 01 `fundacao-solucao` e 02 `autenticacao-autorizacao`.
+- **Depende de:** 01 `fundacao-solucao`. As exigências de autenticação ficam adiadas (SQ-12; `docs/roteiro.md`).
 - **Skills:** `testes-agentes-ia`, `github-versionamento`.
 
 ## Fora do escopo

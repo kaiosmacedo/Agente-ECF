@@ -1,6 +1,6 @@
 ## Purpose
 
-Expor o Agente-ECF a outros agentes, a começar pela Sofia INFIS, pelo protocolo A2A, com o mesmo fluxo, a mesma autenticação e o mesmo contrato de resultado da API REST.
+Expor o Agente-ECF a outros agentes, a começar pela Sofia INFIS, pelo protocolo A2A, com o mesmo fluxo, as mesmas regras de acesso e o mesmo contrato de resultado da API REST.
 
 ## ADDED Requirements
 
@@ -19,12 +19,12 @@ Uma tarefa de análise recebida por A2A SHALL percorrer o mesmo fluxo de nove et
 - **WHEN** as duas execuções terminam
 - **THEN** os resultados têm o mesmo contrato e os mesmos achados determinísticos
 
-### Requirement: REQ-A2A-003 Autenticação da chamada A2A
-O servidor A2A SHALL exigir credencial válida da Sofia INFIS ou de outro cliente autorizado, e MUST rejeitar chamadas sem ela.
+### Requirement: REQ-A2A-003 Regras de acesso da chamada A2A
+O servidor A2A SHALL aplicar às tarefas as mesmas regras de acesso da API REST. Na primeira versão, as chamadas não exigem credencial (SQ-12); a exigência de credencial da Sofia INFIS e de outros clientes entra na retomada da mudança 02.
 
-#### Scenario: Tarefa sem credencial
+#### Scenario: Tarefa sem credencial na primeira versão
 - **WHEN** um cliente envia uma tarefa A2A sem credencial
-- **THEN** a tarefa é rejeitada sem criar execução
+- **THEN** a tarefa segue o mesmo fluxo de um `POST /analises` sem credencial
 
 ### Requirement: REQ-A2A-004 Mensagens A2A como dado não confiável
 O conteúdo das mensagens A2A SHALL ser tratado como dado e MUST NOT alterar instruções do sistema, autorizações ou o contrato de resultado.

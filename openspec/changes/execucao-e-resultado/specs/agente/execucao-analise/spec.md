@@ -5,10 +5,10 @@ Registrar cada execução de análise do Agente-ECF com o estado das nove etapas
 ## ADDED Requirements
 
 ### Requirement: REQ-EXEC-001 Registro da execução
-Cada execução SHALL receber um identificador único gerado pelo sistema e registrar usuário, organização, data de criação e o estado de cada uma das nove etapas da constitution (concluída, não aplicável, com falha ou não executada).
+Cada execução SHALL receber um identificador único gerado pelo sistema e registrar usuário e organização (na primeira versão, declarados e não verificados, conforme SQ-12), data de criação e o estado de cada uma das nove etapas da constitution (concluída, não aplicável, com falha ou não executada).
 
 #### Scenario: Execução criada
-- **WHEN** uma execução é criada para um usuário de `org-a`
+- **WHEN** uma execução é criada com a organização declarada `org-a`
 - **THEN** ela tem um identificador gerado pelo sistema
 - **AND** registra as nove etapas, todas inicialmente como não executadas
 
@@ -43,11 +43,11 @@ O status SHALL ser calculado por regra determinística a partir dos estados das 
 - **THEN** o status é de entrada rejeitada
 
 ### Requirement: REQ-EXEC-005 Consulta do resultado
-A Api.Agente SHALL expor `GET /analises/{id}` que devolve o envelope do resultado a usuários da mesma organização da execução.
+A Api.Agente SHALL expor `GET /analises/{id}`, que devolve o envelope do resultado. Na primeira versão, a consulta não exige credencial nem restringe por organização (SQ-12); a restrição entra na retomada da mudança 02.
 
-#### Scenario: Consulta pela mesma organização
-- **GIVEN** uma execução de `org-a`
-- **WHEN** um usuário autenticado de `org-a` envia `GET /analises/{id}`
+#### Scenario: Consulta sem credencial na primeira versão
+- **GIVEN** uma execução registrada
+- **WHEN** um cliente sem credencial envia `GET /analises/{id}`
 - **THEN** a resposta tem status HTTP 200 com o envelope do resultado
 
 ### Requirement: REQ-EXEC-006 Registro de auditoria
