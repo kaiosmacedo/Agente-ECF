@@ -1,0 +1,34 @@
+{
+  "name": "Agente ECF",
+  "description": "Analisa arquivos da Escrituração Contábil Fiscal (ECF) enviados pela Sofia INFIS.",
+  "url": "https://agente-ecf-agente.vercel.app/a2a",
+  "version": "1.0.0",
+  "protocolVersion": "0.3.0",
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "stateTransitionHistory": false,
+    "extensions": []
+  },
+  "defaultInputModes": [
+    "text"
+  ],
+  "defaultOutputModes": [
+    "text"
+  ],
+  "skills": [
+    {
+      "id": "analisar_documentos",
+      "name": "Análise de arquivos da ECF",
+      "description": "Analisa o texto de arquivos da ECF enviados pela Sofia INFIS.",
+      "tags": [
+        "infis",
+        "sofia",
+        "ecf"
+      ]
+    }
+  ],
+  "supportsAuthenticatedExtendedCard": false,
+  "additionalInterfaces": [],
+  "preferredTransport": "JSONRPC"
+}
