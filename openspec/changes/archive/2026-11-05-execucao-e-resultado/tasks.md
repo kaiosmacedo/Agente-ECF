@@ -59,14 +59,14 @@ Skill: vercel-dotnet-pgvector-atlas
 
 Skill: vercel-dotnet-pgvector-atlas
 
-- [ ] 8.1 **(com Kaio Macedo)** Criar o banco no Neon, de preferência pela integração do Vercel com o projeto `agente-ecf-agente`; verificar que o banco existe e usa TLS.
-- [ ] 8.2 **(Kaio Macedo)** Cadastrar `ConnectionStrings__Execucoes` no Vercel e o segredo da migração no GitHub Environment `producao`; verificar com `vercel env ls` e no ambiente, sem exibir o valor (SQ-03).
-- [ ] 8.3 Depois do merge, verificar que o CD aplicou a migração e publicou, que `/health/ready` responde 200 e que `SendMessage` e `GET /analises/{id}` funcionam em produção com dados sintéticos.
+- [x] 8.1 **(com Kaio Macedo)** Criar o banco no Neon, de preferência pela integração do Vercel com o projeto `agente-ecf-agente`; verificar que o banco existe e usa TLS.
+- [x] 8.2 **(Kaio Macedo)** Cadastrar `ConnectionStrings__Execucoes` no Vercel e o segredo da migração no GitHub Environment `producao`; verificar com `vercel env ls` e no ambiente, sem exibir o valor (SQ-03).
+- [x] 8.3 Depois do merge, verificar que o CD aplicou a migração e publicou, que `/health/ready` responde 200 e que `SendMessage` e `GET /analises/{id}` funcionam em produção com dados sintéticos.
 
 ## 9. Fechamento
 
-- [ ] 9.1 Atualizar o cofre Obsidian e `docs/roteiro.md`; verificar a tabela de mudanças.
-- [ ] 9.2 Executar `/opsx:verify` e conferir a Definition of Done (seção 7 da constitution).
+- [x] 9.1 Atualizar o cofre Obsidian e `docs/roteiro.md`; verificar a tabela de mudanças.
+- [x] 9.2 Executar `/opsx:verify` e conferir a Definition of Done (seção 7 da constitution).
 
 ## Workflow follow-up
 

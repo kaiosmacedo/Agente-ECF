@@ -15,13 +15,13 @@ Cada mudança segue o fluxo da constitution (6.1): especificação → esclareci
 
 | Etapa | Situação |
 | --- | --- |
-| Constitution | v2.0.0 vigente (ratificada na v1.1.0; emendas aprovadas por Kaio Macedo). |
+| Constitution | v2.0.1 vigente (ratificada na v1.1.0; emendas aprovadas por Kaio Macedo). |
 | CI/CD | CI com checks obrigatórios `OpenSpec` e `.NET`; CD publica no Vercel a cada merge na `main`. |
 | Vercel | Em produção: https://agente-ecf-agente.vercel.app e https://agente-ecf-rag.vercel.app (time `agent-ecf`). |
 | Mudança 01 | Concluída: mesclada (PR #2), em produção e arquivada em 2026-10-29; specs vigentes em `openspec/specs/plataforma/`. |
 | Mudança 02 | Congelada em 2026-11-05: a integração com a Sofia não usa token, por decisão de Kaio Macedo. Código preservado na branch `feat/autenticacao-autorizacao` (PR #7, em rascunho). |
 | Mudança 13 | Esqueleto em produção desde 2026-11-05 (PR #9): cartão, `SendMessage` A2A v1.0, contrato SOFIA v1.0 e CORS. Falta o teste com a Sofia real, quando o cliente A2A dela existir. A análise completa chega com as mudanças 03 a 10. |
-| Mudança 03 | Plano técnico e tarefas aprovados em 2026-11-05, com a base do `SofiaInfis`; implementado na branch `feat/execucao-e-resultado` (PR #10), com testes em PostgreSQL real. O merge depende do banco no Neon, que Kaio Macedo cria e cadastra (`docs/ci-cd.md`). |
+| Mudança 03 | Em produção e arquivada desde 2026-11-05 (PR #10): nove etapas, status, achados e `GET /analises/{id}`, com banco no Neon. Sem análise da ECF ainda: toda solicitação válida termina em `parcial`. |
 | Mudanças 04 a 12 | Especificações aprovadas por Kaio Macedo em 2026-10-29 (PR #4) e adequadas às regras SQ-12 e RA-07 em 2026-11-05. |
 
 ## Mudanças
@@ -30,7 +30,7 @@ Cada mudança segue o fluxo da constitution (6.1): especificação → esclareci
 | --- | --- | --- | --- | --- | --- | --- |
 | 01 | `fundacao-solucao` | `plataforma/saude-servicos`, `configuracao-servicos`, `observabilidade`, `qualidade-entrega`, `entrega-servicos` | — | 17, 18 | `testes-agentes-ia`, `vercel-dotnet-pgvector-atlas`, `github-versionamento` | Concluída |
 | 02 | `autenticacao-autorizacao` | `plataforma/autenticacao` | 01 | 09 | `testes-agentes-ia` | Congelada |
-| 03 | `execucao-e-resultado` | `agente/execucao-analise`, `agente/contrato-resultado` | 01, 13 | 07, 08, 15, 23, 25 | `sofia-a2a-contrato`, `testes-agentes-ia`, `vercel-dotnet-pgvector-atlas` | Em implementação |
+| 03 | `execucao-e-resultado` | `agente/execucao-analise`, `agente/contrato-resultado` | 01, 13 | 07, 08, 15, 23, 25 | `sofia-a2a-contrato`, `testes-agentes-ia`, `vercel-dotnet-pgvector-atlas` | Arquivada; em produção desde 2026-11-05 (PR #10) |
 | 04 | `registro-consumo-ia` | `plataforma/consumo-custos` | 01 | 13, 26 | `controle-custos-llm`, `testes-agentes-ia` | Especificação aprovada |
 | 05 | `base-conhecimento-ingestao` | `rag/ingestao-documentos`, `rag/administracao-base` | 04 | 02, 03, 04, 24 | `rag-pgvector`, `controle-custos-llm`, `testes-agentes-ia` | Especificação aprovada |
 | 06 | `recuperacao-conhecimento-mcp` | `rag/recuperacao-conhecimento`, `agente/consulta-conhecimento` | 03, 05 | 03, 14 | `mcp-client-server`, `rag-pgvector`, `vercel-dotnet-pgvector-atlas` | Especificação aprovada |
@@ -41,7 +41,7 @@ Cada mudança segue o fluxo da constitution (6.1): especificação → esclareci
 | 11 | `ferramentas-agente` | `agente/ferramentas` | 10 | 10 | `semantic-kernel-tools`, `testes-agentes-ia` | Especificação aprovada |
 | 12 | `memoria-conversacional` | `agente/memoria-conversacional` | 10 | 01, 11 | `memoria-mongodb`, `testes-agentes-ia` | Especificação aprovada |
 | 13 | `servidor-a2a` | `integracao/servidor-a2a`, `integracao/contrato-sofia`, `integracao/cors` | 01 | 09, 16 | `sofia-a2a-contrato`, `sofia-a2a-implementacao`, `sofia-cors-rest-a2a`, `vercel-dotnet-pgvector-atlas`, `testes-agentes-ia` | Esqueleto em produção |
-| 14 | `telemetria-servicos` | `plataforma/observabilidade` | 01 | — | `testes-agentes-ia` | Em produção desde 2026-11-05 (PR #13); a arquivar |
+| 14 | `telemetria-servicos` | `plataforma/observabilidade` | 01 | — | `testes-agentes-ia` | Arquivada; em produção desde 2026-11-05 (PR #13) |
 | 15 | `classificacao-e-veredito` | `agente/contrato-resultado` | 03 | 07, 08 | `sofia-a2a-contrato`, `testes-agentes-ia` | Pedida por Kaio Macedo em 2026-11-05; especificação em andamento |
 
 `github-versionamento` vale para todas as mudanças. As mudanças 05 a 09 podem avançar em paralelo com 04 quando suas dependências estiverem mescladas.

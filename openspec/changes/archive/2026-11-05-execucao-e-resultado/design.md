@@ -31,7 +31,7 @@ Em `Dominio/Execucoes`, sem dependência de ASP.NET Core, banco ou A2A:
 - `Execucao`: identificador próprio, `idExecucao` e `idSolicitacao` da Sofia, usuário pseudonimizado, organização, data, nove `EtapaDaExecucao`, achados, limitações, hashes dos documentos e versões.
 - `Etapa`: as nove etapas de P03, com as dependências entre elas. Estados: `Concluida`, `NaoAplicavel` (com justificativa), `ComFalha` e `NaoExecutada`.
 - `Achado`: criado por um método que rejeita combinação inválida, com categoria (GD-04), origem, fundamento, registros e severidade. Categoria incompatível com a origem, fundamento ausente ou severidade fora da escala lançam exceção de domínio.
-- **Registros (ajuste na implementação, a confirmar por Kaio Macedo no PR):** erro estrutural, inconsistência de negócio e indício da IA exigem registros. Falha técnica e ausência de evidências podem vir sem eles, porque não houve o que verificar. O texto de REQ-RESULT-003 não faz essa distinção.
+- **Registros (ajuste na implementação, confirmado por Kaio Macedo em 2026-11-05):** erro estrutural, inconsistência de negócio e indício da IA exigem registros. Falha técnica e ausência de evidências podem vir sem eles, porque não houve o que verificar. REQ-RESULT-003 foi ajustado para registrar a distinção.
 
 ### D2. Status e revisão humana (REQ-EXEC-004, REQ-RESULT-005; E01)
 

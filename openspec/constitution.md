@@ -2,8 +2,8 @@
 
 | Campo | Valor |
 | --- | --- |
-| Versão | 2.0.0 |
-| Estado | Vigente (ratificada na v1.1.0; emendas v1.2.0, v1.3.0 e v2.0.0 aprovadas) |
+| Versão | 2.0.1 |
+| Estado | Vigente (ratificada na v1.1.0; emendas v1.2.0, v1.3.0, v2.0.0 e v2.0.1 aprovadas) |
 | Criada em | 2026-10-29 |
 | Última alteração | 2026-11-05 |
 | Ratificada em | 2026-10-29, por Kaio Macedo (versão 1.1.0) |
@@ -823,6 +823,7 @@ Sínteses desta constitution, como a nota do cofre Obsidian, MUST indicar a vers
 | 1.3.0 | 2026-10-29 | MINOR: roteiro em `docs/roteiro.md` e uso obrigatório das skills do projeto indicadas no roteiro e no `tasks.md` (6.1); especificação conjunta de várias mudanças numa branch `docs/roteiro-*` (6.8). Nenhuma especificação vigente afetada. | Aprovada por Kaio Macedo em 2026-10-29 (PR #4). |
 | 1.3.1 | 2026-10-29 | PATCH: DP-17 e DP-18 movidas para as decisões resolvidas, conforme os ADRs 0001 e 0002 aceitos e a mudança `fundacao-solucao` arquivada. Sem efeito normativo. | Registro de decisões aprovadas por Kaio Macedo; merge por delegação (6.6). |
 | 2.0.0 | 2026-11-05 | MAJOR: primeira versão sem autenticação (SQ-12), com SQ-01 e SQ-02 suspensas e RA-03, RA-04, DoD-14 e DP-09 ajustadas; integração com a Sofia pelas skills da turma: RA-07 redefinida (protocolo A2A v1.0 e contrato SOFIA v1.0), CORS (SQ-13) e ajustes em GD-01, GD-06, SQ-04 e SQ-09. Especificações das mudanças 03 a 13 e `docs/roteiro.md` adequadas no mesmo PR; a mudança 02 fica congelada. | Aprovada por Kaio Macedo em 2026-11-05 (PR #8), com as duas travas da SQ-12, o protocolo A2A v1.0 e a integração sem token. |
+| 2.0.1 | 2026-11-05 | PATCH: DP-07, DP-08 e DP-25 movidas para as decisões resolvidas, conforme a mudança `execucao-e-resultado` arquivada. Sem efeito normativo. | Registro de decisões aprovado por Kaio Macedo em 2026-11-05. |
 
 ---
 
@@ -838,8 +839,6 @@ As decisões abaixo não estão definidas. Elas MUST NOT ser tratadas como requi
 | DP-04 | Fontes oficiais da ECF a ingerir. **Fonte inicial definida em 2026-10-29:** Manual da ECF, leiaute 12, publicado em 20/05/2026, para o ano-calendário 2025 e situações especiais de 2026 (dados conforme o nome do arquivo, a confirmar na ingestão), disponível na [página da ECF no portal SPED](https://www.gov.br/sped/pt-br/assuntos/escrituracoes-digitais/ecf) e no [arquivo do manual](https://www.gov.br/sped/pt-br/assuntos/escrituracoes-digitais/ecf/manuais-e-documentos-tecnicos/manual_ecf_leiaute_12_20_05_2026_ac_2025_sit_esp_2026.pdf/@@display-file/file). **Pendentes:** demais documentos (tabelas, regras de validação, schemas), se a cobertura inicial se limita ao leiaute 12, versões anteriores para comparação entre períodos e relação com as regras do programa validador oficial da ECF. | Esclarecimentos da primeira mudança de validação. | Especificação | Qualquer regra de domínio. |
 | DP-05 | Formatos de entrada aceitos, limites de tamanho e condições de processamento. | Especificação da recepção de arquivos. | Especificação | Etapa 2 do fluxo. |
 | DP-06 | Escopo das validações de IRPJ e CSLL, dos cruzamentos entre registros e da comparação com períodos anteriores e com outras escriturações, incluindo a origem desses dados. | Esclarecimentos das mudanças de regras de negócio. | Especificação | Regras de negócio correspondentes. |
-| DP-07 | Escala de severidade e seus critérios. | Especificação do contrato de resultado. | Especificação | Contrato de resultado. |
-| DP-08 | Enumeração dos status de processamento e regra de cálculo. | Especificação do contrato de resultado. | Especificação | Contrato de resultado. |
 | DP-09 | Mecanismo de autenticação e autorização (provedor de identidade, autenticação entre serviços, MCP e A2A) e modelo de organizações. | Antes de encerrar a regra SQ-12, quando o responsável decidir adotar autenticação (diretriz na skill `sofia-cors-rest-a2a`). | ADR | Uso com dados reais e encerramento da SQ-12. |
 | DP-10 | Ferramentas externas necessárias, suas fontes e suas políticas de autorização. | Especificação de cada ferramenta. | Especificação | Etapa 6 do fluxo. |
 | DP-11 | Política de retenção e exclusão de arquivos, resultados, memória, logs e consumo, com a base legal (LGPD). | Antes do uso com dados reais. | ADR ou política aprovada | Uso com dados reais. |
@@ -851,7 +850,6 @@ As decisões abaixo não estão definidas. Elas MUST NOT ser tratadas como requi
 | DP-22 | Processamento síncrono ou assíncrono das análises e tratamento de arquivos grandes. | Especificação e plano técnico da recepção. | Especificação e design | Etapa 2 do fluxo. |
 | DP-23 | Política de rejeição ou reclassificação de itens com referência não verificável (P07). | Especificação do contrato de resultado. | Especificação | Validação semântica. |
 | DP-24 | Conjunto representativo de exemplos para avaliar a recuperação e a análise: origem, anonimização e resultados esperados. | Especificação de avaliação, antes da definição de parâmetros. | Especificação | Aprovação de parâmetros (P11) e de modelos. |
-| DP-25 | Armazenamento das execuções, dos achados e dos resultados na Api.Agente. | Plano técnico da fundação. | Design ou ADR | Persistência de resultados. |
 | DP-26 | Consolidação do consumo da Api.RAG (embeddings de ingestão e de consulta) sem violar a propriedade dos dados (P15). | Plano técnico da mudança de consumo. | Design | Relatórios consolidados de custo. |
 
 ### 9.1 Decisões resolvidas
@@ -863,3 +861,6 @@ As decisões abaixo não estão definidas. Elas MUST NOT ser tratadas como requi
 | DP-21 | Revisão da constitution a cada nova versão do leiaute da ECF adotada e a cada emenda MAJOR. | 2026-10-29 | Seção 8.4. |
 | DP-17 | Um projeto por serviço, com camadas em pastas verificadas por testes de arquitetura; xUnit e Testcontainers. | 2026-10-29 | ADR 0001 (aceito); mudança `fundacao-solucao`. |
 | DP-18 | Vercel com contêineres, dois projetos, somente produção, CD pelo GitHub Actions após o CI na `main`. Ficam para as mudanças seguintes: provedores de banco (esclarecimentos de 03 e 04) e viabilidade de MCP e A2A no Vercel (provas de conceito de 06 e 13). | 2026-10-29 | ADR 0002 (aceito); mudança `fundacao-solucao`. |
+| DP-07 | Severidade: `baixa`, `media`, `alta` e `critica`, a escala do contrato SOFIA v1.0, com critérios no design. É uma escala do produto, não da Receita Federal. | 2026-11-05 | Mudança `execucao-e-resultado`, D3. |
+| DP-08 | Status: `entrada-rejeitada`, `falha-tecnica`, `parcial` e `concluida`, com regra de cálculo e mapeamento para os três status do contrato SOFIA. | 2026-11-05 | Mudança `execucao-e-resultado`, D2. |
+| DP-25 | PostgreSQL no Neon, com banco próprio da Api.Agente, Dapper e migrações em SQL. Texto, nome e pergunta nunca são guardados. | 2026-11-05 | Mudança `execucao-e-resultado`, D6. |

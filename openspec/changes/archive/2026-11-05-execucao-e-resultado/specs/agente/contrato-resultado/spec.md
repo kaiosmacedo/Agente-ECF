@@ -24,7 +24,7 @@ Cada achado SHALL ter exatamente uma categoria entre erro estrutural, inconsist�
 - **THEN** o registro é rejeitado
 
 ### Requirement: REQ-RESULT-003 Evidência mínima
-Cada achado SHALL informar a execução, a origem, a regra, requisito ou fonte que o fundamenta e os registros envolvidos, com linha ou posição e campo quando disponíveis. Achado sem esses campos MUST ser rejeitado.
+Cada achado SHALL informar a execução, a origem, a regra, requisito ou fonte que o fundamenta e os registros envolvidos, com linha ou posição e campo quando disponíveis. Achado sem esses campos MUST ser rejeitado. Só falha técnica e ausência de evidências MAY vir sem registros, porque nesses casos não houve o que verificar.
 
 #### Scenario: Achado sem fundamento
 - **WHEN** um achado é registrado sem regra, requisito ou fonte
