@@ -32,6 +32,7 @@ As etapas 1 a 3 do fluxo (P03) recebem o arquivo, validam tamanho, formato e con
 | E03 | A análise responde na mesma requisição ou de forma assíncrona, com consulta posterior (DP-22)? O limite de duração das funções do Vercel pesa nessa escolha. | — | Kaio Macedo | — | Sim |
 | E04 | O arquivo recebido deve ser guardado? Por quanto tempo e onde (DP-11, GD-06)? | — | Kaio Macedo | — | Sim, para dados reais |
 | E05 | Registro e campos do Manual da ECF, leiaute 12, que identificam o tipo e a versão do leiaute, e a codificação de caracteres do arquivo. A extração é feita do manual e validada por Kaio Macedo (P01). | — | Extração do manual, validação de Kaio Macedo | — | Sim |
+| E07 | A Sofia corta cada arquivo em 20.000 caracteres e acrescenta `[DOCUMENTO TRUNCADO]`. O corte será retirado para os agentes? Enquanto existir, o agente deve detectar o marcador e declarar a limitação, sem validar um arquivo cortado como se estivesse inteiro. | — | Kaio Macedo | — | Sim |
 | E06 | A primeira entrega suporta só o leiaute 12, ou também versões anteriores (DP-04)? | — | Kaio Macedo | — | Sim |
 
 ## Fontes oficiais
@@ -45,6 +46,7 @@ As etapas 1 a 3 do fluxo (P03) recebem o arquivo, validam tamanho, formato e con
 - **Princípios:** P01, P03, P05, P08, P10, P19; GD-06; SQ-05, SQ-12.
 - **Decisões pendentes:** resolve DP-05 e DP-22; depende de DP-04 e DP-11; usa DP-25 (mudança 03).
 - **Depende de:** 03 `execucao-e-resultado`. A entrada pela Sofia usa o contrato da mudança 13.
+- **Maior risco do roteiro:** o código atual da Sofia corta arquivos e o Vercel limita o corpo; veja E02, E07 e `docs/base-sofiainfis.md`.
 - **Skills:** `sofia-a2a-contrato`, `testes-agentes-ia`, `github-versionamento`.
 
 ## Fora do escopo

@@ -29,7 +29,7 @@ O agente precisa consultar o manual oficial da versão do leiaute identificada (
 | ID | Pergunta | Resposta | Fonte ou responsável | Data | Bloqueante |
 | --- | --- | --- | --- | --- | --- |
 | E01 | A primeira ingestão é só o Manual da ECF, leiaute 12, ou inclui outros documentos oficiais (tabelas, regras de validação, manuais de anos anteriores) (DP-04)? | — | Kaio Macedo | — | Sim |
-| E02 | Qual modelo de embeddings e dimensão (DP-02)? O ADR compara as opções da OpenAI disponíveis na conta. | — | Kaio Macedo | — | Sim |
+| E02 | Qual modelo de embeddings e dimensão (DP-02)? O ADR compara as opções da OpenAI disponíveis na conta; o `SofiaInfis` usa `text-embedding-3-small`, com 1536 dimensões. | — | Kaio Macedo | — | Sim |
 | E03 | Quem monta o conjunto de avaliação: perguntas sobre o manual e os trechos esperados (DP-24)? | — | Kaio Macedo | — | Sim, para fixar parâmetros |
 | E04 | Os PDFs originais devem ser guardados? O disco do Vercel não é durável; seria preciso armazenamento de objetos (por exemplo, Vercel Blob). | — | Kaio Macedo | — | Sim |
 | E05 | Tamanho máximo esperado de um documento a ingerir (MB)? | — | Kaio Macedo | — | Não |
@@ -48,6 +48,7 @@ A ingestão guarda o documento como dado. Nenhum requisito desta mudança depend
 - **Decisões pendentes:** resolve DP-02 (ADR de embeddings) e DP-03; depende de DP-04 e DP-24.
 - **Depende de:** 04 `registro-consumo-ia`. O perfil administrador fica adiado (SQ-12; `docs/roteiro.md`).
 - **Skills:** `rag-pgvector`, `controle-custos-llm`, `testes-agentes-ia`, `github-versionamento`.
+- **Base:** ingestão, extração de PDF e Dapper do `SofiaInfis`, com as adaptações de `docs/base-sofiainfis.md`.
 
 ## Fora do escopo
 
