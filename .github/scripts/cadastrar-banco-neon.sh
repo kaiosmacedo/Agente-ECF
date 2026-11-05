@@ -32,8 +32,15 @@ conexao() {
     "$1" "$banco_neon" "$usuario" "$senha"
 }
 
-"$GH" auth status > /dev/null 2>&1 || parar "o GitHub CLI não está autenticado."
-vercel whoami > /dev/null 2>&1 || parar "a Vercel CLI não está autenticada. Rode: npx vercel@65.7.0 login"
+# Quem roda entra na própria conta, se ainda não tiver entrado neste terminal.
+if ! "$GH" auth status > /dev/null 2>&1; then
+  echo "Entre no GitHub: o navegador abre e pede o código que aparece aqui."
+  "$GH" auth login --web --hostname github.com --git-protocol https --skip-ssh-key || parar "não foi possível entrar no GitHub."
+fi
+if ! vercel whoami > /dev/null 2>&1; then
+  echo "Entre no Vercel: siga o link que aparece aqui."
+  npx --yes vercel@65.7.0 login || parar "não foi possível entrar no Vercel."
+fi
 
 echo "1/4 Ligando esta execução ao projeto $PROJETO..."
 vercel link --project "$PROJETO" --yes > /dev/null 2>&1 || parar "não foi possível acessar o projeto $PROJETO."

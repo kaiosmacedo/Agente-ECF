@@ -93,7 +93,7 @@ Host=<host>;Database=<banco>;Username=<usuario>;Password=<senha>;SSL Mode=Verify
 
 A integração do Neon com o Vercel também cria `DATABASE_URL` e variáveis parecidas no projeto. O serviço não as lê: elas só mostram os valores que entram no formato acima.
 
-**Criar e cadastrar:** o responsável pelas contas roda `.github/scripts/cadastrar-banco-neon.sh`. O script cria o banco, pedindo o aceite dos termos do Neon, monta as duas conexões e as cadastra sem exibir os valores. Roda de novo depois de uma troca de senha. No PowerShell, `bash` pode abrir o WSL, então use o do Git:
+**Criar e cadastrar:** o responsável pelas contas roda `.github/scripts/cadastrar-banco-neon.sh`. O script pede o login no GitHub e no Vercel, se ainda não houver sessão no terminal, cria o banco, pedindo o aceite dos termos do Neon, monta as duas conexões e as cadastra sem exibir os valores. Roda de novo depois de uma troca de senha. No PowerShell, `bash` pode abrir o WSL, então use o do Git:
 
 ```powershell
 & "C:\Program Files\Git\bin\bash.exe" .github/scripts/cadastrar-banco-neon.sh
