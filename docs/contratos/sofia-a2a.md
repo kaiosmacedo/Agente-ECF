@@ -2,7 +2,7 @@
 
 Como a Sofia aciona o Agente-ECF. Requisitos em `openspec/changes/servidor-a2a/` e regras em RA-07, SQ-12 e SQ-13 da constitution. O contrato de negócio é compartilhado entre os agentes da turma e está em [`.claude/skills/sofia-a2a-contrato/references/contrato-sofia-v1.md`](../../.claude/skills/sofia-a2a-contrato/references/contrato-sofia-v1.md).
 
-**Situação:** esqueleto da integração. Protocolo e contrato são reais, mas a análise ainda não existe: toda solicitação válida responde com status `parcial`, sem achados, e declara as validações não realizadas. Sem autenticação nem token (SQ-12): use somente dados sintéticos ou anonimizados.
+**Situação:** esqueleto da integração, em produção desde 2026-11-05. Protocolo e contrato são reais, mas a análise ainda não existe: toda solicitação válida responde com status `parcial`, sem achados, e declara as validações não realizadas. Sem autenticação nem token (SQ-12): use somente dados sintéticos ou anonimizados.
 
 ## Identificação
 
@@ -115,6 +115,16 @@ Resposta (o texto do Artifact foi formatado aqui para leitura; ele chega como st
 | `-32009` | Versão desconhecida em `A2A-Version`. |
 
 A resposta de `SendMessage` já é final, mesmo com `returnImmediately`. No Vercel, as instâncias não duram, então `GetTask` não é garantido. `ListTasks` responde sempre com lista vazia: sem identidade verificada, nenhum chamador vê as tarefas dos outros.
+
+## Limite de tamanho
+
+| Onde | Limite | O que acontece acima dele |
+| --- | --- | --- |
+| Vercel (produção) | Corpo da requisição entre 4,4 MB e 4,6 MB, medido em 2026-11-05 | HTTP 413 `FUNCTION_PAYLOAD_TOO_LARGE`, sem resposta JSON-RPC. A Sofia deve tratar como falha técnica. |
+| Serviço | `A2A:TamanhoMaximoDosDocumentosEmBytes` (10 MiB) | Resultado com status `erro` e código `documentos_acima_do_limite`. Em produção, o limite do Vercel vem antes. |
+| Kestrel (Docker) | 30 MB no corpo, padrão do ASP.NET Core | Erro HTTP 413. |
+
+O corpo inclui o envelope e o escape do JSON, então o texto útil é um pouco menor. A decisão para arquivos reais fica na mudança 07 (DP-05).
 
 ## Configuração
 

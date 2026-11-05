@@ -37,7 +37,7 @@ Skill: sofia-cors-rest-a2a
 Skill: vercel-dotnet-pgvector-atlas
 
 - [x] 5.1 Criar `compose.yaml` (D9); verificar com `docker compose` que o cartão responde em `localhost:8085` e, de outro contêiner na rede `sofia-infis_sofia_network`, em `http://agente-ecf:8080`.
-- [ ] 5.2 Incluir o cartão e `SendMessage` em `.github/scripts/testar-conteineres.sh`; verificar na execução local das mesmas chamadas e no CI.
+- [x] 5.2 Incluir o cartão e `SendMessage` em `.github/scripts/testar-conteineres.sh`; verificar na execução local das mesmas chamadas e no CI.
 
 ## 6. Documentação
 
@@ -50,9 +50,9 @@ Skill: sofia-a2a-contrato
 
 Skill: vercel-dotnet-pgvector-atlas
 
-- [ ] 7.1 Depois do merge, verificar que o CD publicou e que a saúde continua 200.
-- [ ] 7.2 Verificar em produção o cartão com a `url` pública e um `SendMessage` com dados sintéticos (REQ-A2A-001, REQ-A2A-005).
-- [ ] 7.3 Medir em produção o maior corpo aceito pelo Vercel em `SendMessage`, só com dados sintéticos, e registrar o resultado em `docs/contratos/sofia-a2a.md` e em E07.
+- [x] 7.1 Depois do merge, verificar que o CD publicou e que a saúde continua 200.
+- [x] 7.2 Verificar em produção o cartão com a `url` pública e um `SendMessage` com dados sintéticos (REQ-A2A-001, REQ-A2A-005).
+- [x] 7.3 Medir em produção o maior corpo aceito pelo Vercel em `SendMessage`, só com dados sintéticos, e registrar o resultado em `docs/contratos/sofia-a2a.md` e em E07.
 - [ ] 7.4 Com Kaio Macedo, fazer o teste com a Sofia real, quando o cliente A2A dela existir.
 - [ ] 7.5 Atualizar o cofre Obsidian e `docs/roteiro.md`; executar `/opsx:verify` e conferir a Definition of Done (seção 7 da constitution).
 

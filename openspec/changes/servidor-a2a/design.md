@@ -90,7 +90,7 @@ Política `SofiaBrowser`, com `Cors:AllowedOrigins` opcional e validada: o agent
 
 - [Outros agentes da turma em v0.3] → a decisão pela v1.0 diverge da skill original. Um cliente v0.3 recebe `-32601`; `A2A.V0_3Compat` é a saída, se for necessário.
 - [Endpoint público sem autenticação] → SQ-12: só dados sintéticos ou anonimizados, sem custo de provedor nesta mudança. Qualquer pessoa com a URL pode chamar, e a decisão é de Kaio Macedo.
-- [Limite de corpo no Vercel] → medido em produção (tarefa 7.3). Se for menor que um arquivo ECF real, a mudança 07 precisa tratar, com novo ADR de hospedagem se preciso.
+- [Limite de corpo no Vercel] → medido em produção: entre 4,4 MB e 4,6 MB. Acima disso, a plataforma responde HTTP 413, sem resposta JSON-RPC. Na rede Docker esse limite não existe. Se um arquivo ECF real não couber, a mudança 07 precisa tratar, com novo ADR de hospedagem se preciso.
 - [SDK em preview] → versão fixada e cobertura de contrato com o cliente do próprio SDK.
 - [`GetTask` entre instâncias] → resposta de `SendMessage` é final; documentado.
 
