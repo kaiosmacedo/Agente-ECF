@@ -41,19 +41,23 @@ Cada mudança segue o fluxo da constitution (6.1): especificação → esclareci
 | 11 | `ferramentas-agente` | `agente/ferramentas` | 10 | 10 | `semantic-kernel-tools`, `testes-agentes-ia` | Especificação aprovada |
 | 12 | `memoria-conversacional` | `agente/memoria-conversacional` | 10 | 01, 11 | `memoria-mongodb`, `testes-agentes-ia` | Especificação aprovada |
 | 13 | `servidor-a2a` | `integracao/servidor-a2a`, `integracao/contrato-sofia`, `integracao/cors` | 01 | 09, 16 | `sofia-a2a-contrato`, `sofia-a2a-implementacao`, `sofia-cors-rest-a2a`, `vercel-dotnet-pgvector-atlas`, `testes-agentes-ia` | Esqueleto em produção |
+| 14 | `telemetria-servicos` | `plataforma/observabilidade` | 01 | — | `testes-agentes-ia` | Em implementação |
 
 `github-versionamento` vale para todas as mudanças. As mudanças 05 a 09 podem avançar em paralelo com 04 quando suas dependências estiverem mescladas.
 
 ## Ordem de execução
 
-A numeração é estável, mas a ordem mudou com as skills da turma (2026-11-05): a Sofia precisa alcançar o agente antes de ele analisar tudo.
+A numeração é estável. A ordem foi revista em 2026-11-05, com as skills da turma e a análise do projeto `SofiaInfis` (`docs/base-sofiainfis.md`): primeiro a base técnica, depois o maior risco, depois o que dá para acelerar com o que já existe.
 
-1. **13, esqueleto:** a Sofia descobre o agente e recebe uma resposta válida, com status `parcial` e as validações não realizadas declaradas.
-2. **03:** execução e resultado internos, projetados para o contrato SOFIA.
-3. **07, 08 e 09:** recepção do texto da ECF, identificação do leiaute, validação estrutural e regras de negócio. O status passa a `concluido` quando todas as validações obrigatórias terminarem.
-4. **04, 05, 06 e 10:** consumo, base de conhecimento, MCP e análise com LLM.
-5. **11 e 12:** ferramentas e memória, se ainda fizerem sentido no fluxo da Sofia. O contrato v1.0 não tem identificador de conversa.
-6. **02:** retomada só se o responsável decidir adotar autenticação; não depende dos passos anteriores.
+1. **13, esqueleto:** feito. A Sofia alcança o agente e recebe uma resposta válida, com status `parcial`.
+2. **14, telemetria:** traces e métricas, sem dependência externa. Deixa as próximas mudanças observáveis.
+3. **03, execução e resultado:** registro das nove etapas, status, contrato de resultado e banco.
+4. **07, recepção e leiaute:** o maior risco. Decide o que fazer com o limite do Vercel e com o corte de 20.000 caracteres da Sofia, o que pode exigir novo host (novo ADR).
+5. **04, 05 e 06, consumo e base de conhecimento:** aceleradas pelo RAG do `SofiaInfis`. Com o manual pesquisável, fica mais fácil localizar as fontes das regras.
+6. **08 e 09, validações:** regras do leiaute e de negócio, cada uma com a fonte oficial. O status passa a `concluido` quando todas as validações obrigatórias terminarem.
+7. **10, análise com LLM:** depende de 04, 06 e 08.
+8. **11 e 12, ferramentas e memória:** se ainda fizerem sentido no fluxo da Sofia. O contrato v1.0 não tem identificador de conversa.
+9. **02, autenticação:** só se o responsável decidir adotá-la; não depende dos passos anteriores.
 
 ## Autenticação adiada (SQ-12)
 
@@ -123,6 +127,8 @@ As capacidades ficam em `openspec/specs/` (e nos deltas das mudanças) agrupadas
 | | `cors` | `REQ-CORS` |
 
 ## Skills do projeto
+
+O que reaproveitar do projeto `SofiaInfis`, por mudança, está em `docs/base-sofiainfis.md`.
 
 As skills ficam em `.claude/skills/` e foram adaptadas do pacote INFIS para Spec Kit. O `tasks.md` de cada mudança indica a skill de cada grupo de tarefas, e o plano técnico confirma as pré-condições que ela declara.
 

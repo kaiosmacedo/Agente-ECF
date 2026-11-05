@@ -42,6 +42,7 @@ Não se aplica: a recuperação devolve trechos das fontes ingeridas na mudança
 - **Decisões pendentes:** contribui para DP-03 e DP-14.
 - **Depende de:** 03 `execucao-e-resultado` (registro da etapa 5) e 05 `base-conhecimento-ingestao`. A autenticação de serviço fica adiada (SQ-12; `docs/roteiro.md`).
 - **Skills:** `mcp-client-server`, `rag-pgvector`, `vercel-dotnet-pgvector-atlas` (prova de conceito), `testes-agentes-ia`, `github-versionamento`.
+- **Base:** consulta vetorial do `SofiaInfis`, com filtro e limiar (`docs/base-sofiainfis.md`).
 
 ## Fora do escopo
 
