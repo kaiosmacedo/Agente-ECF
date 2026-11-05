@@ -51,12 +51,11 @@ context: |
   - P11: chunk, topK e limiares não são fixados sem avaliação com exemplos representativos.
   - P14: a seleção de ferramenta pelo LLM não concede autorização.
   - P15: Api.Agente e Api.RAG se comunicam apenas por MCP; cada serviço é dono dos seus dados.
-  - RA-07: a Sofia é cliente e a Api.Agente é servidor A2A v0.3.x JSON-RPC, com o contrato SOFIA
+  - RA-07: a Sofia é cliente e a Api.Agente é servidor A2A v1.0 JSON-RPC, com o contrato SOFIA
     v1.0 em TextPart; os valores internos são mapeados para os do contrato.
-  - SQ-12: a primeira versão não tem autenticação; a mudança 02 está congelada até pactuar emissor,
-    audience e obtenção do token com o professor. Só dados sintéticos ou anonimizados; identidade
-    declarada não é verificada; cada exigência adiada vai para a seção "Autenticação adiada" de
-    docs/roteiro.md.
+  - SQ-12: a primeira versão não tem autenticação e a integração com a Sofia não usa token; a
+    mudança 02 está congelada. Só dados sintéticos ou anonimizados; identidade declarada não é
+    verificada; cada exigência adiada vai para a seção "Autenticação adiada" de docs/roteiro.md.
   - SQ-13: CORS só para clientes de navegador, com origens explícitas; não substitui autenticação.
   Decisões pendentes estão na seção 9 da constitution; as resolvidas ficam em 9.1. Não
   transformar suposições em requisitos aprovados.
