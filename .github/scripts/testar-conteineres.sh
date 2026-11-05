@@ -1,9 +1,35 @@
 #!/usr/bin/env bash
-# Constrói e testa a imagem de cada serviço (REQ-ENTREGA-001 a 003, REQ-OBSERV-002, REQ-A2A-001, REQ-A2A-005).
+# Constrói e testa a imagem de cada serviço (REQ-ENTREGA-001 a 003, REQ-OBSERV-002, REQ-A2A-001, REQ-A2A-005, REQ-EXEC-005).
 # Uso no CI: VERSAO=<sha> bash .github/scripts/testar-conteineres.sh
 set -euo pipefail
 
 VERSAO="${VERSAO:-local}"
+
+# Banco descartável da Api.Agente, na imagem do compose. Sem senha: só existe durante este teste, em rede própria.
+REDE=agente-ecf-ci
+BANCO=agente-ecf-ci-banco
+CONEXAO="Host=$BANCO;Database=postgres;Username=postgres"
+
+remover_banco() {
+  docker rm -f "$BANCO" > /dev/null 2>&1 || true
+  docker network rm "$REDE" > /dev/null 2>&1 || true
+}
+
+subir_banco() {
+  local inicio=$SECONDS
+  remover_banco
+  docker network create "$REDE" > /dev/null
+  docker run -d --name "$BANCO" --network "$REDE" -e POSTGRES_HOST_AUTH_METHOD=trust pgvector/pgvector:pg16 > /dev/null
+  until docker exec "$BANCO" pg_isready -q -h 127.0.0.1 -U postgres; do
+    if (( SECONDS - inicio >= 60 )); then
+      echo "::error::O PostgreSQL de teste não respondeu em 60 s."
+      exit 1
+    fi
+    sleep 1
+  done
+}
+
+trap remover_banco EXIT
 
 esperar_saude() {
   local url="$1" limite="$2" inicio=$SECONDS
@@ -26,7 +52,7 @@ falhar() {
 
 # Cartão e SendMessage com dados sintéticos: Task concluída, com o resultado do contrato no Artifact.
 testar_a2a() {
-  local id="$1" corpo resposta
+  local id="$1" corpo resposta execucao
   curl -fsS "http://localhost:8080/.well-known/agent-card.json" | jq -e '.supportedInterfaces[0].protocolVersion == "1.0" and .skills[0].id == "analisar_documentos"' > /dev/null \
     || falhar "$id" "Cartão do agente inválido."
   corpo=$(jq -n --arg texto '{"versaoContrato":"1.0","idExecucao":"8b2f0ad6-c2e4-4a68-8bdd-20f785bc798e","idSolicitacao":"e1b3a4cb-d729-4bd4-b796-b9c94be07b46","usuario":{"nome":"Usuario Teste"},"pergunta":"Analise o documento","documentos":[{"idDocumento":"doc-001","nome":"teste.txt","texto":"Documento sintetico."}]}' \
@@ -34,6 +60,25 @@ testar_a2a() {
   resposta=$(curl -fsS -X POST "http://localhost:8080/a2a" -H "Content-Type: application/json" -H "A2A-Version: 1.0" -d "$corpo")
   echo "$resposta" | jq -e '.result.task.status.state == "TASK_STATE_COMPLETED" and (.result.task.artifacts[0].parts[0].text | fromjson | .status == "parcial" and .idSolicitacao == "e1b3a4cb-d729-4bd4-b796-b9c94be07b46")' > /dev/null \
     || falhar "$id" "SendMessage não devolveu o resultado do contrato."
+  execucao=$(echo "$resposta" | jq -r '.result.task.artifacts[0].parts[0].text | fromjson | .idExecucaoAgente')
+  curl -fsS "http://localhost:8080/analises/$execucao" | jq -e --arg id "$execucao" '.idExecucao == $id and .status == "parcial" and (.etapas | length) == 9' > /dev/null \
+    || falhar "$id" "GET /analises/{id} não devolveu o envelope registrado."
+  curl -fsS -X POST "http://localhost:8080/a2a" -H "Content-Type: application/json" -H "A2A-Version: 1.0" -d "$corpo" \
+    | jq -e --arg id "$execucao" '.result.task.artifacts[0].parts[0].text | fromjson | .idExecucaoAgente == $id' > /dev/null \
+    || falhar "$id" "A retentativa criou outra execução."
+  curl -fsS "http://localhost:8080/openapi/v1.json" | jq -e '.paths["/analises/{id}"]' > /dev/null \
+    || falhar "$id" "O documento OpenAPI não descreve GET /analises/{id}."
+}
+
+# A migração cria o banco; rodar de novo não muda nada, e a prontidão só fica verde com o banco no ar.
+testar_migracao() {
+  local imagem="$1" saida
+  saida=$(docker run --rm --network "$REDE" -e "ConnectionStrings__Execucoes=$CONEXAO" "$imagem" --migrar 2>&1)
+  saida+=$(docker run --rm --network "$REDE" -e "ConnectionStrings__Execucoes=$CONEXAO" "$imagem" --migrar 2>&1)
+  echo "$saida" | jq -e -s 'all(.[]; type == "object")' > /dev/null \
+    || { echo "$saida"; echo "::error::A migração escreveu fora do JSON."; exit 1; }
+  [ "$(docker exec "$BANCO" psql -U postgres -tAc "SELECT count(*) FROM migracoes")" = "1" ] \
+    || { echo "::error::A migração não ficou registrada uma única vez."; exit 1; }
 }
 
 for servico in Api.Agente Api.RAG; do
@@ -42,8 +87,20 @@ for servico in Api.Agente Api.RAG; do
 
   docker build --build-arg VERSAO="$VERSAO" -t "$imagem" "src/$servico"
 
+  # A Api.Agente exige o banco: sem a conexão, ela não sobe.
+  ambiente=()
+  if [ "$servico" = "Api.Agente" ]; then
+    if docker run --rm "$imagem" --migrar > /dev/null 2>&1; then
+      echo "::error::$servico iniciou sem a conexão com o banco."
+      exit 1
+    fi
+    subir_banco
+    testar_migracao "$imagem"
+    ambiente=(--network "$REDE" -e "ConnectionStrings__Execucoes=$CONEXAO")
+  fi
+
   # Sem PORT: porta 8080, vivacidade em até 30 s e logs em JSON com correlação.
-  id=$(docker run -d -p 8080:8080 "$imagem")
+  id=$(docker run -d "${ambiente[@]}" -p 8080:8080 "$imagem")
   esperar_saude "http://localhost:8080/health/live" 30 || falhar "$id" "$servico não respondeu na porta 8080 em 30 s."
   curl -fsS -H "X-Correlation-Id: ci-conteiner" "http://localhost:8080/health/live" > /dev/null
   sleep 1
@@ -52,12 +109,15 @@ for servico in Api.Agente Api.RAG; do
   docker logs "$id" 2>&1 | jq -e -s 'any(.[]; any(.Scopes[]?; type == "object" and .CorrelationId? == "ci-conteiner"))' > /dev/null \
     || falhar "$id" "$servico não registrou o identificador de correlação no log."
   if [ "$servico" = "Api.Agente" ]; then
+    curl -fsS "http://localhost:8080/health/ready" > /dev/null || falhar "$id" "$servico não ficou pronto com o banco no ar."
     testar_a2a "$id"
+    docker logs "$id" 2>&1 | jq -e -s 'all(.[]; type == "object")' > /dev/null \
+      || falhar "$id" "$servico gerou log que não é JSON depois de usar o banco."
   fi
   docker rm -f "$id" > /dev/null
 
   # Com PORT=3000: a porta informada pela plataforma é respeitada.
-  id=$(docker run -d -e PORT=3000 -p 3000:3000 "$imagem")
+  id=$(docker run -d "${ambiente[@]}" -e PORT=3000 -p 3000:3000 "$imagem")
   esperar_saude "http://localhost:3000/health/live" 30 || falhar "$id" "$servico não respondeu na porta 3000 com PORT=3000."
   docker rm -f "$id" > /dev/null
 
