@@ -1,0 +1,76 @@
+{
+  "documentos": [
+    {
+      "arquivo": "Manual_ECF_Leiaute_12_23_07_2026_AC_2025_SIT_ESP_2026.pdf",
+      "sha256": "f583475c109bf3f2444b8953924503fb0e6fd7767e69c96958703c6ed80286eb",
+      "emissor": "Receita Federal do Brasil, portal Sped",
+      "titulo": "Manual de Orientação do Leiaute 12 da ECF",
+      "tipo": "manual-ecf",
+      "versao": "leiaute-12",
+      "anoCalendario": 2025,
+      "versaoDaPublicacao": "2026-07-23",
+      "vigencia": "Ano-calendário 2025 e situações especiais de 2026",
+      "origem": "https://www.gov.br/sped/pt-br/assuntos/escrituracoes-digitais/ecf/manuais-e-documentos-tecnicos/manual_ecf_leiaute_12_20_05_2026_ac_2025_sit_esp_2026.pdf/@@display-file/file"
+    },
+    {
+      "arquivo": "Manual_ECF_Leiaute_11_29_09_2025.pdf",
+      "sha256": "902ae4bec71b1eebc1c5ffcf9e7da0b35260a27206a4f40fe9f329238509da57",
+      "emissor": "Receita Federal do Brasil, portal Sped",
+      "titulo": "Manual de Orientação do Leiaute 11 da ECF",
+      "tipo": "manual-ecf",
+      "versao": "leiaute-11",
+      "anoCalendario": 2024,
+      "versaoDaPublicacao": "2025-09-29",
+      "vigencia": "Ano-calendário 2024 e situações especiais de 2025",
+      "origem": "https://www.gov.br/sped/pt-br/assuntos/escrituracoes-digitais/ecf/manuais-e-documentos-tecnicos/manual_ecf_leiaute_11_29_09_2025.pdf/@@display-file/file"
+    },
+    {
+      "arquivo": "Manual_ECF_Leiaute_10_21_12_2023.pdf",
+      "sha256": "8900ba9f5a7dd5986f5ec069a3585ecf311fbab002b7dad7021b64f86dfc383e",
+      "emissor": "Receita Federal do Brasil, portal Sped",
+      "titulo": "Manual de Orientação do Leiaute 10 da ECF",
+      "tipo": "manual-ecf",
+      "versao": "leiaute-10",
+      "anoCalendario": 2023,
+      "versaoDaPublicacao": "2024-04-01",
+      "vigencia": "Ano-calendário 2023 e situações especiais de 2024",
+      "origem": "https://www.gov.br/sped/pt-br/assuntos/escrituracoes-digitais/ecf/manuais-e-documentos-tecnicos/manual_ecf_leiaute_10_21_12_2023.pdf/@@display-file/file"
+    },
+    {
+      "arquivo": "Manual_ECF_Leiaute_9_12_12_2022.pdf",
+      "sha256": "7ba1a3b9320bea223171e56d870627abe02e639fff83c9828723660da78a6da3",
+      "emissor": "Receita Federal do Brasil, portal Sped",
+      "titulo": "Manual de Orientação do Leiaute 9 da ECF",
+      "tipo": "manual-ecf",
+      "versao": "leiaute-9",
+      "anoCalendario": 2022,
+      "versaoDaPublicacao": "2022-12",
+      "vigencia": "Ano-calendário 2022 e situações especiais de 2023",
+      "origem": "https://www.gov.br/sped/pt-br/assuntos/escrituracoes-digitais/ecf/manuais-e-documentos-tecnicos/manual_ecf_leiaute_9_12_12_2022.pdf/@@display-file/file"
+    },
+    {
+      "arquivo": "Manual_de_Orientacao_da_ECF_Janeiro_2022.pdf",
+      "sha256": "305fd4d6dbdabefb0da4df5109699cd7dcf207a1018671f532b5a17fe0edf56c",
+      "emissor": "Receita Federal do Brasil, portal Sped",
+      "titulo": "Manual de Orientação do Leiaute 8 da ECF",
+      "tipo": "manual-ecf",
+      "versao": "leiaute-8",
+      "anoCalendario": 2021,
+      "versaoDaPublicacao": "2022-01",
+      "vigencia": "Ano-calendário 2021 e situações especiais de 2022",
+      "origem": "https://www.gov.br/sped/pt-br/assuntos/escrituracoes-digitais/ecf/manuais-e-documentos-tecnicos/manual_de_orientacao_da_ecf_janeiro_2022.pdf/@@display-file/file"
+    },
+    {
+      "arquivo": "Manual_de_Orientacao_da_ECF_Dezembro_2020.pdf",
+      "sha256": "152c5e50b323ebe8271a31b7704f4769d8c25a4e7849f7de75fd5a974cb9beca",
+      "emissor": "Receita Federal do Brasil, portal Sped",
+      "titulo": "Manual de Orientação do Leiaute 7 da ECF",
+      "tipo": "manual-ecf",
+      "versao": "leiaute-7",
+      "anoCalendario": 2020,
+      "versaoDaPublicacao": "2020-12",
+      "vigencia": "Ano-calendário 2020 e situações especiais de 2021",
+      "origem": "http://sped.rfb.gov.br/estatico/2E/B756440254D95A88E90837EF8166BFF4968846/Manual_de_Orienta%c3%a7%c3%a3o_da_ECF_Dezembro_2020.pdf"
+    }
+  ]
+}

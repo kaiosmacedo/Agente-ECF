@@ -113,6 +113,22 @@ A Api.RAG registra cada chamada ou tentativa a provedores de IA em `consumo_ia`,
 
 **Tabela de preços:** fica em `Consumo:TabelasDePrecos`, em `appsettings.json`, com versão, início da vigência, fonte e preço por modelo. Quando o preço mudar, acrescente uma versão nova e mantenha as anteriores, porque cada estimativa cita a versão usada. Modelo fora da tabela fica com custo desconhecido, nunca zero. A primeira versão, `2026-11`, foi conferida na [página oficial de preços da OpenAI](https://developers.openai.com/api/docs/pricing) em 2026-11-05.
 
+## Base de conhecimento
+
+A Api.RAG guarda os manuais oficiais em trechos com embeddings (`docs/fontes-oficiais.md`, `docs/fontes/manifesto-rag.json`). O PDF passa do limite do Vercel, e a carga não cabe na duração de uma função, então a população roda como um comando, na máquina do responsável pelas contas:
+
+```powershell
+& "C:\Program Files\Git\bin\bash.exe" .github/scripts/popular-rag.sh leiaute-12
+```
+
+O script baixa os PDFs do Release `fontes-ecf-2026-11`, confere os hashes e roda a Api.RAG em contêiner, com a chave e a conexão só em variáveis de ambiente. Rodar de novo não duplica nada. Use `avaliar` para medir a recuperação com `docs/avaliacao/perguntas.json` e `todos` para os seis manuais.
+
+**Manual novo:** baixe o arquivo, registre versão, tamanho e hash em `docs/fontes-oficiais.md` e no manifesto, publique o arquivo em um Release e rode o script. A versão anterior fica como substituída, para auditoria.
+
+**Endpoint:** `POST /documentos` fica desligado em produção (`Ingestao:EndpointHabilitado`), porque é público nesta versão e aciona provedor pago (SQ-12). `GET /documentos`, `GET /documentos/{id}` e `POST /documentos/{id}/desativar` não acionam o provedor.
+
+**Chave da OpenAI:** não fica no Vercel nem no GitHub. Sem ela, a Api.RAG funciona, mas não gera embeddings. A busca da mudança 06 vai precisar dela em produção.
+
 ## Telemetria
 
 Os dois serviços geram traces e métricas com OpenTelemetry (REQ-OBSERV-004 a 007). Os logs continuam em JSON na saída padrão.

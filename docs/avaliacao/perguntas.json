@@ -1,0 +1,315 @@
+{
+  "perguntas": [
+    {
+      "id": "P01",
+      "pergunta": "Até quantos anos depois da entrega uma ECF pode ser retificada?",
+      "tipo": "manual-ecf",
+      "versao": "leiaute-12",
+      "paginas": [
+        17
+      ],
+      "evidencia": "últimos cinco anos"
+    },
+    {
+      "id": "P02",
+      "pergunta": "Qual a diferença entre inconsistência do tipo erro e do tipo aviso nas validações?",
+      "tipo": "manual-ecf",
+      "versao": "leiaute-12",
+      "paginas": [
+        38
+      ],
+      "evidencia": "Alerta apenas informativo"
+    },
+    {
+      "id": "P03",
+      "pergunta": "Quais são os níveis das rotinas de validação do programa da ECF?",
+      "tipo": "manual-ecf",
+      "versao": "leiaute-12",
+      "paginas": [
+        38
+      ],
+      "evidencia": "Validação de Estrutura - Nível 1.1"
+    },
+    {
+      "id": "P04",
+      "pergunta": "Qual deve ser a data final da escrituração quando não há situação especial?",
+      "tipo": "manual-ecf",
+      "versao": "leiaute-12",
+      "paginas": [
+        39,
+        66,
+        68
+      ],
+      "evidencia": "REGRA_DT_FINAL_ESCRITURACAO"
+    },
+    {
+      "id": "P05",
+      "pergunta": "O que acontece se o ano da data inicial for diferente do ano da data final?",
+      "tipo": "manual-ecf",
+      "versao": "leiaute-12",
+      "paginas": [
+        39
+      ],
+      "evidencia": "REGRA_ANO_DIFERENTEs"
+    },
+    {
+      "id": "P06",
+      "pergunta": "O que são as tabelas dinâmicas e quais os tipos de linha delas?",
+      "tipo": "manual-ecf",
+      "versao": "leiaute-12",
+      "paginas": [
+        38
+      ],
+      "evidencia": "CNA – Cálculo não alterável"
+    },
+    {
+      "id": "P07",
+      "pergunta": "Quais são os blocos que compõem o arquivo da ECF?",
+      "tipo": "manual-ecf",
+      "versao": "leiaute-12",
+      "paginas": [
+        41
+      ],
+      "evidencia": "4.1. Blocos do Arquivo"
+    },
+    {
+      "id": "P08",
+      "pergunta": "O que o registro 0010 informa sobre os parâmetros de tributação?",
+      "tipo": "manual-ecf",
+      "versao": "leiaute-12",
+      "paginas": [
+        71
+      ],
+      "evidencia": "Registro 0010:"
+    },
+    {
+      "id": "P09",
+      "pergunta": "Quais os parâmetros complementares do registro 0020?",
+      "tipo": "manual-ecf",
+      "versao": "leiaute-12",
+      "paginas": [
+        81
+      ],
+      "evidencia": "Registro 0020:"
+    },
+    {
+      "id": "P10",
+      "pergunta": "Quem são os signatários informados no registro 0930?",
+      "tipo": "manual-ecf",
+      "versao": "leiaute-12",
+      "paginas": [
+        104
+      ],
+      "evidencia": "Registro 0930:"
+    },
+    {
+      "id": "P11",
+      "pergunta": "O que o registro J050 exige sobre o plano de contas do contribuinte?",
+      "tipo": "manual-ecf",
+      "versao": "leiaute-12",
+      "paginas": [
+        133
+      ],
+      "evidencia": "Registro J050:"
+    },
+    {
+      "id": "P12",
+      "pergunta": "Como é feito o mapeamento para o plano referencial no registro J051?",
+      "tipo": "manual-ecf",
+      "versao": "leiaute-12",
+      "paginas": [
+        136
+      ],
+      "evidencia": "Registro J051:"
+    },
+    {
+      "id": "P13",
+      "pergunta": "O que são os saldos informados no registro K155?",
+      "tipo": "manual-ecf",
+      "versao": "leiaute-12",
+      "paginas": [
+        147
+      ],
+      "evidencia": "Registro K155:"
+    },
+    {
+      "id": "P14",
+      "pergunta": "Qual a regra de compatibilidade entre os registros E155 e K155?",
+      "tipo": "manual-ecf",
+      "versao": "leiaute-12",
+      "paginas": [
+        147,
+        148,
+        156,
+        157
+      ],
+      "evidencia": "REGRA_COMPATIBILIDADE_E155_K155"
+    },
+    {
+      "id": "P15",
+      "pergunta": "O que verifica a regra de natureza permitida para contas patrimoniais?",
+      "tipo": "manual-ecf",
+      "versao": "leiaute-12",
+      "paginas": [
+        147,
+        148
+      ],
+      "evidencia": "REGRA_NATUREZA_PERMITIDA_PATRIMONIAL"
+    },
+    {
+      "id": "P16",
+      "pergunta": "O que o registro M300 demonstra na Parte A do e-Lalur?",
+      "tipo": "manual-ecf",
+      "versao": "leiaute-12",
+      "paginas": [
+        245
+      ],
+      "evidencia": "Registro M300:"
+    },
+    {
+      "id": "P17",
+      "pergunta": "O que o registro M350 demonstra na Parte A do e-Lacs?",
+      "tipo": "manual-ecf",
+      "versao": "leiaute-12",
+      "paginas": [
+        257
+      ],
+      "evidencia": "Registro M350:"
+    },
+    {
+      "id": "P18",
+      "pergunta": "Como são os lançamentos na conta da Parte B do registro M410?",
+      "tipo": "manual-ecf",
+      "versao": "leiaute-12",
+      "paginas": [
+        269
+      ],
+      "evidencia": "Registro M410:"
+    },
+    {
+      "id": "P19",
+      "pergunta": "O que o registro M500 controla sobre os saldos da Parte B?",
+      "tipo": "manual-ecf",
+      "versao": "leiaute-12",
+      "paginas": [
+        272
+      ],
+      "evidencia": "Registro M500:"
+    },
+    {
+      "id": "P20",
+      "pergunta": "O que é apurado no registro N630 sobre o IRPJ?",
+      "tipo": "manual-ecf",
+      "versao": "leiaute-12",
+      "paginas": [
+        299
+      ],
+      "evidencia": "Registro N630:"
+    },
+    {
+      "id": "P21",
+      "pergunta": "O que o registro N650 apresenta sobre a CSLL?",
+      "tipo": "manual-ecf",
+      "versao": "leiaute-12",
+      "paginas": [
+        302
+      ],
+      "evidencia": "Registro N650:"
+    },
+    {
+      "id": "P22",
+      "pergunta": "Como é demonstrada a apuração do lucro presumido no registro P200?",
+      "tipo": "manual-ecf",
+      "versao": "leiaute-12",
+      "paginas": [
+        340
+      ],
+      "evidencia": "Registro P200:"
+    },
+    {
+      "id": "P23",
+      "pergunta": "O que o registro P300 calcula no lucro presumido?",
+      "tipo": "manual-ecf",
+      "versao": "leiaute-12",
+      "paginas": [
+        344
+      ],
+      "evidencia": "Registro P300:"
+    },
+    {
+      "id": "P24",
+      "pergunta": "O que as entidades imunes ou isentas informam no registro U180?",
+      "tipo": "manual-ecf",
+      "versao": "leiaute-12",
+      "paginas": [
+        413
+      ],
+      "evidencia": "Registro U180:"
+    },
+    {
+      "id": "P25",
+      "pergunta": "O que o registro Y570 demonstra sobre o imposto de renda retido na fonte?",
+      "tipo": "manual-ecf",
+      "versao": "leiaute-12",
+      "paginas": [
+        565
+      ],
+      "evidencia": "Registro Y570:"
+    },
+    {
+      "id": "P26",
+      "pergunta": "Quais dados dos sócios são informados no registro Y600?",
+      "tipo": "manual-ecf",
+      "versao": "leiaute-12",
+      "paginas": [
+        571
+      ],
+      "evidencia": "Registro Y600:"
+    },
+    {
+      "id": "P27",
+      "pergunta": "O que o registro 9100 mostra sobre os avisos da escrituração?",
+      "tipo": "manual-ecf",
+      "versao": "leiaute-12",
+      "paginas": [
+        614
+      ],
+      "evidencia": "Registro 9100:"
+    },
+    {
+      "id": "P28",
+      "pergunta": "Quando as outras exclusões sem relacionamento exigem atenção por causa do valor?",
+      "tipo": "manual-ecf",
+      "versao": "leiaute-12",
+      "paginas": [
+        30,
+        31
+      ],
+      "evidencia": "1.33."
+    },
+    {
+      "id": "P29",
+      "pergunta": "Como tratar lançamentos extemporâneos na ECD e seus reflexos na ECF?",
+      "tipo": "manual-ecf",
+      "versao": "leiaute-12",
+      "paginas": [
+        22
+      ],
+      "evidencia": "1.26.s*Lançamentos Extempor"
+    },
+    {
+      "id": "P30",
+      "pergunta": "Quais as penalidades por atraso na entrega da ECF?",
+      "tipo": "manual-ecf",
+      "versao": "leiaute-12",
+      "paginas": [
+        17,
+        20,
+        21,
+        22,
+        600
+      ],
+      "evidencia": "[Mm]ulta por [Aa]traso"
+    }
+  ]
+}
