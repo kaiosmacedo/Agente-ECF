@@ -29,9 +29,13 @@ jobs:
           - nome: Api.Agente
             segredo_projeto: VERCEL_PROJECT_ID_AGENTE
             variavel_url: VERCEL_URL_AGENTE
+            segredo_migracao: CONEXAO_MIGRACAO_EXECUCOES
+            variavel_conexao: ConnectionStrings__Execucoes
           - nome: Api.RAG
             segredo_projeto: VERCEL_PROJECT_ID_RAG
             variavel_url: VERCEL_URL_RAG
+            segredo_migracao: CONEXAO_MIGRACAO_CONHECIMENTO
+            variavel_conexao: ConnectionStrings__Conhecimento
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -46,17 +50,19 @@ jobs:
 
       # Antes do deploy e com o endereço direto do Neon: a trava de migração é de sessão e não passa pelo pooling.
       - name: Aplicar migrações
-        if: matrix.servico.nome == 'Api.Agente'
         env:
-          ConnectionStrings__Execucoes: ${{ secrets.CONEXAO_MIGRACAO_EXECUCOES }}
+          CONEXAO_MIGRACAO: ${{ secrets[matrix.servico.segredo_migracao] }}
+          VARIAVEL_CONEXAO: ${{ matrix.servico.variavel_conexao }}
+          SERVICO: ${{ matrix.servico.nome }}
           VERSAO: ${{ github.event.workflow_run.head_sha }}
         run: |
-          if [ -z "$ConnectionStrings__Execucoes" ]; then
-            echo "::error::Segredo CONEXAO_MIGRACAO_EXECUCOES ausente no Environment producao (ver docs/ci-cd.md)."
+          if [ -z "$CONEXAO_MIGRACAO" ]; then
+            echo "::error::Segredo ${{ matrix.servico.segredo_migracao }} ausente no Environment producao (ver docs/ci-cd.md)."
             exit 1
           fi
-          docker build --build-arg VERSAO="$VERSAO" -t agente-ecf-migrador src/Api.Agente
-          docker run --rm -e ConnectionStrings__Execucoes agente-ecf-migrador --migrar
+          docker build --build-arg VERSAO="$VERSAO" -t agente-ecf-migrador "src/$SERVICO"
+          export "$VARIAVEL_CONEXAO=$CONEXAO_MIGRACAO"
+          docker run --rm -e "$VARIAVEL_CONEXAO" agente-ecf-migrador --migrar
 
       - name: Publicar em produção
         env:
