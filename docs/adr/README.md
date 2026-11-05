@@ -12,6 +12,7 @@ Registro das decisões arquiteturais do Agente-ECF, conforme a seção 6.5 da [c
 | --- | --- | --- | --- |
 | [0001](0001-organizacao-da-solucao-e-testes.md) | Organização da solução e estratégia de testes | Aceito | 2026-10-29 |
 | [0002](0002-hospedagem-vercel-e-ci-cd.md) | Hospedagem no Vercel e pipeline de CI/CD | Aceito | 2026-10-29 |
+| [0003](0003-autenticacao-e-autorizacao.md) | Autenticação e autorização | Aceito | 2026-11-03 |
 
 ## Decisões pendentes que exigem ADR
 
@@ -19,7 +20,7 @@ Registro das decisões arquiteturais do Agente-ECF, conforme a seção 6.5 da [c
 | --- | --- |
 | DP-01 | Armazenamento da memória conversacional: MongoDB ou Redis. |
 | DP-02 | Modelo de embeddings e dimensão dos vetores. |
-| DP-09 | Autenticação e autorização (REST, MCP, A2A e entre serviços). |
+| DP-09 | Autenticação e autorização — ADR 0003 (aceito); resolvida no arquivamento da mudança 02. |
 | DP-11 | Retenção e exclusão de dados (LGPD), quando não aprovada como política. |
 | DP-12 | Política de dados com a OpenAI. |
 | DP-25 | Armazenamento das execuções e resultados, quando não resolvido no design. |

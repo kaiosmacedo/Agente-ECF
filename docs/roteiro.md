@@ -25,7 +25,7 @@ Cada mudança segue o fluxo da constitution (6.1): especificação → esclareci
 | Nº | Mudança | Capacidades | Depende de | DPs | Skills | Estado |
 | --- | --- | --- | --- | --- | --- | --- |
 | 01 | `fundacao-solucao` | `plataforma/saude-servicos`, `configuracao-servicos`, `observabilidade`, `qualidade-entrega`, `entrega-servicos` | — | 17, 18 | `testes-agentes-ia`, `vercel-dotnet-pgvector-atlas`, `github-versionamento` | Concluída |
-| 02 | `autenticacao-autorizacao` | `plataforma/autenticacao` | 01 | 09 | `testes-agentes-ia` | Especificação aprovada |
+| 02 | `autenticacao-autorizacao` | `plataforma/autenticacao` | 01 | 09 | `testes-agentes-ia` | Em esclarecimentos: respostas de 2026-11-01; ajustes e recomendações aguardam confirmação |
 | 03 | `execucao-e-resultado` | `agente/execucao-analise`, `agente/contrato-resultado` | 01, 02 | 07, 08, 15, 23, 25 | `testes-agentes-ia` | Especificação aprovada |
 | 04 | `registro-consumo-ia` | `plataforma/consumo-custos` | 01, 02 | 13, 26 | `controle-custos-llm`, `testes-agentes-ia` | Especificação aprovada |
 | 05 | `base-conhecimento-ingestao` | `rag/ingestao-documentos`, `rag/administracao-base` | 02, 04 | 02, 03, 04, 24 | `rag-pgvector`, `controle-custos-llm`, `testes-agentes-ia` | Especificação aprovada |
@@ -105,4 +105,5 @@ Sem skill dedicada por enquanto: autenticação (02), contrato de resultado (03)
 - **Banco de dados:** a primeira mudança com PostgreSQL (03 ou 04) define, em esclarecimento, o provedor gerenciado compatível com o Vercel (pendência de DP-18).
 - **Armazenamento de arquivos:** o disco do Vercel não é durável; as mudanças 05 e 07 definem onde guardar documentos e arquivos recebidos, se forem guardados.
 - **MCP e A2A no Vercel:** provas de conceito antes de 06 e 13 (ADR 0002).
+- **Clientes agentes:** a Sofia INFIS é a principal chamadora, por A2A; futuramente, a Maia também vai acionar e controlar o agente como o orquestrador (esclarecimento E01 da mudança 02, 2026-11-01). O que "controlar" inclui será esclarecido na mudança 13.
 - **Fontes oficiais:** as regras de 07 a 09 só entram com localização no Manual da ECF, leiaute 12 (DP-04). A extração dessas localizações é a primeira tarefa dos esclarecimentos de cada uma.

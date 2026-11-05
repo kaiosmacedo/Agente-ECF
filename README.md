@@ -2,7 +2,7 @@
 
 Agente de IA que analisa arquivos da Escrituração Contábil Fiscal (ECF), valida sua estrutura e a consistência das informações e gera um relatório de inconsistências com evidências e referências aos manuais oficiais.
 
-**Situação:** fundação concluída e em produção (https://agente-ecf-agente.vercel.app e https://agente-ecf-rag.vercel.app); as próximas mudanças estão em esclarecimentos (`docs/roteiro.md`). A [constitution](openspec/constitution.md) v1.2.0 está vigente; a v1.1.0 foi ratificada por Kaio Macedo em 2026-10-29.
+**Situação:** fundação concluída e em produção (https://agente-ecf-agente.vercel.app e https://agente-ecf-rag.vercel.app); autenticação e autorização (mudança 02) em implementação; as demais mudanças estão em `docs/roteiro.md`. A [constitution](openspec/constitution.md) v1.3.1 está vigente; a v1.1.0 foi ratificada por Kaio Macedo em 2026-10-29.
 
 ## Estrutura
 
@@ -20,9 +20,10 @@ Agente de IA que analisa arquivos da Escrituração Contábil Fiscal (ECF), vali
 | `docs/governanca/desvios.md` | Registro de desvios da constitution. |
 | `.github/` | CI (`workflows/ci.yml`), CD (`workflows/cd.yml`), teste de contêineres, modelo de PR e Dependabot. |
 | `docs/ci-cd.md` | Pipeline de CI/CD, configuração do Vercel, rotação do token e rollback. |
+| `docs/autenticacao.md` | Papéis, registros no Entra ID, variáveis por serviço, cabeçalho `X-Organizacao-Id` e obtenção de token. |
 | `.claude/` | Comandos e skills do OpenSpec e skills do projeto: `github-versionamento`, `testes-agentes-ia`, `rag-pgvector`, `mcp-client-server`, `semantic-kernel-tools`, `controle-custos-llm`, `memoria-mongodb` (após o ADR de memória) e `vercel-dotnet-pgvector-atlas` (após o ADR de hospedagem). |
 
-Serviços (.NET 10, ASP.NET Core): **Api.Agente**, que vai orquestrar a análise, integrar a OpenAI e expor REST e A2A, e **Api.RAG**, que vai gerenciar a base de conhecimento em PostgreSQL com PgVector e expor a recuperação por MCP. Hoje, os dois oferecem `/health/live`, `/health/ready`, correlação por `X-Correlation-Id` e logs em JSON.
+Serviços (.NET 10, ASP.NET Core): **Api.Agente**, que vai orquestrar a análise, integrar a OpenAI e expor REST e A2A, e **Api.RAG**, que vai gerenciar a base de conhecimento em PostgreSQL com PgVector e expor a recuperação por MCP. Hoje, os dois oferecem `/health/live` e `/health/ready` (anônimos), correlação por `X-Correlation-Id`, logs em JSON e autenticação por token JWT do Microsoft Entra ID em todo o resto (ADR 0003). A Api.Agente oferece também `GET /identidade`, para o cliente conferir identidade, perfis e organização resolvida (`docs/autenticacao.md`).
 
 ## Build e testes
 
@@ -40,7 +41,7 @@ dotnet test --solution Agente-ECF.slnx -c Release
 dotnet run --project src/Api.Agente
 ```
 
-A Api.Agente escuta em `http://localhost:8080` e a Api.RAG em `http://localhost:8081` (perfil local). Em contêiner, a porta vem de `PORT`, com 8080 como padrão. Os demais comandos de verificação estão em `docs/ci-cd.md`.
+Antes, defina `Autenticacao__Autoridade` e `Autenticacao__Audiencia` (valores em `docs/autenticacao.md`); sem elas, o serviço não inicia. A Api.Agente escuta em `http://localhost:8080` e a Api.RAG em `http://localhost:8081` (perfil local). Em contêiner, a porta vem de `PORT`, com 8080 como padrão. Os demais comandos de verificação estão em `docs/ci-cd.md`.
 
 ## Fluxo de trabalho
 

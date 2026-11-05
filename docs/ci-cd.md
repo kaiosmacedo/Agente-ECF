@@ -18,7 +18,7 @@ O workflow `CI` roda em todo PR para a `main`, em push na `main` e sob demanda. 
 | Job | Etapas | Requisitos |
 | --- | --- | --- |
 | `OpenSpec` | Presença da constitution, leitura do `openspec/config.yaml` e `openspec validate --all --strict`. | REQ-QUALIDADE-001 |
-| `.NET` | Restaurar; `dotnet format --verify-no-changes`; build Release com avisos como erros e o SHA na versão; testes (Microsoft Testing Platform); pacotes vulneráveis; para cada serviço, `docker build`, vivacidade em até 30 s na porta 8080 e com `PORT=3000`, logs em JSON com correlação e listagem dos arquivos da imagem. | REQ-QUALIDADE-001, 002, 003, 004 e 005; REQ-ENTREGA-001, 002 e 003; REQ-OBSERV-002 |
+| `.NET` | Restaurar; `dotnet format --verify-no-changes`; build Release com avisos como erros e o SHA na versão; testes (Microsoft Testing Platform); pacotes vulneráveis; para cada serviço, `docker build`, vivacidade em até 30 s na porta 8080 e com `PORT=3000` (com opções de autenticação de teste), logs em JSON com correlação, recusa de iniciar sem as opções de autenticação e listagem dos arquivos da imagem. | REQ-QUALIDADE-001, 002, 003, 004 e 005; REQ-ENTREGA-001, 002 e 003; REQ-OBSERV-002; REQ-AUTH-001 |
 
 - As actions são fixadas por SHA; o Dependabot propõe as atualizações.
 - O CI **não chama a OpenAI** (SQ-09).
