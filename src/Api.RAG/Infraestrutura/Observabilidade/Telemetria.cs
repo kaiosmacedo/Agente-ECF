@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Api.RAG.Aplicacao.Consumo;
 using Api.RAG.Infraestrutura.Configuracao;
 using OpenTelemetry;
 using OpenTelemetry.Exporter;
@@ -55,7 +56,8 @@ internal static class Telemetria
             {
                 metricas
                     .AddAspNetCoreInstrumentation()
-                    .AddHttpClientInstrumentation();
+                    .AddHttpClientInstrumentation()
+                    .AddMeter(RegistradorDeConsumo.NomeDoMedidor);
                 if (exportar)
                 {
                     metricas.AddOtlpExporter(opcoes => Destino(opcoes, endereco!, "v1/metrics"));
