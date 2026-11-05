@@ -1,6 +1,8 @@
 # Proposal: Autenticação e autorização
 
 > **Estado:** especificação aprovada por Kaio Macedo em 2026-10-29 (PR #4); esclarecimentos respondidos em 2026-11-01; ajustes de requisitos e recomendações R1 a R5 confirmados por Kaio Macedo em 2026-11-03. Plano técnico e tarefas aprovados por Kaio Macedo em 2026-11-03.
+>
+> **Congelada em 2026-11-05 por decisão de Kaio Macedo**, à espera da skill de autenticação que o professor vai enviar. A implementação dos grupos 1 a 7 fica preservada nesta branch, sem merge. O grupo 8 (Entra ID e Vercel) não foi iniciado: nenhum registro foi criado. Ao retomar, comparar a skill com o ADR 0003 e com o plano antes de continuar.
 
 ## Why
 
