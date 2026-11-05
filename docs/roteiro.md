@@ -21,7 +21,8 @@ Cada mudança segue o fluxo da constitution (6.1): especificação → esclareci
 | Mudança 01 | Concluída: mesclada (PR #2), em produção e arquivada em 2026-10-29; specs vigentes em `openspec/specs/plataforma/`. |
 | Mudança 02 | Congelada em 2026-11-05: a integração com a Sofia não usa token, por decisão de Kaio Macedo. Código preservado na branch `feat/autenticacao-autorizacao` (PR #7, em rascunho). |
 | Mudança 13 | Esqueleto em produção desde 2026-11-05 (PR #9): cartão, `SendMessage` A2A v1.0, contrato SOFIA v1.0 e CORS. Falta o teste com a Sofia real, quando o cliente A2A dela existir. A análise completa chega com as mudanças 03 a 10. |
-| Mudanças 03 a 12 | Especificações aprovadas por Kaio Macedo em 2026-10-29 (PR #4) e adequadas às regras SQ-12 e RA-07 em 2026-11-05; próxima etapa: esclarecimentos da mudança 03. |
+| Mudança 03 | Plano técnico e tarefas aprovados em 2026-11-05, com a base do `SofiaInfis`; implementado na branch `feat/execucao-e-resultado` (PR #10), com testes em PostgreSQL real. O merge depende do banco no Neon, que Kaio Macedo cria e cadastra (`docs/ci-cd.md`). |
+| Mudanças 04 a 12 | Especificações aprovadas por Kaio Macedo em 2026-10-29 (PR #4) e adequadas às regras SQ-12 e RA-07 em 2026-11-05. |
 
 ## Mudanças
 
@@ -29,7 +30,7 @@ Cada mudança segue o fluxo da constitution (6.1): especificação → esclareci
 | --- | --- | --- | --- | --- | --- | --- |
 | 01 | `fundacao-solucao` | `plataforma/saude-servicos`, `configuracao-servicos`, `observabilidade`, `qualidade-entrega`, `entrega-servicos` | — | 17, 18 | `testes-agentes-ia`, `vercel-dotnet-pgvector-atlas`, `github-versionamento` | Concluída |
 | 02 | `autenticacao-autorizacao` | `plataforma/autenticacao` | 01 | 09 | `testes-agentes-ia` | Congelada |
-| 03 | `execucao-e-resultado` | `agente/execucao-analise`, `agente/contrato-resultado` | 01, 13 | 07, 08, 15, 23, 25 | `testes-agentes-ia` | Especificação aprovada |
+| 03 | `execucao-e-resultado` | `agente/execucao-analise`, `agente/contrato-resultado` | 01, 13 | 07, 08, 15, 23, 25 | `sofia-a2a-contrato`, `testes-agentes-ia`, `vercel-dotnet-pgvector-atlas` | Em implementação |
 | 04 | `registro-consumo-ia` | `plataforma/consumo-custos` | 01 | 13, 26 | `controle-custos-llm`, `testes-agentes-ia` | Especificação aprovada |
 | 05 | `base-conhecimento-ingestao` | `rag/ingestao-documentos`, `rag/administracao-base` | 04 | 02, 03, 04, 24 | `rag-pgvector`, `controle-custos-llm`, `testes-agentes-ia` | Especificação aprovada |
 | 06 | `recuperacao-conhecimento-mcp` | `rag/recuperacao-conhecimento`, `agente/consulta-conhecimento` | 03, 05 | 03, 14 | `mcp-client-server`, `rag-pgvector`, `vercel-dotnet-pgvector-atlas` | Especificação aprovada |
@@ -40,7 +41,7 @@ Cada mudança segue o fluxo da constitution (6.1): especificação → esclareci
 | 11 | `ferramentas-agente` | `agente/ferramentas` | 10 | 10 | `semantic-kernel-tools`, `testes-agentes-ia` | Especificação aprovada |
 | 12 | `memoria-conversacional` | `agente/memoria-conversacional` | 10 | 01, 11 | `memoria-mongodb`, `testes-agentes-ia` | Especificação aprovada |
 | 13 | `servidor-a2a` | `integracao/servidor-a2a`, `integracao/contrato-sofia`, `integracao/cors` | 01 | 09, 16 | `sofia-a2a-contrato`, `sofia-a2a-implementacao`, `sofia-cors-rest-a2a`, `vercel-dotnet-pgvector-atlas`, `testes-agentes-ia` | Esqueleto em produção |
-| 14 | `telemetria-servicos` | `plataforma/observabilidade` | 01 | — | `testes-agentes-ia` | Em implementação |
+| 14 | `telemetria-servicos` | `plataforma/observabilidade` | 01 | — | `testes-agentes-ia` | Em produção desde 2026-11-05 (PR #13); a arquivar |
 
 `github-versionamento` vale para todas as mudanças. As mudanças 05 a 09 podem avançar em paralelo com 04 quando suas dependências estiverem mescladas.
 
@@ -49,7 +50,7 @@ Cada mudança segue o fluxo da constitution (6.1): especificação → esclareci
 A numeração é estável. A ordem foi revista em 2026-11-05, com as skills da turma e a análise do projeto `SofiaInfis` (`docs/base-sofiainfis.md`). Depois, Kaio Macedo pediu para colocar a base de conhecimento antes da recepção de arquivos, com as fontes oficiais já localizadas em `docs/fontes-oficiais.md`.
 
 1. **13, esqueleto:** feito. A Sofia alcança o agente e recebe uma resposta válida, com status `parcial`.
-2. **14, telemetria:** traces e métricas, sem dependência externa. Deixa as próximas mudanças observáveis.
+2. **14, telemetria:** feito. Traces e métricas, sem dependência externa, deixam as próximas mudanças observáveis.
 3. **03, execução e resultado:** registro das nove etapas, status, contrato de resultado e banco.
 4. **04, 05 e 06, consumo e base de conhecimento:** popula o RAG com o Manual da ECF, leiaute 12, e deixa o agente consultá-lo. Aceleradas pelo RAG do `SofiaInfis`. O PDF tem 6,5 MB, acima do limite do Vercel, de cerca de 4,5 MB, então a 05 precisa decidir como a ingestão recebe o arquivo.
 5. **07, recepção e leiaute:** o maior risco, agora com a experiência da 05. Decide o que fazer com o limite do Vercel e com o corte de 20.000 caracteres da Sofia, o que pode exigir novo host (novo ADR).
@@ -166,7 +167,7 @@ Sem skill dedicada por enquanto: contrato de resultado (03) e leitura e validaç
 ## Pré-condições transversais
 
 - **Dados reais:** só depois de DP-11 (retenção e LGPD) e DP-12 (política de dados com a OpenAI). Até lá, apenas dados sintéticos ou anonimizados.
-- **Banco de dados:** a primeira mudança com PostgreSQL (03 ou 04) define, em esclarecimento, o provedor gerenciado compatível com o Vercel (pendência de DP-18).
+- **Banco de dados:** PostgreSQL gerenciado no Neon, escolhido por Kaio Macedo em 2026-11-05 (mudança 03).
 - **Armazenamento de arquivos:** o disco do Vercel não é durável; as mudanças 05 e 07 definem onde guardar documentos e arquivos recebidos, se forem guardados.
 - **MCP e A2A no Vercel:** prova de conceito antes de 06 (ADR 0002). Na 13, o A2A não usa streaming e funcionou em produção. Em instâncias que não duram, `GetTask` não é garantido; a resposta de `SendMessage` já é final.
 - **Tamanho no Vercel:** o corpo da requisição é recusado entre 4,4 MB e 4,6 MB (medido em 2026-11-05), com HTTP 413. A mudança 07 precisa decidir o que fazer com arquivos reais maiores; na rede Docker esse limite não existe.

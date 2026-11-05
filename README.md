@@ -9,7 +9,7 @@ Agente de IA que analisa arquivos da Escrituração Contábil Fiscal (ECF), vali
 | Caminho | Conteúdo |
 | --- | --- |
 | `src/Api.Agente/`, `src/Api.RAG/` | Serviços ASP.NET Core (.NET 10), um projeto por serviço, com as pastas `Endpoints`, `Aplicacao`, `Dominio` e `Infraestrutura` (ADR 0001). Cada um tem `Dockerfile` e `vercel.json`. |
-| `tests/Api.Agente.Tests/`, `tests/Api.RAG.Tests/` | Testes xUnit: HTTP em memória, logs, configuração e regras de arquitetura. |
+| `tests/Api.Agente.Tests/`, `tests/Api.RAG.Tests/` | Testes xUnit: HTTP em memória, PostgreSQL em contêiner, logs, configuração e regras de arquitetura. |
 | `Agente-ECF.slnx`, `global.json`, `Directory.Build.props`, `.editorconfig`, `nuget.config` | Solução, SDK, regras de qualidade, formatação e origem dos pacotes. |
 | `openspec/constitution.md` | Princípios, restrições e critérios obrigatórios. Fonte normativa do projeto. |
 | `openspec/config.yaml` | Contexto e regras aplicados pelo OpenSpec a cada artefato. |
@@ -23,14 +23,14 @@ Agente de IA que analisa arquivos da Escrituração Contábil Fiscal (ECF), vali
 | `docs/base-sofiainfis.md` | O que reaproveitar do projeto `SofiaInfis`, por mudança, e o que não copiar. |
 | `docs/fontes-oficiais.md` | Fontes oficiais da ECF: onde estão, versão e hash de cada arquivo. |
 | `docs/contratos/` | Integração com a Sofia: contrato, cartão, erros, configuração e como executar. |
-| `compose.yaml` | Api.Agente na rede `sofia_network`, para a integração com a Sofia. |
+| `compose.yaml` | Api.Agente com o banco local das execuções, na rede `sofia_network`, para a integração com a Sofia. |
 | `.claude/` | Comandos e skills do OpenSpec e skills do projeto: `github-versionamento`, `testes-agentes-ia`, `rag-pgvector`, `mcp-client-server`, `semantic-kernel-tools`, `controle-custos-llm`, `memoria-mongodb` (após o ADR de memória), `vercel-dotnet-pgvector-atlas` (após o ADR de hospedagem), `sofia-a2a-contrato`, `sofia-a2a-implementacao` e `sofia-cors-rest-a2a`. |
 
 Serviços (.NET 10, ASP.NET Core): **Api.Agente**, que vai orquestrar a análise, integrar a OpenAI e expor REST e A2A, e **Api.RAG**, que vai gerenciar a base de conhecimento em PostgreSQL com PgVector e expor a recuperação por MCP. Hoje, os dois oferecem `/health/live`, `/health/ready`, correlação por `X-Correlation-Id`, logs em JSON e traces e métricas com OpenTelemetry (`docs/ci-cd.md`). A Api.Agente também atende a Sofia INFIS por A2A v1.0 (`/.well-known/agent-card.json` e `/a2a`), ainda como esqueleto: responde com status `parcial` e declara as validações não realizadas (`docs/contratos/sofia-a2a.md`).
 
 ## Build e testes
 
-Requer o SDK do .NET 10. A partir da raiz:
+Requer o SDK do .NET 10 e o Docker, usado pelos testes de banco. A partir da raiz:
 
 ```bash
 dotnet build Agente-ECF.slnx -c Release
@@ -40,11 +40,15 @@ dotnet build Agente-ECF.slnx -c Release
 dotnet test --solution Agente-ECF.slnx -c Release
 ```
 
+A Api.Agente precisa de um banco, então a forma mais simples de executá-la é o compose, que sobe o PostgreSQL local e aplica as migrações. Ela fica em `http://localhost:8085`:
+
 ```bash
-dotnet run --project src/Api.Agente
+docker compose up --build agente-ecf
 ```
 
-A Api.Agente escuta em `http://localhost:8080` e a Api.RAG em `http://localhost:8081` (perfil local). Em contêiner, a porta vem de `PORT`, com 8080 como padrão. Os demais comandos de verificação estão em `docs/ci-cd.md`.
+O resultado de uma análise fica em `GET /analises/{id}` (`docs/contratos/envelope-resultado.md`), e a API REST está descrita em `/openapi/v1.json`.
+
+Com `dotnet run`, a Api.Agente escuta em `http://localhost:8080`, desde que `ConnectionStrings__Execucoes` esteja definida, e a Api.RAG em `http://localhost:8081` (perfil local). Em contêiner, a porta vem de `PORT`, com 8080 como padrão. Os demais comandos de verificação estão em `docs/ci-cd.md`.
 
 ## Fluxo de trabalho
 

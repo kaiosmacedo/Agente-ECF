@@ -31,7 +31,7 @@ Cada achado SHALL informar a execução, a origem, a regra, requisito ou fonte q
 - **THEN** o registro é rejeitado
 
 ### Requirement: REQ-RESULT-004 Severidade dentro da escala
-Cada achado SHALL ter severidade da escala definida nesta mudança (E02), e a severidade MUST NOT substituir a categoria.
+Cada achado SHALL ter severidade da escala `baixa`, `media`, `alta` ou `critica`, a do contrato SOFIA v1.0, e a severidade MUST NOT substituir a categoria.
 
 #### Scenario: Severidade fora da escala
 - **WHEN** um achado é registrado com severidade inexistente na escala

@@ -1,12 +1,13 @@
 using System.Text.Json;
 using A2A;
 using Api.Agente.Aplicacao.ContratoSofia;
+using Api.Agente.Infraestrutura.Observabilidade;
 using TaskStatus = A2A.TaskStatus;
 
 namespace Api.Agente.Infraestrutura.Integracao;
 
 /// <summary>Adaptador A2A v1.0: mensagem → serviço de aplicação → Artifact (REQ-A2A-002, REQ-A2A-005).</summary>
-internal sealed partial class AgenteA2A(ProcessadorDeSolicitacoes processador, ILogger<AgenteA2A> logger) : IAgentHandler
+internal sealed partial class AgenteA2A(ProcessadorDeSolicitacoes processador, IHttpContextAccessor http, ILogger<AgenteA2A> logger) : IAgentHandler
 {
     public const string Rota = "/a2a";
     public const string CaminhoDoCartao = "/.well-known/agent-card.json";
@@ -17,7 +18,10 @@ internal sealed partial class AgenteA2A(ProcessadorDeSolicitacoes processador, I
     public async Task ExecuteAsync(RequestContext context, AgentEventQueue eventQueue, CancellationToken cancellationToken)
     {
         var texto = context.UserText;
-        var desfecho = texto is null ? new DesfechoDaSolicitacao(null, "mensagem_sem_texto") : processador.Processar(texto);
+        var correlacao = http.HttpContext?.Response.Headers[CorrelacaoMiddleware.Cabecalho].ToString();
+        var desfecho = texto is null
+            ? new DesfechoDaSolicitacao(null, "mensagem_sem_texto")
+            : await processador.ProcessarAsync(texto, correlacao, cancellationToken);
 
         var tarefa = new AgentTask { Id = context.TaskId, ContextId = context.ContextId };
         if (desfecho.Resultado is { } resultado)

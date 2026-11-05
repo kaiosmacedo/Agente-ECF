@@ -44,6 +44,20 @@ jobs:
       - name: Instalar Vercel CLI
         run: npm install -g vercel@65.7.0
 
+      # Antes do deploy e com o endereço direto do Neon: a trava de migração é de sessão e não passa pelo pooling.
+      - name: Aplicar migrações
+        if: matrix.servico.nome == 'Api.Agente'
+        env:
+          ConnectionStrings__Execucoes: ${{ secrets.CONEXAO_MIGRACAO_EXECUCOES }}
+          VERSAO: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          if [ -z "$ConnectionStrings__Execucoes" ]; then
+            echo "::error::Segredo CONEXAO_MIGRACAO_EXECUCOES ausente no Environment producao (ver docs/ci-cd.md)."
+            exit 1
+          fi
+          docker build --build-arg VERSAO="$VERSAO" -t agente-ecf-migrador src/Api.Agente
+          docker run --rm -e ConnectionStrings__Execucoes agente-ecf-migrador --migrar
+
       - name: Publicar em produção
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
