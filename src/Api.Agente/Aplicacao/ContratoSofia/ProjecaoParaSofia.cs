@@ -16,7 +16,9 @@ internal static class ProjecaoParaSofia
         [.. envelope.Documentos.Select(documento => $"Documento {documento.IdDocumento} recebido: {documento.Caracteres} caracteres, SHA-256 {documento.Hash}."), .. envelope.Limitacoes],
         envelope.Erro is { } erro ? new ErroSofia(erro.Codigo, erro.Mensagem) : null,
         envelope.IdExecucao.ToString(),
-        envelope.RevisaoHumana);
+        envelope.RevisaoHumana,
+        envelope.Veredito,
+        envelope.Resumo);
 
     /// <summary>O contrato só admite três status: rejeição e falha técnica viram erro (E01).</summary>
     public static string StatusDoContrato(string statusInterno) => statusInterno switch
@@ -34,5 +36,9 @@ internal static class ProjecaoParaSofia
         achado.Severidade,
         achado.Categoria,
         achado.Origem,
-        achado.Fundamento);
+        achado.Fundamento,
+        achado.Classe,
+        achado.Registros,
+        achado.Orientacao,
+        achado.Fonte);
 }

@@ -9,6 +9,16 @@ internal enum StatusDaExecucao
     FalhaTecnica,
 }
 
+/// <summary>Como a ECF está, calculado só pelo sistema, separado do status (REQ-RESULT-010; mudança 15, D1).</summary>
+internal enum VereditoDaExecucao
+{
+    Conforme,
+    ConformeComRessalvas,
+    Recusado,
+    Parcial,
+    NaoAvaliado,
+}
+
 /// <summary>Hash e tamanho de um documento recebido; o texto nunca é guardado (GD-06, P19).</summary>
 internal sealed record DocumentoRecebido(string IdDocumento, string Hash, int Caracteres);
 
@@ -69,6 +79,28 @@ internal sealed class Execucao
             }
 
             return HaObrigatoriaNaoConcluida || limitacoes.Count > 0 ? StatusDaExecucao.Parcial : StatusDaExecucao.Concluida;
+        }
+    }
+
+    /// <summary>
+    /// Regra da tabela D1 do plano da mudança 15, nesta ordem. Um erro impeditivo já prova que a ECF não está correta,
+    /// mesmo com validações pendentes; o contrário não vale: "conforme" exige o status concluída (P05).
+    /// </summary>
+    public VereditoDaExecucao Veredito
+    {
+        get
+        {
+            if (achados.Any(achado => achado.Classe == ClasseDoAchado.Impeditiva))
+            {
+                return VereditoDaExecucao.Recusado;
+            }
+
+            return Status switch
+            {
+                StatusDaExecucao.EntradaRejeitada or StatusDaExecucao.FalhaTecnica => VereditoDaExecucao.NaoAvaliado,
+                StatusDaExecucao.Parcial => VereditoDaExecucao.Parcial,
+                _ => achados.Count > 0 ? VereditoDaExecucao.ConformeComRessalvas : VereditoDaExecucao.Conforme,
+            };
         }
     }
 

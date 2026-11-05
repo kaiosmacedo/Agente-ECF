@@ -28,8 +28,29 @@ internal enum SeveridadeDoAchado
     Critica,
 }
 
-/// <summary>Registro envolvido em um achado, com linha e campo quando disponíveis (P06).</summary>
-internal sealed record RegistroEnvolvido(string IdDocumento, string Registro, int? Linha = null, string? Campo = null);
+/// <summary>Classe do achado, calculada pela severidade (REQ-RESULT-007; mudança 15, D2).</summary>
+internal enum ClasseDoAchado
+{
+    Impeditiva,
+    Grave,
+    Observacao,
+}
+
+/// <summary>Os dois tipos de regra do manual (Manual da ECF, leiaute 12, capítulo 3, página 38).</summary>
+internal enum TipoDaRegra
+{
+    Erro,
+    Aviso,
+}
+
+/// <summary>A regra do manual que produziu o achado, como consta do manual (REQ-RESULT-008).</summary>
+internal sealed record RegraDoManual(string Codigo, TipoDaRegra Tipo, string Nivel);
+
+/// <summary>De onde vem a regra: documento, versão e localização (P06, P01).</summary>
+internal sealed record FonteDoAchado(string Documento, string Versao, string Localizacao);
+
+/// <summary>Registro envolvido em um achado, com linha, campo e valor quando disponíveis (P06, REQ-RESULT-011).</summary>
+internal sealed record RegistroEnvolvido(string IdDocumento, string Registro, int? Linha = null, string? Campo = null, string? ValorEncontrado = null);
 
 /// <summary>Regra de domínio violada ao criar um achado ou mudar uma execução.</summary>
 internal sealed class ExcecaoDeDominio(string mensagem) : Exception(mensagem);
@@ -49,6 +70,11 @@ internal sealed record Achado
     // Falha técnica e ausência de evidências podem não ter registro a citar: justamente não houve como verificar.
     private static readonly CategoriaDoAchado[] ExigemRegistros =
         [CategoriaDoAchado.ErroEstrutural, CategoriaDoAchado.InconsistenciaDeNegocio, CategoriaDoAchado.IndicioDaIa];
+
+    private const int TamanhoMaximoDoValor = 200;
+    private const string IndicacaoDeCorte = " [cortado]";
+
+    private static readonly string[] NiveisDoManual = ["1.1", "1.2", "2", "3"];
 
     private Achado()
     {
@@ -70,6 +96,19 @@ internal sealed record Achado
 
     public required SeveridadeDoAchado Severidade { get; init; }
 
+    public RegraDoManual? Regra { get; init; }
+
+    public FonteDoAchado? Fonte { get; init; }
+
+    public string? Orientacao { get; init; }
+
+    public ClasseDoAchado Classe => Severidade switch
+    {
+        SeveridadeDoAchado.Critica => ClasseDoAchado.Impeditiva,
+        SeveridadeDoAchado.Alta => ClasseDoAchado.Grave,
+        _ => ClasseDoAchado.Observacao,
+    };
+
     /// <summary>Cria o achado ou recusa a combinação inválida, sem exceção silenciosa.</summary>
     public static Achado Criar(
         string idAchado,
@@ -79,7 +118,10 @@ internal sealed record Achado
         string descricao,
         SeveridadeDoAchado severidade,
         IReadOnlyList<RegistroEnvolvido>? registros = null,
-        IReadOnlyList<string>? evidencias = null)
+        IReadOnlyList<string>? evidencias = null,
+        RegraDoManual? regra = null,
+        FonteDoAchado? fonte = null,
+        string? orientacao = null)
     {
         if (!OrigensPermitidas[categoria].Contains(origem))
         {
@@ -106,6 +148,14 @@ internal sealed record Achado
             throw new ExcecaoDeDominio("Severidade fora da escala.");
         }
 
+        // Só validador impede: o LLM não recusa uma ECF sozinho (REQ-RESULT-009; P02).
+        if (severidade == SeveridadeDoAchado.Critica && categoria is not (CategoriaDoAchado.ErroEstrutural or CategoriaDoAchado.InconsistenciaDeNegocio))
+        {
+            throw new ExcecaoDeDominio($"A categoria {categoria} não pode ser impeditiva.");
+        }
+
+        ValidarRegra(regra, severidade, fonte, orientacao);
+
         return new Achado
         {
             IdAchado = idAchado,
@@ -113,9 +163,45 @@ internal sealed record Achado
             Origem = origem,
             Fundamento = fundamento,
             Descricao = descricao,
-            Registros = registros ?? [],
+            Registros = [.. (registros ?? []).Select(registro => registro with { ValorEncontrado = Cortar(registro.ValorEncontrado) })],
             Evidencias = evidencias ?? [],
             Severidade = severidade,
+            Regra = regra,
+            Fonte = fonte,
+            Orientacao = orientacao,
         };
     }
+
+    /// <summary>Tipo e nível como no manual; regra do manual sempre traz fonte e orientação (REQ-RESULT-008, 011).</summary>
+    private static void ValidarRegra(RegraDoManual? regra, SeveridadeDoAchado severidade, FonteDoAchado? fonte, string? orientacao)
+    {
+        if (regra is null)
+        {
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(regra.Codigo) || !NiveisDoManual.Contains(regra.Nivel))
+        {
+            throw new ExcecaoDeDominio("A regra precisa do código e de um nível do manual.");
+        }
+
+        if (regra.Tipo == TipoDaRegra.Erro && severidade != SeveridadeDoAchado.Critica)
+        {
+            throw new ExcecaoDeDominio("Regra do tipo Erro impede a conclusão, então a severidade é crítica.");
+        }
+
+        if (regra.Tipo == TipoDaRegra.Aviso && severidade == SeveridadeDoAchado.Critica)
+        {
+            throw new ExcecaoDeDominio("Regra do tipo Aviso é informativa, então não pode ser crítica.");
+        }
+
+        if (fonte is null || string.IsNullOrWhiteSpace(orientacao))
+        {
+            throw new ExcecaoDeDominio("Achado de regra do manual precisa da fonte e da orientação de correção.");
+        }
+    }
+
+    /// <summary>Só o valor do campo, com tamanho limitado; o corte fica indicado (mudança 15, D4).</summary>
+    private static string? Cortar(string? valor) =>
+        valor is { Length: > TamanhoMaximoDoValor } ? string.Concat(valor.AsSpan(0, TamanhoMaximoDoValor), IndicacaoDeCorte) : valor;
 }

@@ -110,6 +110,86 @@ public sealed class EnvelopeTests
         Assert.All(campos, campo => Assert.Contains($"`{campo}`", documento, StringComparison.Ordinal));
     }
 
+    private static Execucao Completa()
+    {
+        var execucao = Execucao.Criar(Guid.NewGuid(), Guid.NewGuid(), new IdentidadeDeclarada("pseudonimo", "org-a"), DateTimeOffset.UtcNow);
+        foreach (var etapa in FluxoDeEtapas.Obrigatorias.Where(etapa => etapa != Etapa.FerramentasExternas))
+        {
+            execucao.ConcluirEtapa(etapa);
+        }
+
+        execucao.MarcarNaoAplicavel(Etapa.FerramentasExternas, "Nenhuma ferramenta externa é necessária nesta análise.");
+        return execucao;
+    }
+
+    private static Achado Impeditivo() => Achado.Criar(
+        "ach-1",
+        CategoriaDoAchado.ErroEstrutural,
+        OrigemDoAchado.Validador,
+        "REGRA_DE_TESTE",
+        "Data final diferente de 31/12.",
+        SeveridadeDoAchado.Critica,
+        [new RegistroEnvolvido("doc-1", "0000", 1, "DT_FIN", "20251130")],
+        regra: new RegraDoManual("REGRA_DE_TESTE", TipoDaRegra.Erro, "1.1"),
+        fonte: new FonteDoAchado("Manual sintético", "leiaute-12", "página 39"),
+        orientacao: "Informe o último dia do ano.");
+
+    [Fact(DisplayName = "REQ-RESULT-010 Síntese de conforme diz que vale para as validações realizadas e é apoio à conferência")]
+    public void SinteseConforme()
+    {
+        var execucao = Completa();
+        execucao.Concluir(DateTimeOffset.UtcNow);
+
+        var envelope = MontadorDoEnvelope.Montar(execucao, null, "1.0.0", "Detalhe.", null);
+
+        Assert.Equal("conforme", envelope.Veredito);
+        Assert.Contains("validações realizadas", envelope.Sintese, StringComparison.Ordinal);
+        Assert.Contains("apoio à conferência", envelope.Sintese, StringComparison.Ordinal);
+        Assert.EndsWith("Detalhe.", envelope.Sintese, StringComparison.Ordinal);
+    }
+
+    [Fact(DisplayName = "REQ-RESULT-011 Achado traz regra, registro, linha, campo, valor, orientação e fonte, e o resumo conta por classe")]
+    public void DetalheDoAchado()
+    {
+        var envelope = Montar(execucao =>
+        {
+            execucao.AdicionarAchado(Impeditivo());
+            execucao.AdicionarAchado(Achado.Criar(
+                "ach-2", CategoriaDoAchado.InconsistenciaDeNegocio, OrigemDoAchado.Validador, "Regra Y", "Divergência.", SeveridadeDoAchado.Alta, [new RegistroEnvolvido("doc-1", "N620")]));
+            execucao.AdicionarAchado(Achado.Criar(
+                "ach-3", CategoriaDoAchado.AusenciaDeEvidencias, OrigemDoAchado.Sistema, "P08", "Sem evidência.", SeveridadeDoAchado.Media));
+        });
+
+        var achado = envelope.Achados[0];
+        var registro = Assert.Single(achado.Registros);
+        Assert.Equal("recusado", envelope.Veredito);
+        Assert.Equal(new ResumoDosAchados(1, 1, 1), envelope.Resumo);
+        Assert.Equal("impeditiva", achado.Classe);
+        Assert.Equal(new RegraDoEnvelope("REGRA_DE_TESTE", "Erro", "1.1"), achado.Regra);
+        Assert.Equal(("0000", 1, "DT_FIN", "20251130"), (registro.Registro, registro.Linha, registro.Campo, registro.ValorEncontrado));
+        Assert.Equal("Informe o último dia do ano.", achado.Orientacao);
+        Assert.Equal("página 39", achado.Fonte!.Localizacao);
+    }
+
+    [Fact(DisplayName = "REQ-RESULT-012 Sofia recebe veredito, resumo e detalhes como opcionais, sem mudar os campos da v1.0")]
+    public void ProjecaoDoDetalhe()
+    {
+        var envelope = Montar(execucao => execucao.AdicionarAchado(Impeditivo()));
+
+        var resultado = ProjecaoParaSofia.Projetar(envelope);
+        var achado = Assert.Single(resultado.Achados);
+
+        Assert.Equal("recusado", resultado.Veredito);
+        Assert.Equal(new ResumoDosAchados(1, 0, 0), resultado.ResumoAchados);
+        Assert.Equal("parcial", resultado.Status);
+        Assert.Equal("critica", achado.Severidade);
+        Assert.Equal(["doc-1"], achado.IdDocumentos);
+        Assert.Equal("impeditiva", achado.Classe);
+        Assert.Equal("Informe o último dia do ano.", achado.Orientacao);
+        Assert.Equal("Manual sintético", achado.Fonte!.Documento);
+        Assert.Equal("DT_FIN", Assert.Single(achado.Registros!).Campo);
+    }
+
     [Theory(DisplayName = "RA-07 Status interno é mapeado para os três do contrato SOFIA")]
     [InlineData("concluida", "concluido")]
     [InlineData("parcial", "parcial")]
@@ -227,6 +307,7 @@ public sealed class AnalisesEndpointsTests
         {
             Assert.Equal(TaskState.Completed, tarefa.Status.State);
             Assert.Equal("parcial", resultado.RootElement.GetProperty("status").GetString());
+            Assert.Equal("parcial", resultado.RootElement.GetProperty("veredito").GetString());
             Assert.True(resultado.RootElement.GetProperty("revisaoHumana").GetBoolean());
             using var consulta = await http.GetAsync(new Uri($"/analises/{resultado.RootElement.GetProperty("idExecucaoAgente").GetString()}", UriKind.Relative), TestContext.Current.CancellationToken);
             Assert.Equal(HttpStatusCode.OK, consulta.StatusCode);
@@ -247,6 +328,7 @@ public sealed class AnalisesEndpointsTests
             Assert.Equal(TaskState.Completed, tarefa.Status.State);
             Assert.Equal("erro", resultado.RootElement.GetProperty("status").GetString());
             Assert.Equal("falha_tecnica", resultado.RootElement.GetProperty("erro").GetProperty("codigo").GetString());
+            Assert.Equal("nao-avaliado", resultado.RootElement.GetProperty("veredito").GetString());
             Assert.Equal(ContratoDeTeste.IdSolicitacao, resultado.RootElement.GetProperty("idSolicitacao").GetString());
             Assert.Empty(resultado.RootElement.GetProperty("achados").EnumerateArray());
         }

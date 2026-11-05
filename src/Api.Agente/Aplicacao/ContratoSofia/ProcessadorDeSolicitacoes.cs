@@ -115,7 +115,8 @@ internal sealed class ProcessadorDeSolicitacoes(IRepositorioDeExecucoes reposito
             $"A solicitação não pôde ser analisada. {Mensagem}",
             [],
             [],
-            new ErroSofia("falha_tecnica", Mensagem));
+            new ErroSofia("falha_tecnica", Mensagem),
+            Veredito: MontadorDoEnvelope.NomeDoVeredito(VereditoDaExecucao.NaoAvaliado));
     }
 
     private static string Hash(string texto) => Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(texto)));

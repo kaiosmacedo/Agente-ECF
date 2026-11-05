@@ -1,3 +1,4 @@
+using System.Globalization;
 using Api.Agente.Dominio.Execucoes;
 
 namespace Api.Agente.Aplicacao.Execucoes;
@@ -13,7 +14,9 @@ internal sealed record EnvelopeDoResultado(
     Guid IdSolicitacao,
     string? IdCorrelacao,
     string Status,
+    string Veredito,
     bool RevisaoHumana,
+    ResumoDosAchados Resumo,
     string Sintese,
     IReadOnlyList<EtapaDoEnvelope> Etapas,
     IReadOnlyList<AchadoDoEnvelope> Achados,
@@ -36,7 +39,17 @@ internal sealed record AchadoDoEnvelope(
     string Descricao,
     IReadOnlyList<RegistroEnvolvido> Registros,
     IReadOnlyList<string> Evidencias,
-    string Severidade);
+    string Severidade,
+    string Classe,
+    RegraDoEnvelope? Regra,
+    FonteDoAchado? Fonte,
+    string? Orientacao);
+
+/// <summary>Quantos achados há em cada classe (REQ-RESULT-011).</summary>
+internal sealed record ResumoDosAchados(int Impeditivas, int Graves, int Observacoes);
+
+/// <summary>A regra do manual, com o tipo pelo nome usado no manual (REQ-RESULT-008).</summary>
+internal sealed record RegraDoEnvelope(string Codigo, string Tipo, string Nivel);
 
 /// <summary>Identidade como veio declarada: nesta versão, nunca é verificada (SQ-12).</summary>
 internal sealed record IdentidadeDoEnvelope(string UsuarioPseudonimo, string Organizacao, bool Verificada);
@@ -76,8 +89,10 @@ internal static class MontadorDoEnvelope
             execucao.IdSolicitacao,
             correlacao,
             NomeDoStatus(execucao.Status),
+            NomeDoVeredito(execucao.Veredito),
             execucao.ExigeRevisaoHumana,
-            sintese,
+            Resumo(execucao),
+            $"{TextoDoVeredito(execucao)} {sintese}",
             [.. execucao.Etapas.Select(etapa => new EtapaDoEnvelope((int)etapa.Etapa, NomeDaEtapa[etapa.Etapa], NomeDoEstado(etapa.Estado), etapa.Justificativa))],
             [.. execucao.Achados.Select(Achado)],
             [.. ValidacoesNaoRealizadas(execucao), .. execucao.Limitacoes],
@@ -97,6 +112,36 @@ internal static class MontadorDoEnvelope
         StatusDaExecucao.FalhaTecnica => "falha-tecnica",
         _ => throw new ArgumentOutOfRangeException(nameof(status)),
     };
+
+    public static string NomeDoVeredito(VereditoDaExecucao veredito) => veredito switch
+    {
+        VereditoDaExecucao.Conforme => "conforme",
+        VereditoDaExecucao.ConformeComRessalvas => "conforme-com-ressalvas",
+        VereditoDaExecucao.Recusado => "recusado",
+        VereditoDaExecucao.Parcial => "parcial",
+        VereditoDaExecucao.NaoAvaliado => "nao-avaliado",
+        _ => throw new ArgumentOutOfRangeException(nameof(veredito)),
+    };
+
+    private static ResumoDosAchados Resumo(Execucao execucao) => new(
+        execucao.Achados.Count(achado => achado.Classe == ClasseDoAchado.Impeditiva),
+        execucao.Achados.Count(achado => achado.Classe == ClasseDoAchado.Grave),
+        execucao.Achados.Count(achado => achado.Classe == ClasseDoAchado.Observacao));
+
+    /// <summary>O que o veredito significa. Vale para as validações realizadas e é apoio à conferência (seção 1.3).</summary>
+    private static string TextoDoVeredito(Execucao execucao)
+    {
+        const string Apoio = "O resultado vale para as validações realizadas e é apoio à conferência, sem substituir o programa oficial da ECF.";
+        var resumo = Resumo(execucao);
+        return execucao.Veredito switch
+        {
+            VereditoDaExecucao.Conforme => $"De acordo e verificada. {Apoio}",
+            VereditoDaExecucao.ConformeComRessalvas => string.Create(CultureInfo.InvariantCulture, $"De acordo, com ressalvas: nenhuma regra impeditiva violada e {resumo.Graves + resumo.Observacoes} ponto(s) a verificar. {Apoio}"),
+            VereditoDaExecucao.Recusado => string.Create(CultureInfo.InvariantCulture, $"Recusada na avaliação: {resumo.Impeditivas} regra(s) impeditiva(s) violada(s). {Apoio}"),
+            VereditoDaExecucao.Parcial => "Avaliação parcial: nem todas as validações foram realizadas.",
+            _ => "Não foi possível avaliar.",
+        };
+    }
 
     /// <summary>Cada validação obrigatória não realizada, com o motivo (REQ-RESULT-006).</summary>
     private static IEnumerable<string> ValidacoesNaoRealizadas(Execucao execucao)
@@ -149,5 +194,14 @@ internal static class MontadorDoEnvelope
             SeveridadeDoAchado.Alta => "alta",
             SeveridadeDoAchado.Critica => "critica",
             _ => throw new ExcecaoDeDominio("Severidade fora da escala."),
-        });
+        },
+        achado.Classe switch
+        {
+            ClasseDoAchado.Impeditiva => "impeditiva",
+            ClasseDoAchado.Grave => "grave",
+            _ => "observacao",
+        },
+        achado.Regra is { } regra ? new RegraDoEnvelope(regra.Codigo, regra.Tipo == TipoDaRegra.Erro ? "Erro" : "Aviso", regra.Nivel) : null,
+        achado.Fonte,
+        achado.Orientacao);
 }
