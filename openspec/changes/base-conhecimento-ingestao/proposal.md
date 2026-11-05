@@ -1,6 +1,6 @@
 # Proposal: Base de conhecimento e ingestão de manuais
 
-> **Estado:** especificação aprovada por Kaio Macedo em 2026-10-29 (roteiro, mudança 05; PR #4). Esclarecimentos respondidos em 2026-11-05. Próxima etapa: plano técnico e tarefas.
+> **Estado:** especificação aprovada por Kaio Macedo em 2026-10-29 (roteiro, mudança 05; PR #4). Esclarecimentos respondidos em 2026-11-05. Plano técnico e tarefas aguardam a aprovação de Kaio Macedo.
 
 ## Why
 
