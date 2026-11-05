@@ -30,7 +30,7 @@ Skill: testes-agentes-ia
 
 Skill: testes-agentes-ia
 
-- [ ] 4.1 Adicionar EF Core e Npgsql, o contexto, a migração inicial e `ConnectionStrings:Execucoes` validada (D6); verificar com Testcontainers que a migração cria a tabela e que a falta da conexão impede a inicialização sem revelar o valor (REQ-CONFIG-002).
+- [ ] 4.1 Adicionar Dapper e Npgsql, o `Migrador`, o script inicial e `ConnectionStrings:Execucoes` validada (D6); verificar com Testcontainers, na imagem `pgvector/pgvector:pg16`, que a migração cria a tabela, que rodar de novo não muda nada, que duas execuções simultâneas não conflitam e que a falta da conexão impede a inicialização sem revelar o valor (REQ-CONFIG-002).
 - [ ] 4.2 Criar o repositório de execuções (D6); verificar com Testcontainers gravação e leitura completas e que texto, nome e pergunta não aparecem no banco (GD-06, SQ-04).
 - [ ] 4.3 Tratar retentativas pelo índice único em `idSolicitacao` (D7); verificar com Testcontainers que duas chamadas, em sequência e simultâneas, geram uma só execução.
 - [ ] 4.4 Incluir o banco em `/health/ready` (D6); verificar com teste 503 sem banco e sem detalhes na resposta (REQ-SAUDE).
@@ -40,15 +40,15 @@ Skill: testes-agentes-ia
 Skill: sofia-a2a-implementacao
 
 - [ ] 5.1 Fazer `ProcessadorDeSolicitacoes` criar e registrar a execução (D4); verificar ponta a ponta com o cliente A2A que a solicitação vira execução com status `parcial`, e que falha do banco termina em tarefa com falha técnica (REQ-A2A-002, REQ-EXEC-001).
-- [ ] 5.2 Criar `GET /analises/{id}` (D4); verificar com teste 200 com o envelope e 404 para identificador inexistente (REQ-EXEC-005).
+- [ ] 5.2 Criar `GET /analises/{id}` e publicar `/openapi/v1.json` (D4); verificar com testes 200 com o envelope, 404 para identificador inexistente e a rota no documento OpenAPI (REQ-EXEC-005, GD-01).
 - [ ] 5.3 Registrar hash, versões e etapas (D8); verificar com teste o cenário de execução auditável (REQ-EXEC-006).
 
 ## 6. Entrega
 
 Skill: vercel-dotnet-pgvector-atlas
 
-- [ ] 6.1 Aplicar a migração no CD antes do deploy, com um bundle do EF (D6); verificar a execução do bundle contra um PostgreSQL em contêiner e a alteração em `.github/workflows/cd.yml`.
-- [ ] 6.2 Ajustar o teste de contêineres para subir com PostgreSQL; verificar no CI.
+- [ ] 6.1 Aplicar a migração no CD antes do deploy, com `--migrar` (D6); verificar a execução contra um PostgreSQL em contêiner e a alteração em `.github/workflows/cd.yml`.
+- [ ] 6.2 Ajustar o teste de contêineres para subir com PostgreSQL e adicionar o banco ao `compose.yaml`; verificar no CI e localmente.
 
 ## 7. Documentação e decisões
 

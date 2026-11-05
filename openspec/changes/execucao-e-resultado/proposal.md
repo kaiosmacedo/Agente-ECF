@@ -1,6 +1,6 @@
 # Proposal: Execução da análise e contrato de resultado
 
-> **Estado:** especificação aprovada por Kaio Macedo em 2026-10-29 (roteiro, mudança 03; PR #4) e adequada à emenda v2.0.0. Esclarecimentos respondidos por ele em 2026-11-05. Plano técnico e tarefas aguardam aprovação.
+> **Estado:** especificação aprovada por Kaio Macedo em 2026-10-29 (roteiro, mudança 03; PR #4) e adequada à emenda v2.0.0. Esclarecimentos respondidos por ele em 2026-11-05. Plano técnico e tarefas aprovados por ele no mesmo dia.
 
 ## Why
 

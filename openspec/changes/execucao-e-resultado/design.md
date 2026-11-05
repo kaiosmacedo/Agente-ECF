@@ -1,6 +1,6 @@
 # Design: Execução da análise e contrato de resultado
 
-> **Estado:** rascunho aguardando aprovação de Kaio Macedo, junto com as tarefas. Esclarecimentos E01 a E07 respondidos em 2026-11-05.
+> **Estado:** plano aprovado por Kaio Macedo em 2026-11-05 e revisto no mesmo dia, depois da análise do projeto `SofiaInfis` (`docs/base-sofiainfis.md`), com a troca de EF Core por Dapper (D6) e a inclusão do OpenAPI (D4), também aprovadas por ele.
 
 ## Context
 
@@ -61,6 +61,7 @@ Escala do contrato SOFIA: `baixa`, `media`, `alta` e `critica`. Cada regra deter
 - `Aplicacao/Execucoes` monta o `EnvelopeDoResultado`, versionado, com identificadores, status, etapas, achados, limitações, revisão humana, datas e tempos.
 - `ResultadoAnaliseSofia` passa a ser projeção do mesmo resultado. Limitações e validações não realizadas vão para `observacoes`. Campos a mais (`categoria`, `origem`, `regra` no achado; `revisaoHumana` e `idExecucaoAgente` no resultado) entram como opcionais, sem mudar os da v1.0.
 - `GET /analises/{id}` devolve o envelope, ou 404 se o identificador não existir. Sem credencial nem restrição por organização (SQ-12).
+- A API REST fica descrita em `/openapi/v1.json`, com `AddOpenApi` e `MapOpenApi` (GD-01, SQ-09), como no `SofiaInfis`, sem interface visual por enquanto.
 - O contrato fica em `docs/contratos/envelope-resultado.md` (GD-01).
 
 ### D5. Identidade na primeira versão (E07; SQ-12)
@@ -74,10 +75,11 @@ Um único ponto na aplicação, `IdentidadeDaRequisicao`:
 ### D6. Persistência (DP-25; E06)
 
 - **PostgreSQL no Neon**, com banco próprio da Api.Agente (RA-05, P15). Provedor escolhido por Kaio Macedo em 2026-11-05.
-- **EF Core com Npgsql:** `Microsoft.EntityFrameworkCore` e `Npgsql.EntityFrameworkCore.PostgreSQL`. Também atende consumo (04) e dá migrações versionadas. **Alternativa:** Npgsql com SQL próprio, com menos dependências, mas migrações manuais em cada mudança.
+- **Dapper com Npgsql:** `Dapper` 2.1.89 e `Npgsql` 10.0.3, o mesmo acesso a dados do `SofiaInfis`, que as mudanças 04, 05 e 06 reaproveitam. A busca vetorial já exige SQL próprio, e menos dependências reduzem o tempo de inicialização em contêiner que escala do zero. **Alternativa:** EF Core, com migrações prontas, mas pouco ganho para uma tabela com `jsonb`, mais peso na inicialização e dois estilos de acesso a dados no projeto.
 - **Modelo:** tabela `execucoes` com colunas para consulta e índice único em `id_solicitacao`, e o conteúdo de etapas, achados e limitações em `jsonb`.
 - **Nunca guardados:** texto dos documentos, nome do usuário e pergunta. Só hash e tamanho (GD-06). Isso reduz o peso de DP-11, que continua pendente.
-- **Migrações:** aplicadas pelo CD antes do deploy, com um bundle do EF, nunca na inicialização (skill `vercel-dotnet-pgvector-atlas`).
+- **Migrações:** scripts SQL versionados e embutidos no serviço, aplicados por um `Migrador` pequeno, com tabela de controle e trava (`pg_advisory_lock`). O CD executa `dotnet Api.Agente.dll --migrar` antes do deploy, nunca na inicialização normal (skill `vercel-dotnet-pgvector-atlas`). Os testes usam o mesmo `Migrador`.
+- **Ambiente local e testes:** imagem `pgvector/pgvector:pg16`, a mesma do `SofiaInfis`, no `compose.yaml` e no Testcontainers, com banco próprio do Agente-ECF (P15).
 - **Conexão:** `ConnectionStrings__Execucoes`, obrigatória e validada, com TLS. O segredo é cadastrado por Kaio Macedo no Vercel e no GitHub Environment `producao`.
 - **Saúde:** `/health/ready` passa a verificar o banco, sem expor detalhes (REQ-SAUDE).
 
@@ -142,7 +144,7 @@ Cada execução registra hash de cada documento, versões do contrato, dos valid
 | P13 | Atende | Metadados preenchidos pelo sistema (D4). |
 | P14 | Não se aplica | Sem ferramentas. |
 | P15 | Atende | Banco próprio da Api.Agente (D6). |
-| P16 | Atende | Pacotes justificados em D6; sem novo projeto. |
+| P16 | Atende | Pacotes justificados em D6; sem novo projeto; acesso a dados alinhado ao `SofiaInfis`. |
 | P17 | Não se aplica | Sem chamadas a provedores de IA. |
 | P18 | Não se aplica | Sem memória conversacional. |
 | P19 | Atende | Registro de hash, versões e etapas (D8). |
