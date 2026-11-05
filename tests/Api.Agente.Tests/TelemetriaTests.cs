@@ -203,7 +203,14 @@ public sealed class TelemetriaExportadaTests
             using var resposta = await fabrica.CreateClient().GetAsync(new Uri("/.well-known/agent-card.json", UriKind.Relative), TestContext.Current.CancellationToken);
 
             Assert.Equal(HttpStatusCode.OK, resposta.StatusCode);
-            Assert.True(fabrica.Services.GetRequiredService<TracerProvider>().ForceFlush(10_000));
+            // O span fecha depois da resposta: repete a exportação até o coletor receber, com limite.
+            var tempo = System.Diagnostics.Stopwatch.StartNew();
+            while (!recebidos.Contains("traces") && tempo.Elapsed < TimeSpan.FromSeconds(10))
+            {
+                fabrica.Services.GetRequiredService<TracerProvider>().ForceFlush(1_000);
+                await Task.Delay(50, TestContext.Current.CancellationToken);
+            }
+
             Assert.True(fabrica.Services.GetRequiredService<MeterProvider>().ForceFlush(10_000));
             Assert.Contains("traces", recebidos);
             Assert.Contains("metrics", recebidos);
