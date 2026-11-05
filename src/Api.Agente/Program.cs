@@ -1,6 +1,8 @@
 using Api.Agente.Endpoints;
 using Api.Agente.Infraestrutura.Configuracao;
+using Api.Agente.Infraestrutura.Cors;
 using Api.Agente.Infraestrutura.Hospedagem;
+using Api.Agente.Infraestrutura.Integracao;
 using Api.Agente.Infraestrutura.Observabilidade;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,11 +11,15 @@ builder.WebHost.UseUrls(EnderecoDeEscuta.Resolver(builder.Configuration["PORT"])
 builder.Services.AdicionarOpcoesValidadas<OpcoesObservabilidade>(builder.Configuration, OpcoesObservabilidade.Secao);
 builder.AdicionarObservabilidade(IdentidadeServico.De("Api.Agente", typeof(Program).Assembly));
 builder.Services.AddHealthChecks();
+builder.Services.AdicionarCorsSofia(builder.Configuration);
+builder.Services.AdicionarServidorA2A(builder.Configuration);
 
 var app = builder.Build();
 
 app.UseMiddleware<CorrelacaoMiddleware>();
+app.UsarCorsSofia();
 app.MapearSaude();
+app.MapearA2A();
 
 app.Run();
 

@@ -14,7 +14,7 @@ public sealed class ArquiteturaTests
     private static readonly string[] Infraestrutura =
     [
         "Microsoft.AspNetCore", "Microsoft.EntityFrameworkCore", "Microsoft.SemanticKernel", "OpenAI",
-        "ModelContextProtocol", "Npgsql", "Pgvector", "MongoDB", "StackExchange.Redis",
+        "ModelContextProtocol", "Npgsql", "Pgvector", "MongoDB", "StackExchange.Redis", "A2A",
     ];
 
     [Fact(DisplayName = "REQ-QUALIDADE-003 Dominio não depende de outras camadas nem de infraestrutura")]
@@ -34,6 +34,17 @@ public sealed class ArquiteturaTests
         var resultado = Types.InAssembly(Assembly)
             .That().ResideInNamespace($"{Servico}.Aplicacao")
             .ShouldNot().HaveDependencyOnAny($"{Servico}.Endpoints", $"{Servico}.Infraestrutura")
+            .GetResult();
+
+        Assert.True(resultado.IsSuccessful, Falhas(resultado));
+    }
+
+    [Fact(DisplayName = "REQ-A2A-002 Aplicacao não depende do protocolo A2A")]
+    public void AplicacaoSemProtocoloA2A()
+    {
+        var resultado = Types.InAssembly(Assembly)
+            .That().ResideInNamespace($"{Servico}.Aplicacao")
+            .ShouldNot().HaveDependencyOn("A2A")
             .GetResult();
 
         Assert.True(resultado.IsSuccessful, Falhas(resultado));

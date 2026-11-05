@@ -20,9 +20,11 @@ Agente de IA que analisa arquivos da Escrituração Contábil Fiscal (ECF), vali
 | `docs/governanca/desvios.md` | Registro de desvios da constitution. |
 | `.github/` | CI (`workflows/ci.yml`), CD (`workflows/cd.yml`), teste de contêineres, modelo de PR e Dependabot. |
 | `docs/ci-cd.md` | Pipeline de CI/CD, configuração do Vercel, rotação do token e rollback. |
-| `.claude/` | Comandos e skills do OpenSpec e skills do projeto: `github-versionamento`, `testes-agentes-ia`, `rag-pgvector`, `mcp-client-server`, `semantic-kernel-tools`, `controle-custos-llm`, `memoria-mongodb` (após o ADR de memória) e `vercel-dotnet-pgvector-atlas` (após o ADR de hospedagem). |
+| `docs/contratos/` | Integração com a Sofia: contrato, cartão, erros, configuração e como executar. |
+| `compose.yaml` | Api.Agente na rede `sofia_network`, para a integração com a Sofia. |
+| `.claude/` | Comandos e skills do OpenSpec e skills do projeto: `github-versionamento`, `testes-agentes-ia`, `rag-pgvector`, `mcp-client-server`, `semantic-kernel-tools`, `controle-custos-llm`, `memoria-mongodb` (após o ADR de memória), `vercel-dotnet-pgvector-atlas` (após o ADR de hospedagem), `sofia-a2a-contrato`, `sofia-a2a-implementacao` e `sofia-cors-rest-a2a`. |
 
-Serviços (.NET 10, ASP.NET Core): **Api.Agente**, que vai orquestrar a análise, integrar a OpenAI e expor REST e A2A, e **Api.RAG**, que vai gerenciar a base de conhecimento em PostgreSQL com PgVector e expor a recuperação por MCP. Hoje, os dois oferecem `/health/live`, `/health/ready`, correlação por `X-Correlation-Id` e logs em JSON.
+Serviços (.NET 10, ASP.NET Core): **Api.Agente**, que vai orquestrar a análise, integrar a OpenAI e expor REST e A2A, e **Api.RAG**, que vai gerenciar a base de conhecimento em PostgreSQL com PgVector e expor a recuperação por MCP. Hoje, os dois oferecem `/health/live`, `/health/ready`, correlação por `X-Correlation-Id` e logs em JSON. A Api.Agente também atende a Sofia INFIS por A2A v1.0 (`/.well-known/agent-card.json` e `/a2a`), ainda como esqueleto: responde com status `parcial` e declara as validações não realizadas (`docs/contratos/sofia-a2a.md`).
 
 ## Build e testes
 

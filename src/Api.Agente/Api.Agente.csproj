@@ -12,4 +12,8 @@
     <InternalsVisibleTo Include="Api.Agente.Tests" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="A2A.AspNetCore" Version="1.0.0-preview4" />
+  </ItemGroup>
+
 </Project>

@@ -1,0 +1,19 @@
+{
+  "versaoContrato": "1.0",
+  "idExecucao": "8b2f0ad6-c2e4-4a68-8bdd-20f785bc798e",
+  "idSolicitacao": "e1b3a4cb-d729-4bd4-b796-b9c94be07b46",
+  "agente": { "idAgente": "agente-fiscal", "nome": "Agente Fiscal" },
+  "status": "concluido",
+  "analise": "Foi identificada divergência entre valor total e pagamento.",
+  "achados": [
+    {
+      "idAchado": "ach-001",
+      "descricao": "Valor de pagamento difere do total declarado.",
+      "idDocumentos": ["doc-001"],
+      "evidencias": ["Valor total: 100,00; pagamento: 90,00"],
+      "severidade": "alta"
+    }
+  ],
+  "observacoes": [],
+  "erro": null
+}

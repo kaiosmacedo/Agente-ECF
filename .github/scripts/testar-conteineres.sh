@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Constrói e testa a imagem de cada serviço (REQ-ENTREGA-001 a 003, REQ-OBSERV-002).
+# Constrói e testa a imagem de cada serviço (REQ-ENTREGA-001 a 003, REQ-OBSERV-002, REQ-A2A-001, REQ-A2A-005).
 # Uso no CI: VERSAO=<sha> bash .github/scripts/testar-conteineres.sh
 set -euo pipefail
 
@@ -24,6 +24,18 @@ falhar() {
   exit 1
 }
 
+# Cartão e SendMessage com dados sintéticos: Task concluída, com o resultado do contrato no Artifact.
+testar_a2a() {
+  local id="$1" corpo resposta
+  curl -fsS "http://localhost:8080/.well-known/agent-card.json" | jq -e '.supportedInterfaces[0].protocolVersion == "1.0" and .skills[0].id == "analisar_documentos"' > /dev/null \
+    || falhar "$id" "Cartão do agente inválido."
+  corpo=$(jq -n --arg texto '{"versaoContrato":"1.0","idExecucao":"8b2f0ad6-c2e4-4a68-8bdd-20f785bc798e","idSolicitacao":"e1b3a4cb-d729-4bd4-b796-b9c94be07b46","usuario":{"nome":"Usuario Teste"},"pergunta":"Analise o documento","documentos":[{"idDocumento":"doc-001","nome":"teste.txt","texto":"Documento sintetico."}]}' \
+    '{jsonrpc:"2.0",id:"ci",method:"SendMessage",params:{message:{role:"ROLE_USER",messageId:"5f92c2ba-6870-4862-87ba-1ae8669a77f4",parts:[{text:$texto}]}}}')
+  resposta=$(curl -fsS -X POST "http://localhost:8080/a2a" -H "Content-Type: application/json" -H "A2A-Version: 1.0" -d "$corpo")
+  echo "$resposta" | jq -e '.result.task.status.state == "TASK_STATE_COMPLETED" and (.result.task.artifacts[0].parts[0].text | fromjson | .status == "parcial" and .idSolicitacao == "e1b3a4cb-d729-4bd4-b796-b9c94be07b46")' > /dev/null \
+    || falhar "$id" "SendMessage não devolveu o resultado do contrato."
+}
+
 for servico in Api.Agente Api.RAG; do
   imagem="agente-ecf-$(echo "$servico" | tr '[:upper:].' '[:lower:]-'):ci"
   echo "::group::$servico"
@@ -39,6 +51,9 @@ for servico in Api.Agente Api.RAG; do
     || falhar "$id" "$servico gerou log que não é JSON."
   docker logs "$id" 2>&1 | jq -e -s 'any(.[]; any(.Scopes[]?; type == "object" and .CorrelationId? == "ci-conteiner"))' > /dev/null \
     || falhar "$id" "$servico não registrou o identificador de correlação no log."
+  if [ "$servico" = "Api.Agente" ]; then
+    testar_a2a "$id"
+  fi
   docker rm -f "$id" > /dev/null
 
   # Com PORT=3000: a porta informada pela plataforma é respeitada.

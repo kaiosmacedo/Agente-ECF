@@ -1,0 +1,20 @@
+# Agente-ECF na rede da Sofia (skill sofia-cors-rest-a2a). A rede é criada pelo compose do projeto SofiaInfis;
+# sem ele no ar, crie uma vez: docker network create sofia-infis_sofia_network
+# Na rede, a Sofia alcança o agente pelo nome do serviço, não por localhost. Só dados sintéticos ou anonimizados (SQ-12).
+name: agente-ecf
+
+services:
+  agente-ecf:
+    build:
+      context: src/Api.Agente
+    environment:
+      A2A__UrlPublica: ${A2A_URL_PUBLICA:-http://agente-ecf:8080/a2a}
+    ports:
+      - "8085:8080"
+    networks:
+      - sofia_network
+
+networks:
+  sofia_network:
+    external: true
+    name: sofia-infis_sofia_network
