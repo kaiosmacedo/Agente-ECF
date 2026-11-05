@@ -491,7 +491,7 @@ Os serviços MAY compartilhar infraestrutura física de banco somente com bancos
 
 **RA-06 — Integração com LLM.** A integração MUST ser feita com a OpenAI, por adaptadores na camada de infraestrutura, usando Semantic Kernel para Function Calling. Modelo, parâmetros de execução, endpoints e chaves MUST vir de configuração externa e MUST NOT ser fixados no código. Tipos do Semantic Kernel e do SDK do provedor MUST NOT aparecer no domínio. A adoção de outro provedor exige ADR e emenda MINOR.
 
-**RA-07 — A2A.** O servidor A2A da Api.Agente MUST reutilizar o mesmo fluxo de aplicação (P03), as mesmas regras de autenticação e autorização e o mesmo contrato de resultado da API REST. Ele MUST NOT expor capacidade que não esteja especificada. A consumidora prevista é a Sofia INFIS; o contrato A2A MUST ser especificado considerando os requisitos de integração dela. O escopo e a priorização do A2A dependem de DP-16.
+**RA-07 — A2A.** A Sofia INFIS é cliente e orquestradora; a Api.Agente é servidor A2A. O servidor MUST seguir o perfil A2A v0.3.x com JSON-RPC 2.0 (`message/send`), publicar o cartão em `/.well-known/agent-card.json` e trocar o contrato SOFIA v1.0 da skill `sofia-a2a-contrato`: `SolicitacaoAnaliseSofia` em `TextPart` da mensagem e `ResultadoAnaliseSofia` em `TextPart` de Artifact. Campos de negócio MUST NOT virar atributos do protocolo, e a credencial MUST ficar no transporte, fora do contrato. O servidor MUST reutilizar o mesmo fluxo de aplicação (P03) e as mesmas regras de acesso da API REST. `ResultadoAnaliseSofia` MUST ser uma projeção do resultado calculado pelo sistema (GD-02), e status e severidade internos MUST ser mapeáveis aos valores do contrato; campos adicionais MAY entrar somente como opcionais. O servidor MUST NOT expor capacidade que não esteja especificada, e o agente MUST NOT chamar outros agentes sem permissão explícita. O escopo e a priorização do A2A dependem de DP-16.
 
 **RA-08 — Camadas.** As dependências MUST seguir a direção `Endpoints → Aplicação → Domínio`. A Infraestrutura implementa as abstrações definidas pela Aplicação ou pelo Domínio. A organização física, em projetos ou em pastas, é definida no plano técnico da fundação (DP-17), e testes de arquitetura MUST verificá-la.
 
@@ -505,7 +505,7 @@ Os serviços MAY compartilhar infraestrutura física de banco somente com bancos
 
 ## 4. Contratos e governança dos dados
 
-**GD-01 — Contratos versionados.** Os contratos abaixo MUST ser explícitos, versionados e mantidos no repositório: API REST (OpenAPI), ferramentas MCP, ferramentas de Function Calling, contrato do LLM, envelope da API e cartão do agente A2A.
+**GD-01 — Contratos versionados.** Os contratos abaixo MUST ser explícitos, versionados e mantidos no repositório: API REST (OpenAPI), ferramentas MCP, ferramentas de Function Calling, contrato do LLM, envelope da API, contrato SOFIA e cartão do agente A2A.
 
 - O versionamento MUST seguir SemVer. Uma mudança incompatível MUST gerar nova versão MAJOR, com plano de convivência ou de migração.
 - A alteração de um contrato MUST estar prevista na especificação da mudança.
@@ -548,8 +548,8 @@ Os serviços MAY compartilhar infraestrutura física de banco somente com bancos
 
 **GD-06 — Documentos recebidos.**
 
-- O sistema MUST registrar o hash de cada arquivo recebido.
-- Limites de tamanho, formatos aceitos e condições de processamento MUST estar na especificação (DP-05).
+- O sistema MUST registrar o hash de cada arquivo recebido. Por A2A, o documento chega como texto já extraído pela Sofia, e o hash é calculado sobre esse texto.
+- Limites de tamanho, formatos aceitos e condições de processamento MUST estar na especificação (DP-05). Conteúdo acima do limite MUST receber erro controlado e MUST NOT ser truncado em silêncio.
 - O armazenamento e a retenção dos arquivos MUST seguir a política de DP-11.
 - O sistema MUST enviar ao LLM somente os trechos necessários à análise, conforme definido na especificação. O envio de dados reais ao provedor depende de DP-12.
 - Arquivos reais de clientes MUST NOT ser versionados no repositório nem usados em testes sem anonimização (SQ-10).
@@ -596,7 +596,7 @@ A consolidação do consumo da Api.RAG, com embeddings de ingestão e de consult
 
 **SQ-03 — Segredos.** Segredos MUST ser obtidos de armazenamento seguro de segredos. Eles MUST NOT aparecer no repositório, em logs, em prompts ou em respostas. A rotação de um segredo MUST NOT exigir alteração de código.
 
-**SQ-04 — Dados sensíveis.** Os dados tratados MUST ser classificados quanto à sensibilidade. Logs MUST NOT conter o conteúdo integral de arquivos, prompts com dados fiscais completos ou segredos. Identificadores sensíveis MUST ser mascarados nos logs. A base legal e a política de tratamento dependem de DP-11 e DP-12.
+**SQ-04 — Dados sensíveis.** Os dados tratados MUST ser classificados quanto à sensibilidade. Logs MUST NOT conter o conteúdo integral de arquivos, prompts com dados fiscais completos ou segredos. Identificadores sensíveis MUST ser mascarados nos logs, e o nome do usuário recebido da Sofia MUST NOT constar de logs operacionais. A base legal e a política de tratamento dependem de DP-11 e DP-12.
 
 **SQ-05 — Entrada segura.**
 
@@ -617,7 +617,7 @@ A consolidação do consumo da Api.RAG, com embeddings de ingestão e de consult
 | Tipo | Obrigatoriedade |
 | --- | --- |
 | Unitário de validadores | Cada regra determinística com pelo menos um caso válido e um inválido. |
-| Contrato | Contrato do LLM, envelope, OpenAPI, ferramentas MCP e de Function Calling e cartão A2A, sempre que o contrato mudar. |
+| Contrato | Contrato do LLM, envelope, OpenAPI, ferramentas MCP e de Function Calling, contrato SOFIA e cartão A2A, sempre que o contrato mudar. |
 | Integração | PostgreSQL/PgVector, armazenamento de memória e MCP entre os serviços, com instâncias reais em ambiente isolado. Bancos MUST NOT ser simulados em testes de integração. |
 | Adversarial | Injeção de prompt, referência fabricada e argumento inválido, sempre que a mudança tocar LLM, RAG, prompts ou ferramentas. |
 | Avaliação da recuperação | GD-08, sempre que mudarem parâmetros de RAG. |
@@ -629,7 +629,7 @@ O CI MUST NOT depender de chamadas reais à OpenAI. Os testes automatizados MUST
 
 **SQ-11 — Dependências.** Os pacotes MUST vir de fontes confiáveis, com versões fixadas, e passar por verificação de vulnerabilidades no CI. Cada nova dependência MUST ser justificada (P16).
 
-**SQ-12 — Primeira versão sem autenticação.** Regra transitória, por decisão do responsável em 2026-11-05: a autenticação será normalizada entre a Sofia INFIS e os demais agentes por uma skill que o professor vai fornecer, e entra na mudança 02 (`autenticacao-autorizacao`). Até essa mudança ser concluída:
+**SQ-12 — Primeira versão sem autenticação.** Regra transitória, por decisão do responsável em 2026-11-05. A skill `sofia-cors-rest-a2a` orienta a autenticação de serviço no transporte (por exemplo, JWT/OAuth2 com audience e scopes), mas não define emissor, audience nem como a Sofia obtém o token; isso será pactuado com o professor e entra na mudança 02 (`autenticacao-autorizacao`). Até essa mudança ser concluída:
 
 - Endpoints REST, MCP e A2A MAY ser implementados e publicados sem autenticação e sem autorização por usuário, organização ou perfil. SQ-01, SQ-02 e as exigências correspondentes de RA-03, RA-04 e DoD-14 ficam suspensas.
 - Usuário e organização MUST vir de um único ponto da camada de aplicação. Eles MAY ser declarados pelo cliente ou assumir valores padrão documentados, e MUST NOT ser tratados como identidade verificada.
@@ -639,6 +639,8 @@ O CI MUST NOT depender de chamadas reais à OpenAI. Os testes automatizados MUST
 - Cada exigência adiada MUST constar da seção "Autenticação adiada" de `docs/roteiro.md`, para ser reaplicada na retomada.
 
 A conclusão da mudança 02 MUST encerrar esta regra por emenda.
+
+**SQ-13 — CORS.** CORS MUST ser aplicado somente aos endpoints com clientes de navegador, com a política nomeada `SofiaBrowser` e as origens em `Cors:AllowedOrigins`, por ambiente. Cada origem MUST ser explícita (esquema, host e porta, sem caminho). `AllowAnyOrigin` com credenciais, `SetIsOriginAllowed` irrestrito com credenciais e wildcard em produção MUST NOT ser usados. Chamadas entre servidores MUST NOT depender de CORS, e CORS MUST NOT ser tratado como autenticação.
 
 ---
 
@@ -820,7 +822,7 @@ Sínteses desta constitution, como a nota do cofre Obsidian, MUST indicar a vers
 | 1.2.0 | 2026-10-29 | MINOR: delegação ao assistente de IA da validação e do merge de PRs (6.6); branches `ci/` e do Dependabot e checks obrigatórios do CI (6.8); decisões do responsável para DP-17 e DP-18, a formalizar em ADR. Nenhuma especificação existente afetada. | Decisões aprovadas por Kaio Macedo em 2026-10-29; merge por delegação (6.6). |
 | 1.3.0 | 2026-10-29 | MINOR: roteiro em `docs/roteiro.md` e uso obrigatório das skills do projeto indicadas no roteiro e no `tasks.md` (6.1); especificação conjunta de várias mudanças numa branch `docs/roteiro-*` (6.8). Nenhuma especificação vigente afetada. | Aprovada por Kaio Macedo em 2026-10-29 (PR #4). |
 | 1.3.1 | 2026-10-29 | PATCH: DP-17 e DP-18 movidas para as decisões resolvidas, conforme os ADRs 0001 e 0002 aceitos e a mudança `fundacao-solucao` arquivada. Sem efeito normativo. | Registro de decisões aprovadas por Kaio Macedo; merge por delegação (6.6). |
-| 2.0.0 | 2026-11-05 | MAJOR: primeira versão sem autenticação (SQ-12), com SQ-01 e SQ-02 suspensas e RA-03, RA-04, DoD-14 e DP-09 ajustadas. Especificações das mudanças 03 a 13 e `docs/roteiro.md` adequadas no mesmo PR; a mudança 02 fica congelada. | Decisão de Kaio Macedo em 2026-11-05; aprovação do texto pendente no PR. |
+| 2.0.0 | 2026-11-05 | MAJOR: primeira versão sem autenticação (SQ-12), com SQ-01 e SQ-02 suspensas e RA-03, RA-04, DoD-14 e DP-09 ajustadas; integração com a Sofia pelas skills da turma: RA-07 redefinida (perfil A2A v0.3.x e contrato SOFIA v1.0), CORS (SQ-13) e ajustes em GD-01, GD-06, SQ-04 e SQ-09. Especificações das mudanças 03 a 13 e `docs/roteiro.md` adequadas no mesmo PR; a mudança 02 fica congelada. | Decisão de Kaio Macedo em 2026-11-05; aprovação do texto pendente no PR. |
 
 ---
 
@@ -838,7 +840,7 @@ As decisões abaixo não estão definidas. Elas MUST NOT ser tratadas como requi
 | DP-06 | Escopo das validações de IRPJ e CSLL, dos cruzamentos entre registros e da comparação com períodos anteriores e com outras escriturações, incluindo a origem desses dados. | Esclarecimentos das mudanças de regras de negócio. | Especificação | Regras de negócio correspondentes. |
 | DP-07 | Escala de severidade e seus critérios. | Especificação do contrato de resultado. | Especificação | Contrato de resultado. |
 | DP-08 | Enumeração dos status de processamento e regra de cálculo. | Especificação do contrato de resultado. | Especificação | Contrato de resultado. |
-| DP-09 | Mecanismo de autenticação e autorização (provedor de identidade, autenticação entre serviços, MCP e A2A) e modelo de organizações. | Antes de encerrar a regra SQ-12, com a skill de autenticação que o professor vai fornecer. | ADR | Uso com dados reais e encerramento da SQ-12. |
+| DP-09 | Mecanismo de autenticação e autorização (provedor de identidade, autenticação entre serviços, MCP e A2A) e modelo de organizações. | Antes de encerrar a regra SQ-12, pactuando com o professor emissor, audience e obtenção do token (diretriz na skill `sofia-cors-rest-a2a`). | ADR | Uso com dados reais e encerramento da SQ-12. |
 | DP-10 | Ferramentas externas necessárias, suas fontes e suas políticas de autorização. | Especificação de cada ferramenta. | Especificação | Etapa 6 do fluxo. |
 | DP-11 | Política de retenção e exclusão de arquivos, resultados, memória, logs e consumo, com a base legal (LGPD). | Antes do uso com dados reais. | ADR ou política aprovada | Uso com dados reais. |
 | DP-12 | Política de dados com a OpenAI: retenção no provedor, região, uso para treinamento, minimização e anonimização. | Antes do envio de dados reais ao provedor. | ADR | Envio de dados reais ao LLM. |
