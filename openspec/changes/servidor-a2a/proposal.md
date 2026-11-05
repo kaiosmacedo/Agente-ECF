@@ -1,23 +1,26 @@
 # Proposal: Servidor A2A para a Sofia INFIS
 
-> **Estado:** especificação aprovada por Kaio Macedo em 2026-10-29 (roteiro, mudança 13; PR #4). Próxima etapa: esclarecimentos. Plano técnico e tarefas só depois dos esclarecimentos bloqueantes.
+> **Estado:** especificação aprovada por Kaio Macedo em 2026-10-29 (roteiro, mudança 13; PR #4) e revista em 2026-11-05 com as skills da turma. Esclarecimentos respondidos pelas skills; Kaio Macedo pediu a implementação em 2026-11-05. O merge depende da aprovação da emenda v2.0.0 da constitution (PR #8).
 
 ## Why
 
-O Agente-ECF é um dos agentes da Sofia INFIS, que deve poder acioná-lo por A2A (constitution, 1.1). A constitution exige que o servidor A2A use o mesmo fluxo, a mesma autenticação e o mesmo contrato de resultado da API REST, e que não exponha capacidade não especificada (RA-07).
+O Agente-ECF é um dos agentes da Sofia INFIS, que o aciona por A2A (constitution, 1.1). As skills `sofia-a2a-contrato`, `sofia-a2a-implementacao` e `sofia-cors-rest-a2a` padronizaram essa integração para todos os agentes: protocolo, contrato de negócio, cartão, CORS e conectividade. Fazer a integração primeiro, como esqueleto, permite que a Sofia alcance o agente desde já e que as próximas mudanças preencham a análise sem alterar o contrato.
 
 ## What Changes
 
-- Publica o cartão do agente com as capacidades especificadas: analisar um arquivo da ECF e consultar o resultado de uma análise.
-- Recebe tarefas A2A e as executa pelo mesmo fluxo da `POST /analises`, com o mesmo contrato de resultado.
+- Publica o cartão do agente em `/.well-known/agent-card.json`, com a skill `analisar_documentos`.
+- Atende `message/send`, `tasks/get` e `tasks/cancel` no endpoint `/a2a` (A2A v0.3.x, JSON-RPC).
+- Recebe `SolicitacaoAnaliseSofia` e devolve `ResultadoAnaliseSofia`, com validação, correlação e erros controlados.
+- Enquanto a análise não existir, responde com status `parcial`, declara as validações não realizadas e registra tamanho e hash de cada documento. Nunca declara conformidade.
+- Configura CORS com a política `SofiaBrowser` e o arquivo `compose.yaml` para a rede dos agentes.
 - Aceita a Sofia INFIS sem credencial na primeira versão (SQ-12); a autenticação normalizada entra na retomada da mudança 02.
-- Propaga a correlação da Sofia para os logs e reflete o status da execução no estado da tarefa A2A.
-- Executa antes uma prova de conceito do transporte A2A no Vercel (ADR 0002).
 
 ## Capabilities
 
 ### New Capabilities
 - `integracao/servidor-a2a`: exposição do Agente-ECF a outros agentes, a começar pela Sofia INFIS, pelo protocolo A2A.
+- `integracao/contrato-sofia`: contrato SOFIA v1.0, validação, correlação e tratamento de erros.
+- `integracao/cors`: origens de navegador autorizadas e independência das chamadas entre servidores.
 
 ### Modified Capabilities
 - Nenhuma.
@@ -26,31 +29,44 @@ O Agente-ECF é um dos agentes da Sofia INFIS, que deve poder acioná-lo por A2A
 
 | ID | Pergunta | Resposta | Fonte ou responsável | Data | Bloqueante |
 | --- | --- | --- | --- | --- | --- |
-| E01 | Qual versão do protocolo A2A e qual SDK a Sofia INFIS usa? | — | Kaio Macedo | — | Sim |
-| E02 | Quais capacidades expor no início: só analisar e consultar, ou também conversar (DP-16)? | — | Kaio Macedo | — | Sim |
-| E03 | A Sofia precisa de streaming ou notificações de andamento? A prova de conceito verifica o suporte no Vercel. | — | Kaio Macedo | — | Sim |
-| E04 | Que cabeçalho de correlação a Sofia envia (pendência E06 da fundação)? | — | Kaio Macedo | — | Não |
+| E01 | Qual versão do protocolo A2A e qual SDK a Sofia INFIS usa? | Perfil fixado: A2A v0.3.x com JSON-RPC. O servidor usa o SDK oficial `A2A.AspNetCore` 0.3.4-preview. Ver E05 sobre o cliente da Sofia. | `sofia-a2a-implementacao` | 2026-11-05 | Não |
+| E02 | Quais capacidades expor no início: só analisar e consultar, ou também conversar (DP-16)? | Só a skill `analisar_documentos`, com o resultado na própria resposta. Sem consulta nem conversa. | `sofia-a2a-implementacao`, RF01 | 2026-11-05 | Não |
+| E03 | A Sofia precisa de streaming ou notificações de andamento? | Não: `streaming` e `pushNotifications` são `false` no cartão do perfil da turma. | `sofia-a2a-contrato`, exemplos | 2026-11-05 | Não |
+| E04 | Que cabeçalho de correlação a Sofia envia (pendência E06 da fundação)? | O contrato correlaciona por `idExecucao` e `idSolicitacao`; a skill pede propagar `traceId` e request ID em cabeçalhos, sem fixar o nome. O serviço mantém `X-Correlation-Id` e registra os dois identificadores. | `sofia-a2a-implementacao` | 2026-11-05 | Não |
+| E05 | O cliente da Sofia fala v0.3? O projeto `SofiaInfis` referencia `Microsoft.Agents.AI.A2A` 1.27.0-preview, que traz o SDK `A2A` 1.0.0-preview3 (protocolo v1.0), e ainda não tem código de cliente. A skill fixa v0.3.x. | — | Professor / Kaio Macedo | — | Não para o servidor; sim para a integração real |
+| E06 | Há frontend da Sofia que chame o agente pelo navegador? | Não encontrado no projeto `SofiaInfis`. `Cors:AllowedOrigins` fica vazio até existir uma origem real. | Kaio Macedo confirma | 2026-11-05 | Não |
+| E07 | Qual o limite de tamanho dos documentos e o que o Vercel aceita no corpo da requisição? | Limite configurável, com padrão de 10 MiB até DP-05 ser resolvida na mudança 07. O corpo aceito pelo Vercel é medido em produção, depois do merge. | Mudança 07; verificação da tarefa 7.3 | 2026-11-05 | Não |
+| E08 | Em que rede a Sofia alcança o agente? A skill usa `agentes-network`; o compose de `SofiaInfis` usa `sofia_network`, e a API dela roda fora dele. | — | Professor / Kaio Macedo | — | Não para o servidor; sim para a integração real |
 
 ## Fontes oficiais
 
-Não se aplica: sem regras de domínio fiscal.
+| Documento | Emissor | Versão | Localização |
+| --- | --- | --- | --- |
+| [Especificação A2A](https://a2a-protocol.org/v0.3.0/specification/) | Projeto A2A | 0.3.0 | Seções 5 (cartão), 7 (métodos), 8 (erros) e 11 (conformidade) |
+| Contrato SOFIA | Pacote da turma SOFIA/INFIS | 1.0 | `.claude/skills/sofia-a2a-contrato/references/` |
+
+Sem regras de domínio fiscal.
 
 ## Princípios, decisões e dependências
 
-- **Princípios:** P03, P05, P10, P19; RA-07; SQ-07, SQ-12.
-- **Decisões pendentes:** resolve DP-16; DP-09 fica adiada (SQ-12).
-- **Depende de:** 03 `execucao-e-resultado` e 10 `analise-llm` (para a análise completa). A credencial fica adiada (SQ-12; `docs/roteiro.md`).
-- **Skills:** `vercel-dotnet-pgvector-atlas` (prova de conceito), `testes-agentes-ia`, `github-versionamento`.
+- **Princípios:** P03, P05, P07, P08, P10, P13, P16, P19; RA-07; GD-01, GD-06; SQ-04, SQ-05, SQ-07, SQ-12, SQ-13.
+- **Decisões pendentes:** resolve DP-16 no arquivamento (autenticação do A2A fica em DP-09, adiada pela SQ-12); DP-05 continua pendente na mudança 07.
+- **Depende de:** 01 `fundacao-solucao`. A análise completa chega com as mudanças 03 a 10. A credencial fica adiada (SQ-12; `docs/roteiro.md`).
+- **Skills:** `sofia-a2a-contrato`, `sofia-a2a-implementacao`, `sofia-cors-rest-a2a`, `vercel-dotnet-pgvector-atlas`, `testes-agentes-ia`, `github-versionamento`.
 
 ## Fora do escopo
 
 - Capacidades não especificadas no cartão do agente.
-- Cliente A2A do Agente-ECF para chamar outros agentes.
+- Cliente A2A, registry, despacho e agregação: são da Sofia.
+- Cliente A2A do Agente-ECF para chamar outros agentes (RF05).
+- Validações da ECF, persistência e análise com LLM (mudanças 03 a 10).
+- Autenticação (mudança 02).
 
 ## Impact
 
-- Servidor A2A na Api.Agente, cartão do agente versionado e, conforme a prova de conceito, possível host persistente (novo ADR).
+- Novo pacote `A2A.AspNetCore` na Api.Agente; novos endpoints `/.well-known/agent-card.json` e `/a2a`, públicos enquanto valer a SQ-12.
+- Novos arquivos `compose.yaml`, `docs/contratos/sofia-a2a.md` e `docs/contratos/agent-card.json`.
 
 ## Aprovação
 
-Especificação aprovada por Kaio Macedo em 2026-10-29 (PR #4). Esclarecimentos, plano técnico e tarefas seguem na branch `feat/<id>` da mudança.
+Especificação aprovada por Kaio Macedo em 2026-10-29 (PR #4); revisão e implementação pedidas por ele em 2026-11-05, com as skills da turma.
