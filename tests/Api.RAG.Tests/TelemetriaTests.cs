@@ -1,4 +1,5 @@
 using System.Net;
+using Api.RAG.Infraestrutura.Configuracao;
 using Api.RAG.Infraestrutura.Observabilidade;
 using Api.RAG.Tests.Infra;
 using Microsoft.AspNetCore.Builder;
@@ -8,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
-using Api.RAG.Infraestrutura.Configuracao;
 
 namespace Api.RAG.Tests;
 
