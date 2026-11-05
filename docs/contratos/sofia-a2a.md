@@ -42,7 +42,7 @@ Requisição (`POST` no `url` do cartão, com `Content-Type: application/json`):
       "parts": [
         {
           "kind": "text",
-          "text": "{\"versaoContrato\":\"1.0\",\"idExecucao\":\"8b2f0ad6-c2e4-4a68-8bdd-20f785bc798e\",\"idSolicitacao\":\"e1b3a4cb-d729-4bd4-b796-b9c94be07b46\",\"usuario\":{\"nome\":\"Maria Oliveira\"},\"pergunta\":\"Analise o documento\",\"documentos\":[{\"idDocumento\":\"doc-001\",\"nome\":\"ECF-sintetica.txt\",\"texto\":\"|0000|LECF|0012|\"}]}"
+          "text": "{\"versaoContrato\":\"1.0\",\"idExecucao\":\"8b2f0ad6-c2e4-4a68-8bdd-20f785bc798e\",\"idSolicitacao\":\"e1b3a4cb-d729-4bd4-b796-b9c94be07b46\",\"usuario\":{\"nome\":\"Maria Oliveira\"},\"pergunta\":\"Analise o documento\",\"documentos\":[{\"idDocumento\":\"doc-001\",\"nome\":\"documento-sintetico.txt\",\"texto\":\"Documento sintético de teste.\"}]}"
         }
       ]
     }
@@ -77,7 +77,7 @@ Resposta (o texto do Artifact foi formatado aqui para leitura; ele chega como st
               "analise": "1 documento(s) recebido(s). Esta versão ainda não executa as validações da ECF: nenhum achado foi produzido e nenhuma conformidade é declarada.",
               "achados": [],
               "observacoes": [
-                "Documento doc-001 recebido: 16 caracteres, SHA-256 62c7300c09e9ba7fb61fd495bda362790382b6f7d22517ee2a6e0c2bf1f9ac18.",
+                "Documento doc-001 recebido: 29 caracteres, SHA-256 52ab0f0ad162f0e68f6e9424057bacdf43b209861b2475733611a420202a974d.",
                 "Validações não realizadas nesta versão: identificação do leiaute, validação estrutural, regras de negócio, consulta ao manual e análise por IA."
               ],
               "erro": null
@@ -98,7 +98,7 @@ Resposta (o texto do Artifact foi formatado aqui para leitura; ele chega como st
 | Campo obrigatório ausente ou inválido, `idDocumento` repetido | `completed` | `erro` | `solicitacao_invalida` |
 | `versaoContrato` diferente de `1.0` | `completed` | `erro` | `versao_contrato_nao_suportada` |
 | Texto dos documentos acima do limite | `completed` | `erro` | `documentos_acima_do_limite` |
-| Mensagem sem `TextPart`, texto que não é JSON, `idExecucao` ou `idSolicitacao` que não são UUID | `failed` | sem resultado | motivo em `status.message` |
+| Mensagem sem `TextPart`, texto fora da estrutura JSON do contrato, `idExecucao` ou `idSolicitacao` que não são UUID | `failed` | sem resultado | motivo em `status.message` |
 
 `concluido` fica reservado para quando todas as validações obrigatórias existirem (P05).
 

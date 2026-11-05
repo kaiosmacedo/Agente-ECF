@@ -17,10 +17,11 @@ internal sealed partial class AgenteA2A(
     public async Task AoCriarTarefa(AgentTask tarefa, CancellationToken cancelamento)
     {
         var texto = tarefa.History?.LastOrDefault()?.Parts.OfType<TextPart>().FirstOrDefault()?.Text;
-        var desfecho = texto is null ? new DesfechoDaSolicitacao(null, "mensagem_sem_texto") : processador.Processar(texto);
 
         // O histórico traz os documentos e o nome do usuário: não fica em memória nem volta na resposta (SQ-04).
         tarefa.History = null;
+
+        var desfecho = texto is null ? new DesfechoDaSolicitacao(null, "mensagem_sem_texto") : processador.Processar(texto);
 
         if (desfecho.Resultado is { } resultado)
         {
