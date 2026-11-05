@@ -2,7 +2,7 @@
 
 Como a Sofia aciona o Agente-ECF. Requisitos em `openspec/changes/servidor-a2a/` e regras em RA-07, SQ-12 e SQ-13 da constitution. O contrato de negócio é compartilhado entre os agentes da turma e está em [`.claude/skills/sofia-a2a-contrato/references/contrato-sofia-v1.md`](../../.claude/skills/sofia-a2a-contrato/references/contrato-sofia-v1.md).
 
-**Situação:** esqueleto da integração, em produção desde 2026-11-05. Protocolo e contrato são reais, mas a análise ainda não existe: toda solicitação válida responde com status `parcial`, sem achados, e declara as validações não realizadas. Sem autenticação nem token (SQ-12): use somente dados sintéticos ou anonimizados.
+**Situação:** esqueleto da integração, em produção desde 2026-11-05. Protocolo e contrato são reais, mas a análise ainda não existe: toda solicitação válida vira uma execução registrada e responde com status `parcial`, sem achados, declarando as validações não realizadas. Sem autenticação nem token (SQ-12): use somente dados sintéticos ou anonimizados.
 
 ## Identificação
 
@@ -72,15 +72,26 @@ Resposta (o texto do Artifact foi formatado aqui para leitura; ele chega como st
                 "versaoContrato": "1.0",
                 "idExecucao": "8b2f0ad6-c2e4-4a68-8bdd-20f785bc798e",
                 "idSolicitacao": "e1b3a4cb-d729-4bd4-b796-b9c94be07b46",
-                "agente": { "idAgente": "agente-ecf", "nome": "Agente ECF" },
+                "agente": {
+                  "idAgente": "agente-ecf",
+                  "nome": "Agente ECF"
+                },
                 "status": "parcial",
-                "analise": "1 documento(s) recebido(s). Esta versão ainda não executa as validações da ECF: nenhum achado foi produzido e nenhuma conformidade é declarada.",
+                "analise": "2 documento(s) recebido(s). Esta versão ainda não executa as validações da ECF: nenhum achado foi produzido e nenhuma conformidade é declarada.",
                 "achados": [],
                 "observacoes": [
-                  "Documento doc-001 recebido: 29 caracteres, SHA-256 52ab0f0ad162f0e68f6e9424057bacdf43b209861b2475733611a420202a974d.",
-                  "Validações não realizadas nesta versão: identificação do leiaute, validação estrutural, regras de negócio, consulta ao manual e análise por IA."
+                  "Documento doc-001 recebido: 50 caracteres, SHA-256 8d5e75d4a95a7e77b3e5f11e5d1a45aa6c0063b6708948a28ffc89f6657cbccf.",
+                  "Documento doc-002 recebido: 30 caracteres, SHA-256 c0e8a6303b06ec5cfb98b65c05b9c551036a4d4101a23c7cea64031fe8fc7a73.",
+                  "Etapa não realizada: Identificação do leiaute. Motivo: ainda não implementada nesta versão.",
+                  "Etapa não realizada: Validação estrutural. Motivo: ainda não implementada nesta versão.",
+                  "Etapa não realizada: Consulta ao manual. Motivo: ainda não implementada nesta versão.",
+                  "Etapa não realizada: Ferramentas externas. Motivo: ainda não implementada nesta versão.",
+                  "Etapa não realizada: Análise com LLM. Motivo: ainda não implementada nesta versão.",
+                  "Etapa não realizada: Validação da saída. Motivo: ainda não implementada nesta versão."
                 ],
-                "erro": null
+                "erro": null,
+                "idExecucaoAgente": "0c2b1690-69c3-478e-89c1-be2026274300",
+                "revisaoHumana": true
               }
             }
           ]
@@ -99,9 +110,14 @@ Resposta (o texto do Artifact foi formatado aqui para leitura; ele chega como st
 | Campo obrigatório ausente ou inválido, `idDocumento` repetido | `TASK_STATE_COMPLETED` | `erro` | `solicitacao_invalida` |
 | `versaoContrato` diferente de `1.0` | `TASK_STATE_COMPLETED` | `erro` | `versao_contrato_nao_suportada` |
 | Texto dos documentos acima do limite | `TASK_STATE_COMPLETED` | `erro` | `documentos_acima_do_limite` |
+| Banco indisponível: nada foi registrado, e a Sofia pode repetir a chamada | `TASK_STATE_COMPLETED` | `erro` | `falha_tecnica` |
 | Mensagem sem parte de texto, texto fora da estrutura JSON do contrato, `idExecucao` ou `idSolicitacao` que não são UUID | `TASK_STATE_FAILED` | sem resultado | motivo em `status.message` |
 
 `concluido` fica reservado para quando todas as validações obrigatórias existirem (P05).
+
+**Campos opcionais:** além dos da v1.0, o resultado traz `idExecucaoAgente`, o identificador para consultar `GET /analises/{id}` (ver `envelope-resultado.md`), e `revisaoHumana`. Com achados, cada um traz também `categoria`, `origem` e `regra`. Quem não os conhece pode ignorá-los.
+
+**Retentativas:** repetir o mesmo `idSolicitacao` devolve o resultado já registrado, sem criar outra execução.
 
 | Erro JSON-RPC | Quando |
 | --- | --- |
@@ -128,21 +144,23 @@ O corpo inclui o envelope e o escape do JSON, então o texto útil é um pouco m
 
 ## Configuração
 
-Nenhum destes valores é segredo.
+`ConnectionStrings__Execucoes` é segredo: fica no Vercel, nunca no repositório (ver `docs/ci-cd.md`). O serviço não inicia sem ela. Os demais valores não são segredo.
 
 | Opção (variável de ambiente) | Padrão | Uso |
 | --- | --- | --- |
 | `A2A:UrlPublica` (`A2A__UrlPublica`) | Em produção, a URL do Vercel; fora dela, `http://localhost:8080/a2a` | Endereço anunciado no cartão |
 | `A2A:TamanhoMaximoDosDocumentosEmBytes` | `10485760` (provisório até DP-05, na mudança 07) | Limite do texto somado dos documentos |
 | `Cors:AllowedOrigins:<n>` (`Cors__AllowedOrigins__<n>`) | Vazio | Origens de navegador, só se houver frontend |
+| `Identidade:OrganizacaoPadrao` (`Identidade__OrganizacaoPadrao`) | `infis` | Organização registrada nas execuções |
+| `ConnectionStrings:Execucoes` (`ConnectionStrings__Execucoes`) | Nenhum: obrigatória | Banco das execuções, no formato `Host=...;Database=...;Username=...;Password=...` |
 
 **CORS:** a chamada da Sofia é entre servidores e não depende de CORS. Preencha `Cors:AllowedOrigins` só se um frontend no navegador chamar o agente, com a origem desse frontend (esquema, host e porta, sem barra final). CORS não substitui autenticação.
 
 **Autenticação:** a integração não usa token, por decisão de Kaio Macedo (SQ-12). O que voltaria se isso mudar está na seção "Autenticação adiada" de [`docs/roteiro.md`](../roteiro.md).
 
-**Organização:** o contrato v1.0 não tem esse campo. A mudança 03 usa um valor padrão configurado.
+**Organização:** o contrato v1.0 não tem esse campo, então o agente registra um valor padrão configurado, marcado como não verificado.
 
-**Privacidade:** `usuario.nome`, `pergunta` e o texto dos documentos não vão para logs, para a resposta nem para o armazenamento das tarefas. Os logs trazem `idExecucao`, `idSolicitacao`, status e o `X-Correlation-Id`.
+**Privacidade:** `usuario.nome`, `pergunta` e o texto dos documentos não vão para logs, para a resposta, para o armazenamento das tarefas nem para o banco. Do nome, só o SHA-256 é guardado, como pseudônimo; dos documentos, só hash e tamanho. Os logs trazem `idExecucao`, `idSolicitacao`, status e o `X-Correlation-Id`.
 
 ## Como executar
 
@@ -157,6 +175,8 @@ Na rede da Sofia, com Docker. A rede é a `sofia_network` do compose de `SofiaIn
 ```bash
 docker network create sofia-infis_sofia_network
 ```
+
+O compose sobe também o banco local das execuções e aplica as migrações:
 
 ```bash
 docker compose up --build agente-ecf

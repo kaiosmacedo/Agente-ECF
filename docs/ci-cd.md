@@ -30,8 +30,9 @@ O workflow `CI` roda em todo PR para a `main`, em push na `main` e sob demanda. 
 O workflow `CD` dispara quando o `CI` termina com sucesso em push na `main` (ou seja, depois de um merge). Para cada serviço, ele:
 
 1. instala a Vercel CLI `65.7.0`;
-2. publica em produção com `vercel deploy --prod`, usando o token e o ID do projeto guardados no GitHub Environment `producao`;
-3. consulta `GET /health/live` na URL de produção por até 60 s e falha se não receber HTTP 200, registrando o tempo até a resposta.
+2. só na Api.Agente, aplica as migrações do banco (`--migrar`, na imagem construída do mesmo commit). Se falhar, nada é publicado;
+3. publica em produção com `vercel deploy --prod`, usando o token e o ID do projeto guardados no GitHub Environment `producao`;
+4. consulta `GET /health/live` na URL de produção por até 60 s e falha se não receber HTTP 200, registrando o tempo até a resposta.
 
 PRs e outras branches não publicam: o CD só reage ao CI de push na `main`, e o `vercel.json` de cada serviço desliga o deploy pela integração Git do Vercel (`"git": { "deploymentEnabled": false }`).
 
@@ -72,6 +73,27 @@ Se o primeiro deploy atribuir outro domínio de produção, atualizar a variáve
 ## Rollback
 
 No painel do Vercel, abrir o projeto afetado → Deployments → escolher a publicação anterior saudável → **Promote to Production**. Pela CLI, com o projeto vinculado localmente (`vercel link`), `vercel rollback` faz o mesmo. Depois, corrigir a causa num PR; o próximo merge publica a correção.
+
+## Banco das execuções
+
+A Api.Agente guarda as execuções em PostgreSQL no Neon (DP-25). O serviço não inicia sem a conexão. As migrações são scripts SQL embutidos no serviço, em `src/Api.Agente/Infraestrutura/Persistencia/Migracoes/`, e nunca rodam na inicialização normal.
+
+São dois segredos, com endereços diferentes do mesmo banco, porque a trava da migração é de sessão e não passa pelo pooling:
+
+| Segredo | Onde | Endereço |
+| --- | --- | --- |
+| `ConnectionStrings__Execucoes` | Vercel, projeto `agente-ecf-agente`, ambiente Production | Com pooling (`-pooler` no host) e pool pequeno |
+| `CONEXAO_MIGRACAO_EXECUCOES` | GitHub Environment `producao` | Direto (sem `-pooler`) |
+
+Os dois usam o formato do Npgsql, não o `postgresql://` que o Neon mostra por padrão. O serviço recusa a inicialização em outro formato, sem revelar o valor:
+
+```text
+Host=<host>;Database=<banco>;Username=<usuario>;Password=<senha>;SSL Mode=Require;Maximum Pool Size=5
+```
+
+O banco fica na região `aws-us-east-1`, perto das funções do Vercel, em `iad1`. Só dados sintéticos ou anonimizados por enquanto (SQ-12; DP-11 antes de dados reais).
+
+**Rollback:** promover o deploy anterior no Vercel. Migrações só acrescentam, então a versão anterior continua funcionando.
 
 ## Telemetria
 

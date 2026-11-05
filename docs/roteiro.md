@@ -21,7 +21,7 @@ Cada mudança segue o fluxo da constitution (6.1): especificação → esclareci
 | Mudança 01 | Concluída: mesclada (PR #2), em produção e arquivada em 2026-10-29; specs vigentes em `openspec/specs/plataforma/`. |
 | Mudança 02 | Congelada em 2026-11-05: a integração com a Sofia não usa token, por decisão de Kaio Macedo. Código preservado na branch `feat/autenticacao-autorizacao` (PR #7, em rascunho). |
 | Mudança 13 | Esqueleto em produção desde 2026-11-05 (PR #9): cartão, `SendMessage` A2A v1.0, contrato SOFIA v1.0 e CORS. Falta o teste com a Sofia real, quando o cliente A2A dela existir. A análise completa chega com as mudanças 03 a 10. |
-| Mudança 03 | Plano técnico e tarefas aprovados em 2026-11-05, com a base do `SofiaInfis`; implementação na branch `feat/execucao-e-resultado`. O merge depende do banco no Neon. |
+| Mudança 03 | Plano técnico e tarefas aprovados em 2026-11-05, com a base do `SofiaInfis`; implementado na branch `feat/execucao-e-resultado` (PR #10), com testes em PostgreSQL real. O merge depende do banco no Neon, que Kaio Macedo cria e cadastra (`docs/ci-cd.md`). |
 | Mudanças 04 a 12 | Especificações aprovadas por Kaio Macedo em 2026-10-29 (PR #4) e adequadas às regras SQ-12 e RA-07 em 2026-11-05. |
 
 ## Mudanças
@@ -41,7 +41,7 @@ Cada mudança segue o fluxo da constitution (6.1): especificação → esclareci
 | 11 | `ferramentas-agente` | `agente/ferramentas` | 10 | 10 | `semantic-kernel-tools`, `testes-agentes-ia` | Especificação aprovada |
 | 12 | `memoria-conversacional` | `agente/memoria-conversacional` | 10 | 01, 11 | `memoria-mongodb`, `testes-agentes-ia` | Especificação aprovada |
 | 13 | `servidor-a2a` | `integracao/servidor-a2a`, `integracao/contrato-sofia`, `integracao/cors` | 01 | 09, 16 | `sofia-a2a-contrato`, `sofia-a2a-implementacao`, `sofia-cors-rest-a2a`, `vercel-dotnet-pgvector-atlas`, `testes-agentes-ia` | Esqueleto em produção |
-| 14 | `telemetria-servicos` | `plataforma/observabilidade` | 01 | — | `testes-agentes-ia` | Em implementação |
+| 14 | `telemetria-servicos` | `plataforma/observabilidade` | 01 | — | `testes-agentes-ia` | Em produção desde 2026-11-05 (PR #13); a arquivar |
 
 `github-versionamento` vale para todas as mudanças. As mudanças 05 a 09 podem avançar em paralelo com 04 quando suas dependências estiverem mescladas.
 
@@ -50,7 +50,7 @@ Cada mudança segue o fluxo da constitution (6.1): especificação → esclareci
 A numeração é estável. A ordem foi revista em 2026-11-05, com as skills da turma e a análise do projeto `SofiaInfis` (`docs/base-sofiainfis.md`): primeiro a base técnica, depois o maior risco, depois o que dá para acelerar com o que já existe.
 
 1. **13, esqueleto:** feito. A Sofia alcança o agente e recebe uma resposta válida, com status `parcial`.
-2. **14, telemetria:** traces e métricas, sem dependência externa. Deixa as próximas mudanças observáveis.
+2. **14, telemetria:** feito. Traces e métricas, sem dependência externa, deixam as próximas mudanças observáveis.
 3. **03, execução e resultado:** registro das nove etapas, status, contrato de resultado e banco.
 4. **07, recepção e leiaute:** o maior risco. Decide o que fazer com o limite do Vercel e com o corte de 20.000 caracteres da Sofia, o que pode exigir novo host (novo ADR).
 5. **04, 05 e 06, consumo e base de conhecimento:** aceleradas pelo RAG do `SofiaInfis`. Com o manual pesquisável, fica mais fácil localizar as fontes das regras.

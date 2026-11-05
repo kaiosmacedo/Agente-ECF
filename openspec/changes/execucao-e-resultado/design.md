@@ -31,6 +31,7 @@ Em `Dominio/Execucoes`, sem dependência de ASP.NET Core, banco ou A2A:
 - `Execucao`: identificador próprio, `idExecucao` e `idSolicitacao` da Sofia, usuário pseudonimizado, organização, data, nove `EtapaDaExecucao`, achados, limitações, hashes dos documentos e versões.
 - `Etapa`: as nove etapas de P03, com as dependências entre elas. Estados: `Concluida`, `NaoAplicavel` (com justificativa), `ComFalha` e `NaoExecutada`.
 - `Achado`: criado por um método que rejeita combinação inválida, com categoria (GD-04), origem, fundamento, registros e severidade. Categoria incompatível com a origem, fundamento ausente ou severidade fora da escala lançam exceção de domínio.
+- **Registros (ajuste na implementação, a confirmar por Kaio Macedo no PR):** erro estrutural, inconsistência de negócio e indício da IA exigem registros. Falha técnica e ausência de evidências podem vir sem eles, porque não houve o que verificar. O texto de REQ-RESULT-003 não faz essa distinção.
 
 ### D2. Status e revisão humana (REQ-EXEC-004, REQ-RESULT-005; E01)
 
@@ -80,7 +81,8 @@ Um único ponto na aplicação, `IdentidadeDaRequisicao`:
 - **Nunca guardados:** texto dos documentos, nome do usuário e pergunta. Só hash e tamanho (GD-06). Isso reduz o peso de DP-11, que continua pendente.
 - **Migrações:** scripts SQL versionados e embutidos no serviço, aplicados por um `Migrador` pequeno, com tabela de controle e trava (`pg_advisory_lock`). O CD executa `dotnet Api.Agente.dll --migrar` antes do deploy, nunca na inicialização normal (skill `vercel-dotnet-pgvector-atlas`). Os testes usam o mesmo `Migrador`.
 - **Ambiente local e testes:** imagem `pgvector/pgvector:pg16`, a mesma do `SofiaInfis`, no `compose.yaml` e no Testcontainers, com banco próprio do Agente-ECF (P15).
-- **Conexão:** `ConnectionStrings__Execucoes`, obrigatória e validada, com TLS. O segredo é cadastrado por Kaio Macedo no Vercel e no GitHub Environment `producao`.
+- **Conexão:** `ConnectionStrings__Execucoes`, obrigatória e validada, com TLS. O segredo é cadastrado por Kaio Macedo no Vercel, com o endereço de pooling. A migração usa `CONEXAO_MIGRACAO_EXECUCOES`, no GitHub Environment `producao`, com o endereço direto, porque `pg_advisory_lock` é de sessão e não passa pelo pooling do Neon.
+- **GSS desligado na conexão (ajuste na implementação):** o Npgsql tenta GSS por padrão, e a imagem não traz a biblioteca do Kerberos. A tentativa escreve uma linha fora do JSON nos logs (REQ-OBSERV-002).
 - **Saúde:** `/health/ready` passa a verificar o banco, sem expor detalhes (REQ-SAUDE).
 
 ### D7. Retentativas (RNF02 da skill)
@@ -115,6 +117,18 @@ Cada execução registra hash de cada documento, versões do contrato, dos valid
 ## Open Questions
 
 - DP-11 (retenção), antes de dados reais. DP-23 fica para a mudança 10, e DP-15, para uma mudança própria de relatório.
+
+## Decisões a registrar no arquivamento
+
+Texto pronto para a seção 9.1 da constitution (tarefa 7.2). DP-11 e DP-23 continuam pendentes.
+
+| ID | Decisão | Data | Registro |
+| --- | --- | --- | --- |
+| DP-07 | Severidade: `baixa`, `media`, `alta` e `critica`, a escala do contrato SOFIA v1.0, com os critérios de D3. É uma escala do produto, não da Receita Federal. | 2026-11-05 | Mudança `execucao-e-resultado`, D3. |
+| DP-08 | Status: `entrada-rejeitada`, `falha-tecnica`, `parcial` e `concluida`, com a regra de D2 e o mapeamento para os três status do contrato SOFIA. | 2026-11-05 | Mudança `execucao-e-resultado`, D2. |
+| DP-25 | PostgreSQL no Neon, com banco próprio da Api.Agente, Dapper e migrações em SQL. Texto, nome e pergunta nunca são guardados. | 2026-11-05 | Mudança `execucao-e-resultado`, D6. |
+
+DP-15 fica como só JSON por agora: continua pendente, para uma mudança própria de relatório (E03).
 
 ## Skills aplicáveis
 
