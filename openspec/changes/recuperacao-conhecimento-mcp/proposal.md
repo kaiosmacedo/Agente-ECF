@@ -10,7 +10,7 @@ A etapa 5 do fluxo (P03) consulta o manual da versão identificada. A constituti
 
 - Expõe na Api.RAG uma ferramenta MCP de busca no manual, com contrato versionado de entrada e saída.
 - Aplica filtro obrigatório por tipo de documento e versão do manual, sem misturar versões.
-- Implementa o cliente MCP na Api.Agente para a etapa 5, com timeout, autenticação de serviço e registro dos chunks recebidos na execução.
+- Implementa o cliente MCP na Api.Agente para a etapa 5, com timeout e registro dos chunks recebidos na execução; a autenticação de serviço fica adiada (SQ-12).
 - Trata indisponibilidade como falha técnica e limitação, nunca como consulta realizada.
 - Registra o consumo dos embeddings de consulta na Api.RAG.
 - Executa antes uma prova de conceito do MCP no Vercel (ADR 0002).
@@ -38,9 +38,9 @@ Não se aplica: a recuperação devolve trechos das fontes ingeridas na mudança
 
 ## Princípios, decisões e dependências
 
-- **Princípios:** P06, P07, P08, P10, P11, P15, P17, P19; RA-03; SQ-01, SQ-06.
+- **Princípios:** P06, P07, P08, P10, P11, P15, P17, P19; RA-03; SQ-06, SQ-12.
 - **Decisões pendentes:** contribui para DP-03 e DP-14.
-- **Depende de:** 03 `execucao-e-resultado` (registro da etapa 5) e 05 `base-conhecimento-ingestao`. Usa a autenticação de serviço de 02.
+- **Depende de:** 03 `execucao-e-resultado` (registro da etapa 5) e 05 `base-conhecimento-ingestao`. A autenticação de serviço fica adiada (SQ-12; `docs/roteiro.md`).
 - **Skills:** `mcp-client-server`, `rag-pgvector`, `vercel-dotnet-pgvector-atlas` (prova de conceito), `testes-agentes-ia`, `github-versionamento`.
 
 ## Fora do escopo

@@ -8,7 +8,7 @@ O agente precisa consultar o manual oficial da versão do leiaute identificada (
 
 ## What Changes
 
-- Cria o endpoint POST de ingestão, administrativo, que recebe um documento oficial com metadados obrigatórios.
+- Cria o endpoint POST de ingestão, administrativo (sem exigir perfil na primeira versão, SQ-12), que recebe um documento oficial com metadados obrigatórios.
 - Extrai o texto, segmenta com parâmetros configuráveis, gera embeddings e grava documentos e chunks com metadados de origem, versão e localização.
 - Torna a ingestão idempotente por hash e mantém versões substituídas recuperáveis para auditoria, fora das buscas de vigentes.
 - Registra o consumo dos embeddings (mudança 04).
@@ -44,9 +44,9 @@ A ingestão guarda o documento como dado. Nenhum requisito desta mudança depend
 
 ## Princípios, decisões e dependências
 
-- **Princípios:** P06, P10, P11, P15, P17; GD-07, GD-08; SQ-02, SQ-05.
+- **Princípios:** P06, P10, P11, P15, P17; GD-07, GD-08; SQ-05, SQ-12.
 - **Decisões pendentes:** resolve DP-02 (ADR de embeddings) e DP-03; depende de DP-04 e DP-24.
-- **Depende de:** 02 `autenticacao-autorizacao` (perfil administrador) e 04 `registro-consumo-ia`.
+- **Depende de:** 04 `registro-consumo-ia`. O perfil administrador fica adiado (SQ-12; `docs/roteiro.md`).
 - **Skills:** `rag-pgvector`, `controle-custos-llm`, `testes-agentes-ia`, `github-versionamento`.
 
 ## Fora do escopo

@@ -22,7 +22,7 @@ Adaptada da skill de mesmo nome do pacote INFIS para Spec Kit. Em conflito, `ope
 
 - ADR aceito para DP-01 escolhendo MongoDB (por exemplo, MongoDB Atlas) em vez de Redis. Sem ele, parar e informar.
 - Política de retenção, expiração e exclusão aprovada (DP-11) antes de qualquer uso com dados reais.
-- Mecanismo de identidade definido (DP-09): o isolamento depende da identidade autenticada.
+- Mecanismo de identidade definido (DP-09) ou regra SQ-12 vigente: na primeira versão, o isolamento usa a identidade declarada, que não é verificada.
 
 ## Fluxo de execução
 
@@ -30,7 +30,7 @@ Adaptada da skill de mesmo nome do pacote INFIS para Spec Kit. Em conflito, `ope
 2. Criar índices compostos por organização, usuário e conversa, com ordenação por data. TTL somente se a política aprovada pedir.
 3. Limitar o histórico enviado ao modelo por parâmetro configurável (P18), mantendo a ordem cronológica.
 4. Não guardar segredos, arquivos ECF completos nem saídas sensíveis de ferramentas; aplicar minimização, mascaramento ou criptografia conforme o ADR (P18, SQ-04).
-5. Filtrar toda consulta pela identidade autenticada; nunca aceitar identificador de usuário vindo do cliente sem vínculo com a autenticação (SQ-02).
+5. Filtrar toda consulta pela identidade da requisição. Fora da SQ-12, ela é a identidade autenticada, e nenhum identificador de usuário vindo do cliente é aceito sem vínculo com a autenticação (SQ-02).
 6. Implementar expiração e exclusão conforme a política e documentar o efeito em backups (GD-11).
 7. Manter a memória separada do conhecimento oficial: ela nunca serve de fonte, evidência ou referência (P18, GD-09).
 8. Em falha do MongoDB, não inventar histórico; seguir o comportamento degradado definido na especificação e registrar a limitação (P08).

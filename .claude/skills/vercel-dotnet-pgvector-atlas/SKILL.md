@@ -15,7 +15,7 @@ Esta skill **não decide** a hospedagem. Antes de qualquer passo, confirmar em `
 
 - ADR aceito para DP-18 escolhendo Vercel com contêiner;
 - ADR aceito para DP-01 escolhendo MongoDB Atlas (se a mudança envolver memória);
-- ADR aceito para DP-09 (autenticação), pois nenhum endpoint funcional pode ser exposto sem ele.
+- ADR aceito para DP-09 (autenticação) ou regra SQ-12 vigente, que permite publicar a primeira versão sem autenticação, só com dados sintéticos ou anonimizados.
 
 Sem esses ADRs, parar e informar o usuário. Não criar Dockerfile nem configuração de deploy por antecipação.
 
@@ -108,7 +108,7 @@ docker build -f Dockerfile.vercel -t <servico>:local .
 docker run --rm -p 8080:8080 --env-file .env.production.local <servico>:local
 ```
 
-`.env.production.local` nunca é commitado. Usar credenciais de desenvolvimento isoladas e dados sintéticos (SQ-10). Testar `GET /health` sem expor segredos e os endpoints funcionais com autenticação.
+`.env.production.local` nunca é commitado. Usar credenciais de desenvolvimento isoladas e dados sintéticos (SQ-10). Testar `GET /health` sem expor segredos e os endpoints funcionais (com autenticação, quando a regra SQ-12 deixar de valer).
 
 ## 6. Publicação no Vercel
 
@@ -128,7 +128,7 @@ vercel deploy --prod
 
 ## 7. Aceite pós-deploy
 
-- Health check de cada serviço e autorização dos endpoints (SQ-01, SQ-02).
+- Health check de cada serviço e autorização dos endpoints (SQ-01, SQ-02; suspensas enquanto valer a SQ-12).
 - Consulta vetorial real filtrada por tipo e versão de manual (P11); chamada MCP da Api.Agente à Api.RAG (P15); gravação e leitura de memória isolada por usuário (P18), se previstas na mudança.
 - Correlação propagada e logs sem dados sensíveis (SQ-04, SQ-07); consumo registrado nas chamadas à OpenAI (P17).
 - Latência, timeouts, TLS e cold start verificados; rollback preparado.

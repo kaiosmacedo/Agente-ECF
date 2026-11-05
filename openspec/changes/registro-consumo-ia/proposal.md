@@ -12,7 +12,7 @@ A constitution exige registrar toda chamada a provedor de IA, inclusive retentat
 - Distingue valor informado pelo provedor de valor estimado pelo sistema e mantém desconhecido como desconhecido.
 - Mantém tabela de preços versionada com vigência e referencia a versão em cada estimativa.
 - Torna observável a falha ao gravar o consumo (log de erro e métrica).
-- Oferece consulta agregada por execução, modelo e período para perfis autorizados.
+- Oferece consulta agregada por execução, modelo e período; a restrição por perfil fica adiada (SQ-12).
 
 ## Capabilities
 
@@ -37,9 +37,9 @@ Não se aplica: sem regras de domínio fiscal. A tabela de preços é referênci
 
 ## Princípios, decisões e dependências
 
-- **Princípios:** P13, P15, P17, P19; GD-10; SQ-02, SQ-04.
+- **Princípios:** P13, P15, P17, P19; GD-10; SQ-04, SQ-12.
 - **Decisões pendentes:** resolve DP-13 e DP-26.
-- **Depende de:** 01 `fundacao-solucao` e 02 `autenticacao-autorizacao` (consulta restrita).
+- **Depende de:** 01 `fundacao-solucao`. A restrição da consulta fica adiada (SQ-12; `docs/roteiro.md`).
 - **Skills:** `controle-custos-llm`, `testes-agentes-ia`, `github-versionamento`.
 
 ## Fora do escopo

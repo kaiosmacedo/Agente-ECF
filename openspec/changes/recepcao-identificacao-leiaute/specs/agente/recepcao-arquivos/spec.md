@@ -5,10 +5,10 @@ Receber o arquivo da ECF enviado pelo usuário ou pela orquestradora, criar a ex
 ## ADDED Requirements
 
 ### Requirement: REQ-RECEPCAO-001 Envio cria a execução
-A Api.Agente SHALL oferecer `POST /analises`, autenticado, que recebe um arquivo, cria a execução, registra o hash do arquivo e devolve o identificador da execução e o status.
+A Api.Agente SHALL oferecer `POST /analises`, sem exigir credencial na primeira versão (SQ-12), que recebe um arquivo, cria a execução, registra o hash do arquivo e devolve o identificador da execução e o status.
 
 #### Scenario: Envio válido
-- **WHEN** um usuário autenticado envia um arquivo sintético dentro dos limites
+- **WHEN** um usuário envia um arquivo sintético dentro dos limites
 - **THEN** a resposta traz o identificador da execução e o status
 - **AND** a execução registra o hash SHA-256 do arquivo
 

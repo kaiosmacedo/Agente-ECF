@@ -31,7 +31,7 @@ Adaptada da skill de mesmo nome do pacote INFIS para Spec Kit. Em conflito, `ope
 4. Distinguir valor informado pelo provedor e valor estimado pelo sistema; guardar a referência e a versão da tabela de preços usada. Cálculos de custo usam `decimal`.
 5. Centralizar a medição num ponto testável (decorator, filtro ou handler do cliente HTTP) que capture também retentativas, chamadas de ferramentas que gerem uso de LLM e embeddings.
 6. Falha ao gravar o consumo não é silenciosa: gera log de erro e métrica observável (P17). A estratégia (fila, outbox ou melhor esforço documentado) fica no plano técnico, sem descartar o resultado da chamada.
-7. Consultas agregadas restritas por organização e usuário autorizados; nenhum prompt completo, credencial ou dado fiscal nos registros (SQ-04).
+7. Consultas agregadas restritas por organização e usuário autorizados (restrição adiada enquanto valer a SQ-12); nenhum prompt completo, credencial ou dado fiscal nos registros (SQ-04).
 8. Criar migrações e testes de concorrência, cálculo com `decimal`, preço ausente, tokens ausentes e múltiplas tentativas (SQ-09).
 
 ## Critérios de entrega

@@ -36,7 +36,7 @@ Não se aplica, salvo se uma ferramenta de E01 consultar serviço oficial; nesse
 
 ## Princípios, decisões e dependências
 
-- **Princípios:** P07, P10, P14, P19; RA-06; SQ-02, SQ-06.
+- **Princípios:** P07, P10, P14, P19; RA-06; SQ-06, SQ-12 (a política de cada ferramenta continua valendo; usuário e organização são declarados).
 - **Decisões pendentes:** resolve DP-10.
 - **Depende de:** 10 `analise-llm`.
 - **Skills:** `semantic-kernel-tools`, `testes-agentes-ia`, `github-versionamento`.

@@ -10,7 +10,7 @@ O Agente-ECF é um dos agentes da Sofia INFIS, que deve poder acioná-lo por A2A
 
 - Publica o cartão do agente com as capacidades especificadas: analisar um arquivo da ECF e consultar o resultado de uma análise.
 - Recebe tarefas A2A e as executa pelo mesmo fluxo da `POST /analises`, com o mesmo contrato de resultado.
-- Autentica a Sofia INFIS conforme o ADR de DP-09 e DP-16.
+- Aceita a Sofia INFIS sem credencial na primeira versão (SQ-12); a autenticação normalizada entra na retomada da mudança 02.
 - Propaga a correlação da Sofia para os logs e reflete o status da execução no estado da tarefa A2A.
 - Executa antes uma prova de conceito do transporte A2A no Vercel (ADR 0002).
 
@@ -37,9 +37,9 @@ Não se aplica: sem regras de domínio fiscal.
 
 ## Princípios, decisões e dependências
 
-- **Princípios:** P03, P05, P10, P19; RA-07; SQ-01, SQ-07.
-- **Decisões pendentes:** resolve DP-16; usa DP-09.
-- **Depende de:** 02 `autenticacao-autorizacao`, 03 `execucao-e-resultado` e 10 `analise-llm` (para a análise completa).
+- **Princípios:** P03, P05, P10, P19; RA-07; SQ-07, SQ-12.
+- **Decisões pendentes:** resolve DP-16; DP-09 fica adiada (SQ-12).
+- **Depende de:** 03 `execucao-e-resultado` e 10 `analise-llm` (para a análise completa). A credencial fica adiada (SQ-12; `docs/roteiro.md`).
 - **Skills:** `vercel-dotnet-pgvector-atlas` (prova de conceito), `testes-agentes-ia`, `github-versionamento`.
 
 ## Fora do escopo

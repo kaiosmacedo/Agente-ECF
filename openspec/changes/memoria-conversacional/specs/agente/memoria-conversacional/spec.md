@@ -5,7 +5,7 @@ Guardar e recuperar o histórico das conversas com o Agente-ECF com isolamento p
 ## ADDED Requirements
 
 ### Requirement: REQ-MEMORIA-001 Isolamento do histórico
-O histórico SHALL ser isolado por usuário, conversa e organização, com base na identidade autenticada. A consulta de conversa de outro usuário ou organização MUST responder como não encontrada.
+O histórico SHALL ser isolado por usuário, conversa e organização, com base na identidade da requisição: declarada na primeira versão (SQ-12) e autenticada a partir da retomada da mudança 02. A consulta de conversa de outro usuário ou organização MUST responder como não encontrada.
 
 #### Scenario: Conversa de outro usuário
 - **GIVEN** uma conversa do usuário A em `org-a`

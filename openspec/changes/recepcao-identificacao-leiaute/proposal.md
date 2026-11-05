@@ -8,7 +8,7 @@ As etapas 1 a 3 do fluxo (P03) recebem o arquivo, validam tamanho, formato e con
 
 ## What Changes
 
-- Cria `POST /analises`, autenticado, que recebe o arquivo, cria a execução e registra o hash (etapa 1).
+- Cria `POST /analises`, sem autenticação na primeira versão (SQ-12), que recebe o arquivo, cria a execução e registra o hash (etapa 1).
 - Valida tamanho, formato e limites de processamento antes de ler o conteúdo completo (etapa 2).
 - Identifica o tipo de documento e a versão do leiaute pelos campos definidos no Manual da ECF (etapa 3).
 - Trata versão não suportada ou identificação ambígua como limitação, sem executar validações dependentes de versão.
@@ -27,8 +27,8 @@ As etapas 1 a 3 do fluxo (P03) recebem o arquivo, validam tamanho, formato e con
 
 | ID | Pergunta | Resposta | Fonte ou responsável | Data | Bloqueante |
 | --- | --- | --- | --- | --- | --- |
-| E01 | Quais formatos aceitar: o arquivo texto da ECF, compactado (ZIP), outros (DP-05)? | — | Kaio Macedo | — | Sim |
-| E02 | Qual o tamanho máximo esperado de um arquivo ECF real (MB) (DP-05)? | — | Kaio Macedo | — | Sim |
+| E01 | Quais formatos aceitar: o arquivo texto da ECF, compactado (ZIP), outros (DP-05)? Pela Sofia, o documento já chega como texto (`documentos[].texto`), sem binário; o `POST /analises` direto segue valendo para outros usos? | — | Kaio Macedo | — | Sim |
+| E02 | Qual o tamanho máximo esperado de um arquivo ECF real (MB) (DP-05)? Isso precisa caber no corpo JSON aceito pelo Vercel. E, se a Sofia enviar vários documentos, como tratar os que não forem ECF? | — | Kaio Macedo | — | Sim |
 | E03 | A análise responde na mesma requisição ou de forma assíncrona, com consulta posterior (DP-22)? O limite de duração das funções do Vercel pesa nessa escolha. | — | Kaio Macedo | — | Sim |
 | E04 | O arquivo recebido deve ser guardado? Por quanto tempo e onde (DP-11, GD-06)? | — | Kaio Macedo | — | Sim, para dados reais |
 | E05 | Registro e campos do Manual da ECF, leiaute 12, que identificam o tipo e a versão do leiaute, e a codificação de caracteres do arquivo. A extração é feita do manual e validada por Kaio Macedo (P01). | — | Extração do manual, validação de Kaio Macedo | — | Sim |
@@ -42,10 +42,10 @@ As etapas 1 a 3 do fluxo (P03) recebem o arquivo, validam tamanho, formato e con
 
 ## Princípios, decisões e dependências
 
-- **Princípios:** P01, P03, P05, P08, P10, P19; GD-06; SQ-01, SQ-05.
+- **Princípios:** P01, P03, P05, P08, P10, P19; GD-06; SQ-05, SQ-12.
 - **Decisões pendentes:** resolve DP-05 e DP-22; depende de DP-04 e DP-11; usa DP-25 (mudança 03).
-- **Depende de:** 03 `execucao-e-resultado` (e, por ela, 02).
-- **Skills:** `testes-agentes-ia`, `github-versionamento`.
+- **Depende de:** 03 `execucao-e-resultado`. A entrada pela Sofia usa o contrato da mudança 13.
+- **Skills:** `sofia-a2a-contrato`, `testes-agentes-ia`, `github-versionamento`.
 
 ## Fora do escopo
 
