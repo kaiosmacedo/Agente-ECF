@@ -71,7 +71,7 @@ Um achado SHALL informar, além do que REQ-RESULT-003 exige, a orientação de c
 - **THEN** o valor guardado é cortado em 200 caracteres e indica o corte
 
 ### Requirement: REQ-RESULT-012 Campos opcionais para a Sofia
-O resultado do contrato SOFIA v1.0 SHALL levar o veredito, a contagem por classe e, em cada achado, a classe, a orientação e a fonte, como campos opcionais, sem alterar os campos da v1.0.
+O resultado do contrato SOFIA v1.0 SHALL levar o veredito, a contagem por classe e, em cada achado, a classe, os registros, a orientação e a fonte, como campos opcionais, sem alterar os campos da v1.0.
 
 #### Scenario: Cliente da v1.0
 - **GIVEN** um cliente que conhece só os campos da v1.0

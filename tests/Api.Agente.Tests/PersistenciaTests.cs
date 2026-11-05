@@ -56,7 +56,41 @@ public sealed class PersistenciaTests(BancoDeTeste banco) : IClassFixture<BancoD
 
         await using var conexao = await banco.Banco.OpenConnectionAsync(TestContext.Current.CancellationToken);
         Assert.Equal(1, await conexao.ExecuteScalarAsync<int>("SELECT count(*) FROM migracoes WHERE nome LIKE '%0001_execucoes.sql'"));
+        Assert.Equal(1, await conexao.ExecuteScalarAsync<int>("SELECT count(*) FROM migracoes WHERE nome LIKE '%0002_veredito.sql'"));
         Assert.Equal(1, await conexao.ExecuteScalarAsync<int>("SELECT count(*) FROM information_schema.tables WHERE table_name = 'execucoes'"));
+    }
+
+    [Fact(DisplayName = "REQ-RESULT-010 Migração preenche o veredito das execuções antigas, e rodar de novo não muda nada")]
+    public async Task MigracaoDoVeredito()
+    {
+        var cancelamento = TestContext.Current.CancellationToken;
+        await using (var admin = await banco.Banco.OpenConnectionAsync(cancelamento))
+        {
+            await admin.ExecuteAsync(new CommandDefinition("CREATE DATABASE migracao_antiga", cancellationToken: cancelamento));
+        }
+
+        var conexao = new NpgsqlConnectionStringBuilder(banco.Conexao) { Database = "migracao_antiga" }.ConnectionString;
+        await using var antigo = NpgsqlDataSource.Create(conexao);
+        var idParcial = Guid.NewGuid();
+        var idRejeitada = Guid.NewGuid();
+        await using (var c = await antigo.OpenConnectionAsync(cancelamento))
+        {
+            await c.ExecuteAsync(new CommandDefinition(await File.ReadAllTextAsync(Repositorio.Caminho("src", "Api.Agente", "Infraestrutura", "Persistencia", "Migracoes", "0001_execucoes.sql"), cancelamento), cancellationToken: cancelamento));
+            await c.ExecuteAsync(new CommandDefinition("CREATE TABLE migracoes (nome text PRIMARY KEY, aplicada_em timestamptz NOT NULL DEFAULT now())", cancellationToken: cancelamento));
+            await c.ExecuteAsync(new CommandDefinition("INSERT INTO migracoes (nome) VALUES ('Api.Agente.Infraestrutura.Persistencia.Migracoes.0001_execucoes.sql')", cancellationToken: cancelamento));
+            const string Inserir = "INSERT INTO execucoes (id, id_execucao_sofia, id_solicitacao, organizacao, usuario_pseudonimo, status, criada_em, conteudo) VALUES (@Id, @Id, @Id, 'org', 'p', @Status, now(), '{}')";
+            await c.ExecuteAsync(new CommandDefinition(Inserir, new { Id = idParcial, Status = "parcial" }, cancellationToken: cancelamento));
+            await c.ExecuteAsync(new CommandDefinition(Inserir, new { Id = idRejeitada, Status = "entrada-rejeitada" }, cancellationToken: cancelamento));
+        }
+
+        await new Migrador(antigo).AplicarAsync(cancelamento);
+        await new Migrador(antigo).AplicarAsync(cancelamento);
+
+        await using var leitura = await antigo.OpenConnectionAsync(cancelamento);
+        Assert.Equal("parcial", await leitura.ExecuteScalarAsync<string>("SELECT veredito FROM execucoes WHERE id = @Id", new { Id = idParcial }));
+        Assert.Equal("nao-avaliado", await leitura.ExecuteScalarAsync<string>("SELECT conteudo->>'veredito' FROM execucoes WHERE id = @Id", new { Id = idRejeitada }));
+        Assert.Equal(0, await leitura.ExecuteScalarAsync<int>("SELECT (conteudo->'resumo'->>'impeditivas')::int FROM execucoes WHERE id = @Id", new { Id = idParcial }));
+        Assert.Equal(2, await leitura.ExecuteScalarAsync<int>("SELECT count(*) FROM migracoes"));
     }
 
     [Fact(DisplayName = "REQ-CONFIG-002 Migrações simultâneas não conflitam")]
@@ -119,6 +153,11 @@ public sealed class PersistenciaTests(BancoDeTeste banco) : IClassFixture<BancoD
         Assert.Equal(envelope.IdExecucao, porSolicitacao!.IdExecucao);
         Assert.Equal(9, porId.Etapas.Count);
         Assert.Equal("doc-1", Assert.Single(porId.Documentos).IdDocumento);
+        await using (var coluna = await banco.Banco.OpenConnectionAsync(TestContext.Current.CancellationToken))
+        {
+            Assert.Equal(envelope.Veredito, await coluna.ExecuteScalarAsync<string>("SELECT veredito FROM execucoes WHERE id = @Id", new { Id = envelope.IdExecucao }));
+        }
+
         Assert.True(JsonNode.DeepEquals(
             JsonSerializer.SerializeToNode(envelope, ContratoSofiaV1.Json),
             JsonSerializer.SerializeToNode(porId, ContratoSofiaV1.Json)));

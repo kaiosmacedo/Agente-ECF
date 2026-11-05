@@ -180,6 +180,129 @@ public sealed class ExecucaoTests
         Assert.Equal(StatusDaExecucao.EntradaRejeitada, execucao.Status);
     }
 
+    private static Achado DeRegra(TipoDaRegra tipo, SeveridadeDoAchado severidade, string? valor = null) => Achado.Criar(
+        "ach-1",
+        CategoriaDoAchado.ErroEstrutural,
+        OrigemDoAchado.Validador,
+        "REGRA_DE_TESTE",
+        "Campo inválido.",
+        severidade,
+        [new RegistroEnvolvido("doc-1", "0000", 1, "DT_FIN", valor)],
+        regra: new RegraDoManual("REGRA_DE_TESTE", tipo, "1.1"),
+        fonte: new FonteDoAchado("Manual sintético", "12", "página 1"),
+        orientacao: "Corrija o campo.");
+
+    [Theory(DisplayName = "REQ-RESULT-007 Classe é calculada pela severidade")]
+    [InlineData(nameof(SeveridadeDoAchado.Critica), nameof(ClasseDoAchado.Impeditiva))]
+    [InlineData(nameof(SeveridadeDoAchado.Alta), nameof(ClasseDoAchado.Grave))]
+    [InlineData(nameof(SeveridadeDoAchado.Media), nameof(ClasseDoAchado.Observacao))]
+    [InlineData(nameof(SeveridadeDoAchado.Baixa), nameof(ClasseDoAchado.Observacao))]
+    public void ClassePelaSeveridade(string severidade, string classe)
+    {
+        var achado = Achado.Criar(
+            "ach-1", CategoriaDoAchado.ErroEstrutural, OrigemDoAchado.Validador, "Regra", "Descrição.", Enum.Parse<SeveridadeDoAchado>(severidade), [new RegistroEnvolvido("doc-1", "R1")]);
+
+        Assert.Equal(Enum.Parse<ClasseDoAchado>(classe), achado.Classe);
+    }
+
+    [Fact(DisplayName = "REQ-RESULT-008 Regra do tipo Erro com severidade menor é rejeitada")]
+    public void ErroSemCritica() => Assert.Throws<ExcecaoDeDominio>(() => DeRegra(TipoDaRegra.Erro, SeveridadeDoAchado.Media));
+
+    [Fact(DisplayName = "REQ-RESULT-008 Regra do tipo Aviso não pode ser impeditiva")]
+    public void AvisoCritico() => Assert.Throws<ExcecaoDeDominio>(() => DeRegra(TipoDaRegra.Aviso, SeveridadeDoAchado.Critica));
+
+    [Fact(DisplayName = "REQ-RESULT-008 Regra com nível fora do manual é rejeitada")]
+    public void NivelInvalido() =>
+        Assert.Throws<ExcecaoDeDominio>(() => Achado.Criar(
+            "ach-1", CategoriaDoAchado.ErroEstrutural, OrigemDoAchado.Validador, "Regra", "Descrição.", SeveridadeDoAchado.Critica, [new RegistroEnvolvido("doc-1", "R1")],
+            regra: new RegraDoManual("REGRA", TipoDaRegra.Erro, "9"), fonte: new FonteDoAchado("Manual", "12", "p. 1"), orientacao: "Corrija."));
+
+    [Theory(DisplayName = "REQ-RESULT-009 Só erro estrutural e inconsistência de negócio podem ser impeditivos")]
+    [InlineData(nameof(CategoriaDoAchado.IndicioDaIa), nameof(OrigemDoAchado.Llm))]
+    [InlineData(nameof(CategoriaDoAchado.AusenciaDeEvidencias), nameof(OrigemDoAchado.Sistema))]
+    [InlineData(nameof(CategoriaDoAchado.FalhaTecnica), nameof(OrigemDoAchado.Sistema))]
+    public void SoValidadorImpede(string categoria, string origem) =>
+        Assert.Throws<ExcecaoDeDominio>(() => Achado.Criar(
+            "ach-1", Enum.Parse<CategoriaDoAchado>(categoria), Enum.Parse<OrigemDoAchado>(origem), "Fonte", "Descrição.", SeveridadeDoAchado.Critica, [new RegistroEnvolvido("doc-1", "R1")]));
+
+    [Fact(DisplayName = "REQ-RESULT-010 Regra impeditiva violada recusa, mesmo com validações pendentes")]
+    public void RecusadoComPendencias()
+    {
+        var execucao = Nova();
+
+        execucao.AdicionarAchado(DeRegra(TipoDaRegra.Erro, SeveridadeDoAchado.Critica));
+
+        Assert.Equal(StatusDaExecucao.Parcial, execucao.Status);
+        Assert.Equal(VereditoDaExecucao.Recusado, execucao.Veredito);
+    }
+
+    [Fact(DisplayName = "REQ-RESULT-010 Sem achados e com validação pendente, o veredito é parcial")]
+    public void ParcialSemAchados() => Assert.Equal(VereditoDaExecucao.Parcial, Nova().Veredito);
+
+    [Fact(DisplayName = "REQ-RESULT-010 Entrada rejeitada não é avaliada")]
+    public void EntradaRejeitadaNaoAvaliada()
+    {
+        var execucao = Nova();
+
+        execucao.FalharEtapa(Etapa.ValidacaoDaEntrada);
+
+        Assert.Equal(VereditoDaExecucao.NaoAvaliado, execucao.Veredito);
+    }
+
+    [Fact(DisplayName = "REQ-RESULT-010 Falha técnica não é avaliada")]
+    public void FalhaTecnicaNaoAvaliada()
+    {
+        var execucao = Completa();
+
+        execucao.FalharEtapa(Etapa.ConsultaAoManual);
+
+        Assert.Equal(VereditoDaExecucao.NaoAvaliado, execucao.Veredito);
+    }
+
+    [Fact(DisplayName = "REQ-RESULT-010 Validações concluídas com aviso dão conforme com ressalvas")]
+    public void ConformeComRessalvas()
+    {
+        var execucao = Completa();
+
+        execucao.AdicionarAchado(DeRegra(TipoDaRegra.Aviso, SeveridadeDoAchado.Media));
+
+        Assert.Equal(VereditoDaExecucao.ConformeComRessalvas, execucao.Veredito);
+    }
+
+    [Fact(DisplayName = "REQ-RESULT-010 Validações concluídas sem achados dão conforme")]
+    public void Conforme() => Assert.Equal(VereditoDaExecucao.Conforme, Completa().Veredito);
+
+    [Fact(DisplayName = "P05 Limitação declarada impede o veredito conforme")]
+    public void LimitacaoImpedeConforme()
+    {
+        var execucao = Completa();
+
+        execucao.AdicionarLimitacao("Manual da versão indisponível.");
+
+        Assert.Equal(VereditoDaExecucao.Parcial, execucao.Veredito);
+    }
+
+    [Fact(DisplayName = "REQ-RESULT-011 Achado de regra sem fonte ou orientação é rejeitado")]
+    public void RegraSemDetalhe() =>
+        Assert.Throws<ExcecaoDeDominio>(() => Achado.Criar(
+            "ach-1", CategoriaDoAchado.ErroEstrutural, OrigemDoAchado.Validador, "Regra", "Descrição.", SeveridadeDoAchado.Critica, [new RegistroEnvolvido("doc-1", "R1")],
+            regra: new RegraDoManual("REGRA", TipoDaRegra.Erro, "1.1")));
+
+    [Fact(DisplayName = "REQ-RESULT-011 Valor encontrado longo é cortado em 200 caracteres, com o corte indicado")]
+    public void ValorLongo()
+    {
+        var achado = DeRegra(TipoDaRegra.Erro, SeveridadeDoAchado.Critica, new string('x', 250));
+
+        var valor = Assert.Single(achado.Registros).ValorEncontrado!;
+        Assert.StartsWith(new string('x', 200) + " ", valor, StringComparison.Ordinal);
+        Assert.EndsWith("[cortado]", valor, StringComparison.Ordinal);
+        Assert.DoesNotContain(new string('x', 201), valor, StringComparison.Ordinal);
+    }
+
+    [Fact(DisplayName = "REQ-RESULT-011 Valor curto fica como está")]
+    public void ValorCurto() =>
+        Assert.Equal("20251231", Assert.Single(DeRegra(TipoDaRegra.Erro, SeveridadeDoAchado.Critica, "20251231").Registros).ValorEncontrado);
+
     [Fact(DisplayName = "REQ-RESULT-002 Indício com origem validador é rejeitado")]
     public void IndicioComOrigemValidador() =>
         Assert.Throws<ExcecaoDeDominio>(() => Achado.Criar(

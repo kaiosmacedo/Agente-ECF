@@ -24,7 +24,7 @@ public sealed class ContratoSofiaTests
         var raiz = json.RootElement;
 
         Assert.Equal(
-            ["versaoContrato", "idExecucao", "idSolicitacao", "agente", "status", "analise", "achados", "observacoes", "erro", "idExecucaoAgente", "revisaoHumana"],
+            ["versaoContrato", "idExecucao", "idSolicitacao", "agente", "status", "analise", "achados", "observacoes", "erro", "idExecucaoAgente", "revisaoHumana", "veredito", "resumoAchados"],
             raiz.EnumerateObject().Select(campo => campo.Name));
         Assert.Equal("1.0", raiz.GetProperty("versaoContrato").GetString());
         Assert.Equal(ContratoDeTeste.IdExecucao, raiz.GetProperty("idExecucao").GetString());
