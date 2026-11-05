@@ -21,7 +21,8 @@ Cada mudança segue o fluxo da constitution (6.1): especificação → esclareci
 | Mudança 01 | Concluída: mesclada (PR #2), em produção e arquivada em 2026-10-29; specs vigentes em `openspec/specs/plataforma/`. |
 | Mudança 02 | Congelada em 2026-11-05: a integração com a Sofia não usa token, por decisão de Kaio Macedo. Código preservado na branch `feat/autenticacao-autorizacao` (PR #7, em rascunho). |
 | Mudança 13 | Em implementação: esqueleto do servidor A2A v1.0 para a Sofia (cartão, `SendMessage`, contrato SOFIA v1.0, CORS), na branch `feat/servidor-a2a`. A análise completa chega com as mudanças 03 a 10. |
-| Mudanças 03 a 12 | Especificações aprovadas por Kaio Macedo em 2026-10-29 (PR #4) e adequadas às regras SQ-12 e RA-07 em 2026-11-05; próxima etapa: esclarecimentos da mudança 03. |
+| Mudança 03 | Esclarecimentos respondidos em 2026-11-05; plano técnico e tarefas aguardam aprovação, na branch `feat/execucao-e-resultado`. |
+| Mudanças 04 a 12 | Especificações aprovadas por Kaio Macedo em 2026-10-29 (PR #4) e adequadas às regras SQ-12 e RA-07 em 2026-11-05. |
 
 ## Mudanças
 
@@ -29,7 +30,7 @@ Cada mudança segue o fluxo da constitution (6.1): especificação → esclareci
 | --- | --- | --- | --- | --- | --- | --- |
 | 01 | `fundacao-solucao` | `plataforma/saude-servicos`, `configuracao-servicos`, `observabilidade`, `qualidade-entrega`, `entrega-servicos` | — | 17, 18 | `testes-agentes-ia`, `vercel-dotnet-pgvector-atlas`, `github-versionamento` | Concluída |
 | 02 | `autenticacao-autorizacao` | `plataforma/autenticacao` | 01 | 09 | `testes-agentes-ia` | Congelada |
-| 03 | `execucao-e-resultado` | `agente/execucao-analise`, `agente/contrato-resultado` | 01, 13 | 07, 08, 15, 23, 25 | `testes-agentes-ia` | Especificação aprovada |
+| 03 | `execucao-e-resultado` | `agente/execucao-analise`, `agente/contrato-resultado` | 01, 13 | 07, 08, 15, 23, 25 | `sofia-a2a-contrato`, `testes-agentes-ia`, `vercel-dotnet-pgvector-atlas` | Plano aguardando aprovação |
 | 04 | `registro-consumo-ia` | `plataforma/consumo-custos` | 01 | 13, 26 | `controle-custos-llm`, `testes-agentes-ia` | Especificação aprovada |
 | 05 | `base-conhecimento-ingestao` | `rag/ingestao-documentos`, `rag/administracao-base` | 04 | 02, 03, 04, 24 | `rag-pgvector`, `controle-custos-llm`, `testes-agentes-ia` | Especificação aprovada |
 | 06 | `recuperacao-conhecimento-mcp` | `rag/recuperacao-conhecimento`, `agente/consulta-conhecimento` | 03, 05 | 03, 14 | `mcp-client-server`, `rag-pgvector`, `vercel-dotnet-pgvector-atlas` | Especificação aprovada |
@@ -144,7 +145,7 @@ Sem skill dedicada por enquanto: contrato de resultado (03) e leitura e validaç
 ## Pré-condições transversais
 
 - **Dados reais:** só depois de DP-11 (retenção e LGPD) e DP-12 (política de dados com a OpenAI). Até lá, apenas dados sintéticos ou anonimizados.
-- **Banco de dados:** a primeira mudança com PostgreSQL (03 ou 04) define, em esclarecimento, o provedor gerenciado compatível com o Vercel (pendência de DP-18).
+- **Banco de dados:** PostgreSQL gerenciado no Neon, escolhido por Kaio Macedo em 2026-11-05 (mudança 03).
 - **Armazenamento de arquivos:** o disco do Vercel não é durável; as mudanças 05 e 07 definem onde guardar documentos e arquivos recebidos, se forem guardados.
 - **MCP e A2A no Vercel:** prova de conceito antes de 06 (ADR 0002). Na 13, o A2A não usa streaming: depois do merge, a verificação em produção mede o tamanho de corpo aceito pelo Vercel e a resposta de `SendMessage`. Em instâncias que não duram, `GetTask` não é garantido; a resposta de `SendMessage` já é final.
 - **Fontes oficiais:** as regras de 07 a 09 só entram com localização no Manual da ECF, leiaute 12 (DP-04). A extração dessas localizações é a primeira tarefa dos esclarecimentos de cada uma.
