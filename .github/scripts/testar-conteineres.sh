@@ -58,10 +58,10 @@ testar_a2a() {
   corpo=$(jq -n --arg texto '{"versaoContrato":"1.0","idExecucao":"8b2f0ad6-c2e4-4a68-8bdd-20f785bc798e","idSolicitacao":"e1b3a4cb-d729-4bd4-b796-b9c94be07b46","usuario":{"nome":"Usuario Teste"},"pergunta":"Analise o documento","documentos":[{"idDocumento":"doc-001","nome":"teste.txt","texto":"Documento sintetico."}]}' \
     '{jsonrpc:"2.0",id:"ci",method:"SendMessage",params:{message:{role:"ROLE_USER",messageId:"5f92c2ba-6870-4862-87ba-1ae8669a77f4",parts:[{text:$texto}]}}}')
   resposta=$(curl -fsS -X POST "http://localhost:8080/a2a" -H "Content-Type: application/json" -H "A2A-Version: 1.0" -d "$corpo")
-  echo "$resposta" | jq -e '.result.task.status.state == "TASK_STATE_COMPLETED" and (.result.task.artifacts[0].parts[0].text | fromjson | .status == "parcial" and .idSolicitacao == "e1b3a4cb-d729-4bd4-b796-b9c94be07b46")' > /dev/null \
+  echo "$resposta" | jq -e '.result.task.status.state == "TASK_STATE_COMPLETED" and (.result.task.artifacts[0].parts[0].text | fromjson | .status == "parcial" and .veredito == "parcial" and .idSolicitacao == "e1b3a4cb-d729-4bd4-b796-b9c94be07b46")' > /dev/null \
     || falhar "$id" "SendMessage não devolveu o resultado do contrato."
   execucao=$(echo "$resposta" | jq -r '.result.task.artifacts[0].parts[0].text | fromjson | .idExecucaoAgente')
-  curl -fsS "http://localhost:8080/analises/$execucao" | jq -e --arg id "$execucao" '.idExecucao == $id and .status == "parcial" and (.etapas | length) == 9' > /dev/null \
+  curl -fsS "http://localhost:8080/analises/$execucao" | jq -e --arg id "$execucao" '.idExecucao == $id and .status == "parcial" and .veredito == "parcial" and (.etapas | length) == 9' > /dev/null \
     || falhar "$id" "GET /analises/{id} não devolveu o envelope registrado."
   curl -fsS -X POST "http://localhost:8080/a2a" -H "Content-Type: application/json" -H "A2A-Version: 1.0" -d "$corpo" \
     | jq -e --arg id "$execucao" '.result.task.artifacts[0].parts[0].text | fromjson | .idExecucaoAgente == $id' > /dev/null \
@@ -72,12 +72,13 @@ testar_a2a() {
 
 # A migração cria o banco; rodar de novo não muda nada, e a prontidão só fica verde com o banco no ar.
 testar_migracao() {
-  local imagem="$1" saida
+  local imagem="$1" saida aplicadas
   saida=$(docker run --rm --network "$REDE" -e "ConnectionStrings__Execucoes=$CONEXAO" "$imagem" --migrar 2>&1)
+  aplicadas=$(docker exec "$BANCO" psql -U postgres -tAc "SELECT count(*) FROM migracoes")
   saida+=$(docker run --rm --network "$REDE" -e "ConnectionStrings__Execucoes=$CONEXAO" "$imagem" --migrar 2>&1)
   echo "$saida" | jq -e -s 'all(.[]; type == "object")' > /dev/null \
     || { echo "$saida"; echo "::error::A migração escreveu fora do JSON."; exit 1; }
-  [ "$(docker exec "$BANCO" psql -U postgres -tAc "SELECT count(*) FROM migracoes")" = "1" ] \
+  [ "$aplicadas" -gt 0 ] && [ "$(docker exec "$BANCO" psql -U postgres -tAc "SELECT count(*) FROM migracoes")" = "$aplicadas" ] \
     || { echo "::error::A migração não ficou registrada uma única vez."; exit 1; }
 }
 
