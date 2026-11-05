@@ -7,11 +7,13 @@ description: Implementar e integrar o Agente-ECF ao orquestrador SOFIA da INFIS 
 
 Adaptada da skill de mesmo nome do pacote da turma SOFIA/INFIS, escrita para Spec Kit. Em conflito com o fluxo do projeto, `openspec/constitution.md` prevalece.
 
+**Decisão do responsável (2026-11-05):** a skill original fixava v0.3.x "até decisão explícita de migração". Essa decisão foi tomada: o protocolo é A2A **v1.0**, igual ao SDK que o projeto `SofiaInfis` referencia. O texto abaixo já reflete isso.
+
 **Mudanças do roteiro** (`docs/roteiro.md`): 13 `servidor-a2a`. O Agente-ECF é **servidor** A2A; o cliente A2A, o registry, o despacho e a agregação são da Sofia e ficam fora deste repositório.
 
 ## Objetivo
 
-Implementar uma integração **A2A real**, em que a Sofia é cliente e orquestradora e o Agente-ECF é servidor A2A. Não substituir o protocolo por um POST REST arbitrário. Adotar **A2A v0.3.x JSON-RPC** como perfil fixado para a turma, até decisão explícita de migração; seguir a [especificação oficial](https://a2a-protocol.org/v0.3.0/specification/) e confirmar o SDK .NET disponível antes de escrever código.
+Implementar uma integração **A2A real**, em que a Sofia é cliente e orquestradora e o Agente-ECF é servidor A2A. Não substituir o protocolo por um POST REST arbitrário. Adotar **A2A v1.0 JSON-RPC**; seguir a [especificação oficial](https://a2a-protocol.org/v1.0.0/specification/) e confirmar o SDK .NET disponível antes de escrever código.
 
 ## Ler primeiro
 
@@ -29,13 +31,13 @@ Implementar uma integração **A2A real**, em que a Sofia é cliente e orquestra
 
 ## Regras de protocolo e domínio
 
-- O agente é descoberto em `/.well-known/agent-card.json`, que declara `url`, skills, versão e transporte. Nunca tratar o endereço do cartão como endpoint RPC.
-- No perfil v0.3.x: JSON-RPC 2.0 `message/send`, `params.message.role=user`, `messageId` e `parts` com `kind=text`. A resposta é uma `Task` com a análise em `artifacts`, não em `status.message`.
+- O agente é descoberto em `/.well-known/agent-card.json`, que declara `supportedInterfaces` (`url`, `protocolBinding`, `protocolVersion`), skills e versão. Nunca tratar o endereço do cartão como endpoint RPC.
+- Na v1.0: JSON-RPC 2.0 `SendMessage`, `params.message.role=ROLE_USER`, `messageId` e `parts` com `text`. A resposta é `result.task`, com a análise em `artifacts`, não em `status.message`. Exemplos em `../sofia-a2a-contrato/references/exemplos-a2a-v10.md`.
 - `SolicitacaoAnaliseSofia` chega como **texto JSON UTF-8 em um TextPart**; campos de negócio não são atributos do protocolo. `ResultadoAnaliseSofia` sai como JSON em TextPart de Artifact.
 - `idExecucao`, `idSolicitacao`, `usuario.nome`, `pergunta`, `documentos[].idDocumento`, `documentos[].nome` e `documentos[].texto` são obrigatórios. Preservar os IDs e a relação documento-análise.
 - Propagar `traceId` e request ID em metadata ou cabeçalhos, sem expor segredo. Registrar duração, status e agente; remover conteúdo sensível dos logs.
 - O agente MUST NOT chamar outros agentes sem permissão explícita: a Sofia centraliza roteamento e síntese.
-- Autenticar por HTTPS e mecanismo pactuado (por exemplo, Bearer), prevenir SSRF e prompt injection. Enquanto valer a SQ-12, a credencial fica adiada.
+- Autenticar por HTTPS e mecanismo pactuado (por exemplo, Bearer), prevenir SSRF e prompt injection. A integração atual não usa token (SQ-12).
 - Não inventar APIs de Microsoft Agent Framework nem de SDK A2A: inspecionar versões, pacotes e documentação antes de programar.
 
 ## Saída exigida

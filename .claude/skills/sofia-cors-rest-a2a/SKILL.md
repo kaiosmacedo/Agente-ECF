@@ -7,6 +7,8 @@ description: Padronizar a configuração segura de CORS, conectividade HTTP e au
 
 Adaptada da skill de mesmo nome do pacote da turma SOFIA/INFIS, escrita para Spec Kit. Em conflito com o fluxo do projeto, `openspec/constitution.md` prevalece.
 
+**Decisões do responsável (2026-11-05):** a rede definitiva é `sofia_network`, do compose da Sofia, cujo nome real no Docker é `sofia-infis_sofia_network`; `agentes-network`, em `references/dotnet.md`, é só o exemplo da turma. A integração não usa token (SQ-12).
+
 **Mudanças do roteiro** (`docs/roteiro.md`): 13 `servidor-a2a` (CORS e conectividade) e 02 `autenticacao-autorizacao` (autenticação, na retomada).
 
 ## Objetivo
@@ -25,7 +27,7 @@ Adaptar o projeto com alterações mínimas para que a Sofia invoque o agente vi
 
 - A credencial fica no transporte: autenticação de serviço, por exemplo JWT/OAuth2 com audience e scopes, em HTTPS. Sem credencial válida, endpoint protegido responde 401 ou 403.
 - Integrar com a autenticação existente sem desabilitar proteções. Autenticação vem depois de CORS no pipeline.
-- **Não define** emissor, valores de audience, scopes nem como a Sofia obtém o token. Isso precisa ser pactuado na retomada da mudança 02 (`docs/roteiro.md`). Enquanto valer a regra SQ-12, os endpoints ficam sem credencial.
+- **Não define** emissor, valores de audience, scopes nem como a Sofia obtém o token. Isso só precisa ser definido se a mudança 02 for retomada (`docs/roteiro.md`). Enquanto valer a regra SQ-12, os endpoints ficam sem credencial.
 
 ## Procedimento no OpenSpec
 
