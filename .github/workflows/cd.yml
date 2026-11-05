@@ -64,12 +64,13 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets[matrix.servico.segredo_projeto] }}
           VERCEL_TELEMETRY_DISABLED: "1"
+          VERSAO: ${{ github.event.workflow_run.head_sha }}
         run: |
           if [ -z "$VERCEL_TOKEN" ] || [ -z "$VERCEL_ORG_ID" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
             echo "::error::Segredos do Vercel ausentes no Environment producao (ver docs/ci-cd.md)."
             exit 1
           fi
-          vercel deploy --prod --yes --token "$VERCEL_TOKEN"
+          vercel deploy --prod --yes --token "$VERCEL_TOKEN" --build-env VERSAO="$VERSAO"
 
       - name: Verificar saúde em produção
         env:
