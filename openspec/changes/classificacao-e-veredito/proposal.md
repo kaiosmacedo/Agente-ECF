@@ -1,6 +1,6 @@
 # Proposal: Classificação das regras e veredito
 
-> **Estado:** pedida por Kaio Macedo em 2026-11-05. Especificação e plano técnico aguardam a aprovação dele.
+> **Estado:** especificação e plano técnico aprovados por Kaio Macedo em 2026-11-05 (PR #15).
 
 ## Why
 
@@ -28,10 +28,10 @@ O manual já dá a base oficial da separação: as regras têm tipo `Erro` ou `A
 
 | ID | Pergunta | Resposta | Fonte ou responsável | Data | Bloqueante |
 | --- | --- | --- | --- | --- | --- |
-| E01 | Quais os nomes dos vereditos? Kaio Macedo citou "total de acordo e verificado", "recusado na avaliação" e "parcial". | `conforme`, `conforme-com-ressalvas`, `recusado`, `parcial` e `nao-avaliado`. | Kaio Macedo, na aprovação deste plano | — | Não |
-| E02 | Quais os nomes das classes? Kaio Macedo citou impeditivas, graves que não impedem e falhas em observação. | `impeditiva`, `grave` e `observacao`, calculadas pela severidade de DP-07, sem criar outra escala (GD-05). | Kaio Macedo, na aprovação deste plano | — | Não |
-| E03 | Quem decide quais regras são graves? O manual só separa `Erro` e `Aviso`, e define `Aviso` como "alerta apenas informativo". | Pendente. Até haver responsável, `Erro` é `critica`, e `Aviso` é `media`, ou seja, em observação. Nenhuma regra vira grave sem aprovação de quem responde pelo domínio. É a mesma pergunta de E02 da mudança 08. | Kaio Macedo | — | Não |
-| E04 | O achado guarda o valor encontrado no arquivo? Ajuda a corrigir, mas é dado fiscal. | Sim, só o valor do campo, com até 200 caracteres. Hoje só há dados sintéticos (SQ-12). Antes de dados reais, DP-11 precisa decidir retenção e mascaramento. | Kaio Macedo, na aprovação deste plano | — | Não |
+| E01 | Quais os nomes dos vereditos? Kaio Macedo citou "total de acordo e verificado", "recusado na avaliação" e "parcial". | `conforme`, `conforme-com-ressalvas`, `recusado`, `parcial` e `nao-avaliado`. | Kaio Macedo | 2026-11-05 | Não |
+| E02 | Quais os nomes das classes? Kaio Macedo citou impeditivas, graves que não impedem e falhas em observação. | `impeditiva`, `grave` e `observacao`, calculadas pela severidade de DP-07, sem criar outra escala (GD-05). | Kaio Macedo | 2026-11-05 | Não |
+| E03 | Quem decide quais regras são graves? O manual só separa `Erro` e `Aviso`, e define `Aviso` como "alerta apenas informativo". | Kaio Macedo pediu para basear a classificação em fontes confiáveis além do manual, em vez de depender de uma pessoa da área. O assistente pesquisa e propõe, com a fonte de cada critério, e Kaio Macedo aprova (P01). Até a aprovação, `Erro` é `critica`, e `Aviso` é `media`. É a mesma pergunta de E02 da mudança 08. | Kaio Macedo | 2026-11-05 | Não |
+| E04 | O achado guarda o valor encontrado no arquivo? Ajuda a corrigir, mas é dado fiscal. | Sim, só o valor do campo, com até 200 caracteres. Hoje só há dados sintéticos (SQ-12). Antes de dados reais, DP-11 precisa decidir retenção e mascaramento. | Kaio Macedo | 2026-11-05 | Não |
 
 ## Fontes oficiais
 
@@ -61,4 +61,4 @@ Só `Erro`, `Aviso` e os níveis vêm do manual. Veredito, classes e critérios 
 
 ## Aprovação
 
-Aguarda Kaio Macedo.
+Aprovada por Kaio Macedo em 2026-11-05 (PR #15).

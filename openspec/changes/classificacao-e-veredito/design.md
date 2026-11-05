@@ -57,7 +57,7 @@ Hoje o banco não guarda nada vindo do arquivo além de hash e tamanho. O valor 
 ### D5. Banco e contrato (REQ-RESULT-012)
 
 - Migração `0002`: coluna `veredito`, para consulta, e atualização do `jsonb` das execuções já gravadas (`parcial` continua `parcial`; `entrada-rejeitada` e `falha-tecnica` viram `nao-avaliado`).
-- `ResultadoAnaliseSofia` ganha `veredito` e `resumoAchados`, e `AchadoSofia` ganha `classe`, `orientacao` e `fonte`, todos opcionais, como em D4 da mudança 03.
+- `ResultadoAnaliseSofia` ganha `veredito` e `resumoAchados`, e `AchadoSofia` ganha `classe`, `registros`, `orientacao` e `fonte`, todos opcionais, como em D4 da mudança 03.
 - A síntese é montada pelo sistema a partir do veredito. Em `conforme`, ela informa que o resultado vale para as validações realizadas e é apoio à conferência (seção 1.3 da constitution).
 
 ### D6. Testes

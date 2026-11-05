@@ -69,29 +69,35 @@ Resposta (o texto do Artifact foi formatado aqui para leitura; ele chega como st
           "parts": [
             {
               "text": {
-                "versaoContrato": "1.0",
-                "idExecucao": "8b2f0ad6-c2e4-4a68-8bdd-20f785bc798e",
-                "idSolicitacao": "e1b3a4cb-d729-4bd4-b796-b9c94be07b46",
-                "agente": {
-                  "idAgente": "agente-ecf",
-                  "nome": "Agente ECF"
-                },
-                "status": "parcial",
-                "analise": "2 documento(s) recebido(s). Esta versão ainda não executa as validações da ECF: nenhum achado foi produzido e nenhuma conformidade é declarada.",
-                "achados": [],
-                "observacoes": [
-                  "Documento doc-001 recebido: 50 caracteres, SHA-256 8d5e75d4a95a7e77b3e5f11e5d1a45aa6c0063b6708948a28ffc89f6657cbccf.",
-                  "Documento doc-002 recebido: 30 caracteres, SHA-256 c0e8a6303b06ec5cfb98b65c05b9c551036a4d4101a23c7cea64031fe8fc7a73.",
-                  "Etapa não realizada: Identificação do leiaute. Motivo: ainda não implementada nesta versão.",
-                  "Etapa não realizada: Validação estrutural. Motivo: ainda não implementada nesta versão.",
-                  "Etapa não realizada: Consulta ao manual. Motivo: ainda não implementada nesta versão.",
-                  "Etapa não realizada: Ferramentas externas. Motivo: ainda não implementada nesta versão.",
-                  "Etapa não realizada: Análise com LLM. Motivo: ainda não implementada nesta versão.",
-                  "Etapa não realizada: Validação da saída. Motivo: ainda não implementada nesta versão."
-                ],
-                "erro": null,
-                "idExecucaoAgente": "0c2b1690-69c3-478e-89c1-be2026274300",
-                "revisaoHumana": true
+                  "versaoContrato": "1.0",
+                  "idExecucao": "8b2f0ad6-c2e4-4a68-8bdd-20f785bc798e",
+                  "idSolicitacao": "e1b3a4cb-d729-4bd4-b796-b9c94be07b46",
+                  "agente": {
+                    "idAgente": "agente-ecf",
+                    "nome": "Agente ECF"
+                  },
+                  "status": "parcial",
+                  "analise": "Avaliação parcial: nem todas as validações foram realizadas. 2 documento(s) recebido(s). Esta versão ainda não executa as validações da ECF: nenhum achado foi produzido e nenhuma conformidade é declarada.",
+                  "achados": [],
+                  "observacoes": [
+                    "Documento doc-001 recebido: 50 caracteres, SHA-256 8d5e75d4a95a7e77b3e5f11e5d1a45aa6c0063b6708948a28ffc89f6657cbccf.",
+                    "Documento doc-002 recebido: 30 caracteres, SHA-256 c0e8a6303b06ec5cfb98b65c05b9c551036a4d4101a23c7cea64031fe8fc7a73.",
+                    "Etapa não realizada: Identificação do leiaute. Motivo: ainda não implementada nesta versão.",
+                    "Etapa não realizada: Validação estrutural. Motivo: ainda não implementada nesta versão.",
+                    "Etapa não realizada: Consulta ao manual. Motivo: ainda não implementada nesta versão.",
+                    "Etapa não realizada: Ferramentas externas. Motivo: ainda não implementada nesta versão.",
+                    "Etapa não realizada: Análise com LLM. Motivo: ainda não implementada nesta versão.",
+                    "Etapa não realizada: Validação da saída. Motivo: ainda não implementada nesta versão."
+                  ],
+                  "erro": null,
+                  "idExecucaoAgente": "ad27a5cb-794e-48af-b3ad-30f2b4759022",
+                  "revisaoHumana": true,
+                  "veredito": "parcial",
+                  "resumoAchados": {
+                    "impeditivas": 0,
+                    "graves": 0,
+                    "observacoes": 0
+                  }
               }
             }
           ]
@@ -110,12 +116,14 @@ Resposta (o texto do Artifact foi formatado aqui para leitura; ele chega como st
 | Campo obrigatório ausente ou inválido, `idDocumento` repetido | `TASK_STATE_COMPLETED` | `erro` | `solicitacao_invalida` |
 | `versaoContrato` diferente de `1.0` | `TASK_STATE_COMPLETED` | `erro` | `versao_contrato_nao_suportada` |
 | Texto dos documentos acima do limite | `TASK_STATE_COMPLETED` | `erro` | `documentos_acima_do_limite` |
-| Banco indisponível: nada foi registrado, e a Sofia pode repetir a chamada | `TASK_STATE_COMPLETED` | `erro` | `falha_tecnica` |
+| Banco indisponível: nada foi registrado, e a Sofia pode repetir a chamada. O veredito é `nao-avaliado`. | `TASK_STATE_COMPLETED` | `erro` | `falha_tecnica` |
 | Mensagem sem parte de texto, texto fora da estrutura JSON do contrato, `idExecucao` ou `idSolicitacao` que não são UUID | `TASK_STATE_FAILED` | sem resultado | motivo em `status.message` |
 
 `concluido` fica reservado para quando todas as validações obrigatórias existirem (P05).
 
-**Campos opcionais:** além dos da v1.0, o resultado traz `idExecucaoAgente`, o identificador para consultar `GET /analises/{id}` (ver `envelope-resultado.md`), e `revisaoHumana`. Com achados, cada um traz também `categoria`, `origem` e `regra`. Quem não os conhece pode ignorá-los.
+**Campos opcionais:** além dos da v1.0, o resultado traz `idExecucaoAgente`, o identificador para consultar `GET /analises/{id}` (ver `envelope-resultado.md`), `revisaoHumana`, `veredito` e `resumoAchados`. Com achados, cada um traz também `categoria`, `origem`, `regra`, `classe`, `registros`, `orientacao` e `fonte`. Quem não os conhece pode ignorá-los.
+
+**Veredito:** é o campo que diz como a ECF está: `conforme`, `conforme-com-ressalvas`, `recusado`, `parcial` ou `nao-avaliado` (ver `envelope-resultado.md`). O `status` só diz se a análise rodou: `recusado` pode vir com `status` `parcial`.
 
 **Retentativas:** repetir o mesmo `idSolicitacao` devolve o resultado já registrado, sem criar outra execução.
 
