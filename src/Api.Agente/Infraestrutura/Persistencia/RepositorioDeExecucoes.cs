@@ -19,8 +19,8 @@ internal sealed class RepositorioDeExecucoes(NpgsqlDataSource banco) : IReposito
     public async Task<EnvelopeDoResultado> RegistrarAsync(EnvelopeDoResultado envelope, CancellationToken cancelamento)
     {
         const string Sql = """
-            INSERT INTO execucoes (id, id_execucao_sofia, id_solicitacao, organizacao, usuario_pseudonimo, status, criada_em, concluida_em, conteudo)
-            VALUES (@IdExecucao, @IdExecucaoSofia, @IdSolicitacao, @Organizacao, @UsuarioPseudonimo, @Status, @CriadaEm, @ConcluidaEm, CAST(@Conteudo AS jsonb))
+            INSERT INTO execucoes (id, id_execucao_sofia, id_solicitacao, organizacao, usuario_pseudonimo, status, veredito, criada_em, concluida_em, conteudo)
+            VALUES (@IdExecucao, @IdExecucaoSofia, @IdSolicitacao, @Organizacao, @UsuarioPseudonimo, @Status, @Veredito, @CriadaEm, @ConcluidaEm, CAST(@Conteudo AS jsonb))
             ON CONFLICT (id_solicitacao) DO NOTHING
             """;
 
@@ -32,6 +32,7 @@ internal sealed class RepositorioDeExecucoes(NpgsqlDataSource banco) : IReposito
             envelope.Identidade.Organizacao,
             envelope.Identidade.UsuarioPseudonimo,
             envelope.Status,
+            envelope.Veredito,
             CriadaEm = envelope.CriadaEm.UtcDateTime,
             ConcluidaEm = envelope.ConcluidaEm?.UtcDateTime,
             Conteudo = JsonSerializer.Serialize(envelope, ContratoSofiaV1.Json),

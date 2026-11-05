@@ -42,7 +42,7 @@ Cada mudança segue o fluxo da constitution (6.1): especificação → esclareci
 | 12 | `memoria-conversacional` | `agente/memoria-conversacional` | 10 | 01, 11 | `memoria-mongodb`, `testes-agentes-ia` | Especificação aprovada |
 | 13 | `servidor-a2a` | `integracao/servidor-a2a`, `integracao/contrato-sofia`, `integracao/cors` | 01 | 09, 16 | `sofia-a2a-contrato`, `sofia-a2a-implementacao`, `sofia-cors-rest-a2a`, `vercel-dotnet-pgvector-atlas`, `testes-agentes-ia` | Esqueleto em produção |
 | 14 | `telemetria-servicos` | `plataforma/observabilidade` | 01 | — | `testes-agentes-ia` | Arquivada; em produção desde 2026-11-05 (PR #13) |
-| 15 | `classificacao-e-veredito` | `agente/contrato-resultado` | 03 | 07, 08 | `sofia-a2a-contrato`, `testes-agentes-ia` | Pedida por Kaio Macedo em 2026-11-05; especificação em andamento |
+| 15 | `classificacao-e-veredito` | `agente/contrato-resultado` | 03 | 07, 08 | `sofia-a2a-contrato`, `testes-agentes-ia` | Plano aprovado em 2026-11-05 (PR #15); implementação na branch `feat/classificacao-e-veredito` |
 
 `github-versionamento` vale para todas as mudanças. As mudanças 05 a 09 podem avançar em paralelo com 04 quando suas dependências estiverem mescladas.
 

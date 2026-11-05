@@ -2,7 +2,7 @@
 
 Formato do resultado de uma execução, devolvido por `GET /analises/{id}`. Requisitos em `openspec/changes/execucao-e-resultado/` (REQ-RESULT-001 a 006, REQ-EXEC-001 a 006) e regras em P03 a P09, GD-03, GD-04 e GD-05 da constitution.
 
-**Situação:** a análise da ECF ainda não existe. Toda solicitação válida termina em `parcial`, com a revisão humana indicada e sem achados. Sem autenticação (SQ-12): a consulta não exige credencial nem restringe por organização, então use somente dados sintéticos ou anonimizados.
+**Situação:** a análise da ECF ainda não existe. Toda solicitação válida termina com status e veredito `parcial`, com a revisão humana indicada e sem achados. Sem autenticação (SQ-12): a consulta não exige credencial nem restringe por organização, então use somente dados sintéticos ou anonimizados.
 
 ## Exemplo
 
@@ -11,13 +11,19 @@ Saída real do serviço para a solicitação de `tests/Api.Agente.Tests/Fixtures
 ```json
 {
   "versaoContrato": "1.0",
-  "idExecucao": "0c2b1690-69c3-478e-89c1-be2026274300",
+  "idExecucao": "ad27a5cb-794e-48af-b3ad-30f2b4759022",
   "idExecucaoSofia": "8b2f0ad6-c2e4-4a68-8bdd-20f785bc798e",
   "idSolicitacao": "e1b3a4cb-d729-4bd4-b796-b9c94be07b46",
   "idCorrelacao": "exemplo-doc-1",
   "status": "parcial",
+  "veredito": "parcial",
   "revisaoHumana": true,
-  "sintese": "2 documento(s) recebido(s). Esta versão ainda não executa as validações da ECF: nenhum achado foi produzido e nenhuma conformidade é declarada.",
+  "resumo": {
+    "impeditivas": 0,
+    "graves": 0,
+    "observacoes": 0
+  },
+  "sintese": "Avaliação parcial: nem todas as validações foram realizadas. 2 documento(s) recebido(s). Esta versão ainda não executa as validações da ECF: nenhum achado foi produzido e nenhuma conformidade é declarada.",
   "etapas": [
     {
       "numero": 1,
@@ -105,9 +111,9 @@ Saída real do serviço para a solicitação de `tests/Api.Agente.Tests/Fixtures
     "servico": "0.1.0+local",
     "validadores": "nenhum"
   },
-  "criadaEm": "2026-11-05T16:02:45.1793594+00:00",
-  "concluidaEm": "2026-11-05T16:02:45.1841929+00:00",
-  "duracaoMs": 4.8335,
+  "criadaEm": "2026-11-05T18:42:49.4669191+00:00",
+  "concluidaEm": "2026-11-05T18:42:49.4710257+00:00",
+  "duracaoMs": 4.1066,
   "erro": null
 }
 ```
@@ -123,9 +129,11 @@ Todos são preenchidos pelo sistema, nunca pelo modelo (P13).
 | `idExecucaoSofia` | `idExecucao` recebido da Sofia. |
 | `idSolicitacao` | `idSolicitacao` recebido da Sofia. É único: uma retentativa devolve a execução já registrada. |
 | `idCorrelacao` | `X-Correlation-Id` da requisição que criou a execução. |
-| `status` | Status interno, na tabela abaixo. |
+| `status` | Se a análise rodou até o fim: status interno, na tabela abaixo. |
+| `veredito` | Como a ECF está: veredito, na tabela abaixo. |
 | `revisaoHumana` | Calculada pelo sistema; nenhuma recomendação do modelo a dispensa (P09). |
-| `sintese` | Texto curto sobre o resultado. |
+| `resumo` | Quantos achados há em cada classe: `impeditivas`, `graves` e `observacoes`. |
+| `sintese` | Texto curto sobre o resultado, a partir do veredito. |
 | `etapas` | As nove etapas de P03, sempre todas, cada uma com `numero`, `nome`, `estado` e `justificativa`. |
 | `achados` | Lista de achados, descritos abaixo. |
 | `limitacoes` | Cada validação obrigatória não realizada, com o motivo, e as demais limitações da análise. |
@@ -154,6 +162,30 @@ A regra é aplicada nesta ordem, e `status` no contrato SOFIA é o da última co
 
 `concluida` não significa "conforme": erros e inconsistências continuam nos achados.
 
+## Veredito
+
+Calculado pelo sistema, nesta ordem (REQ-RESULT-010). O LLM não define nem altera o veredito.
+
+| Ordem | Condição | `veredito` | Significado |
+| --- | --- | --- | --- |
+| 1 | Há achado impeditivo | `recusado` | Recusada na avaliação. Vale mesmo com validações pendentes: um erro impeditivo já prova que a ECF não está correta. |
+| 2 | Status `entrada-rejeitada` ou `falha-tecnica` | `nao-avaliado` | Não foi possível avaliar. |
+| 3 | Status `parcial` | `parcial` | Nada impeditivo até aqui, mas nem tudo foi validado. |
+| 4 | Status `concluida`, com achados | `conforme-com-ressalvas` | Nada impeditivo; há pontos a verificar. |
+| 5 | Status `concluida`, sem achados | `conforme` | De acordo e verificada nas validações realizadas. |
+
+O resultado é apoio à conferência (seção 1.3 da constitution) e não substitui o programa oficial da ECF. O veredito é do produto, não uma classificação da Receita Federal.
+
+## Classes
+
+Calculadas pela severidade, sem criar outra escala (REQ-RESULT-007).
+
+| `classe` | `severidade` | Critério |
+| --- | --- | --- |
+| `impeditiva` | `critica` | Regra do tipo `Erro` no manual: "impede a conclusão com sucesso da funcionalidade" (Manual do Leiaute 12, capítulo 3, página 38). Só erro estrutural e inconsistência de negócio podem ser impeditivos. |
+| `grave` | `alta` | Não impede, mas precisa de correção. Critério do produto. |
+| `observacao` | `media`, `baixa` | Regra do tipo `Aviso` no manual ("alerta apenas informativo") e demais pontos a verificar. |
+
 ## Revisão humana
 
 `revisaoHumana` é `true` com falha técnica, validação obrigatória não concluída, indício da IA ou ausência de evidências (REQ-RESULT-005).
@@ -167,9 +199,15 @@ A regra é aplicada nesta ordem, e `status` no contrato SOFIA é o da última co
 | `origem` | `validador`, `ferramenta`, `llm` ou `sistema`. |
 | `fundamento` | Regra, requisito ou fonte que fundamenta o achado. Obrigatório. |
 | `descricao` | O problema apontado. |
-| `registros` | `idDocumento`, `registro` e, quando disponíveis, `linha` e `campo`. |
+| `registros` | `idDocumento`, `registro` e, quando disponíveis, `linha`, `campo` e `valorEncontrado`, este com até 200 caracteres. |
 | `evidencias` | Trechos que sustentam o achado. |
 | `severidade` | `baixa`, `media`, `alta` ou `critica`. Obrigatória. |
+| `classe` | `impeditiva`, `grave` ou `observacao`, calculada pela severidade. |
+| `regra` | `codigo`, `tipo` (`Erro` ou `Aviso`) e `nivel` (1.1, 1.2, 2 ou 3), como no manual, quando o achado vem de regra do manual. |
+| `fonte` | `documento`, `versao` e `localizacao`, obrigatória em achado de regra do manual. |
+| `orientacao` | Como corrigir, obrigatória em achado de regra do manual. O agente orienta, mas não altera o arquivo. |
+
+O valor encontrado é dado do arquivo, então só é usado com dados sintéticos até DP-11 decidir retenção e mascaramento.
 
 | Categoria | Origens permitidas | Exige `registros` |
 | --- | --- | --- |

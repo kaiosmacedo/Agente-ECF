@@ -6,28 +6,28 @@ Marcar cada tarefa somente com a verificação indicada executada. Plano em `des
 
 Skill: testes-agentes-ia
 
-- [ ] 1.1 Calcular a classe pela severidade (D2); verificar com testes as quatro severidades (REQ-RESULT-007).
-- [ ] 1.2 Adicionar tipo e nível oficiais ao achado e rejeitar as combinações proibidas (D3); verificar com testes os cenários de `Erro` com severidade menor, `Aviso` impeditivo e indício impeditivo (REQ-RESULT-008, REQ-RESULT-009).
-- [ ] 1.3 Calcular o veredito (D1); verificar com testes uma linha para cada condição, inclusive `recusado` com validações pendentes (REQ-RESULT-010).
-- [ ] 1.4 Adicionar orientação, fonte e valor encontrado (D4); verificar com testes o achado completo e o corte em 200 caracteres (REQ-RESULT-011).
+- [x] 1.1 Calcular a classe pela severidade (D2); verificar com testes as quatro severidades (REQ-RESULT-007).
+- [x] 1.2 Adicionar tipo e nível oficiais ao achado e rejeitar as combinações proibidas (D3); verificar com testes os cenários de `Erro` com severidade menor, `Aviso` impeditivo e indício impeditivo (REQ-RESULT-008, REQ-RESULT-009).
+- [x] 1.3 Calcular o veredito (D1); verificar com testes uma linha para cada condição, inclusive `recusado` com validações pendentes (REQ-RESULT-010).
+- [x] 1.4 Adicionar orientação, fonte e valor encontrado (D4); verificar com testes o achado completo e o corte em 200 caracteres (REQ-RESULT-011).
 
 ## 2. Envelope e contrato
 
 Skill: sofia-a2a-contrato
 
-- [ ] 2.1 Levar veredito, resumo e detalhes ao envelope e à síntese (D4, D5); verificar com round-trip e com a síntese de `conforme` (REQ-RESULT-010, REQ-RESULT-011).
-- [ ] 2.2 Levar os campos opcionais ao contrato SOFIA (D5); verificar que os testes de contrato da mudança 13 continuam aprovados e que o cliente A2A real recebe os campos novos (REQ-RESULT-012).
+- [x] 2.1 Levar veredito, resumo e detalhes ao envelope e à síntese (D4, D5); verificar com round-trip e com a síntese de `conforme` (REQ-RESULT-010, REQ-RESULT-011).
+- [x] 2.2 Levar os campos opcionais ao contrato SOFIA (D5); verificar que os testes de contrato da mudança 13 continuam aprovados e que o cliente A2A real recebe os campos novos (REQ-RESULT-012).
 
 ## 3. Persistência
 
 Skill: testes-agentes-ia
 
-- [ ] 3.1 Criar a migração `0002` (D5); verificar com Testcontainers que ela preenche o veredito de execuções antigas e que rodar de novo não muda nada.
-- [ ] 3.2 Verificar com Testcontainers que texto, nome e pergunta continuam fora do banco e que só o valor do campo citado é guardado (SQ-04).
+- [x] 3.1 Criar a migração `0002` (D5); verificar com Testcontainers que ela preenche o veredito de execuções antigas e que rodar de novo não muda nada.
+- [x] 3.2 Verificar com Testcontainers que texto, nome e pergunta continuam fora do banco e que só o valor do campo citado é guardado (SQ-04).
 
 ## 4. Documentação
 
-- [ ] 4.1 Atualizar `docs/contratos/envelope-resultado.md` e `docs/contratos/sofia-a2a.md` com vereditos, classes e detalhes; verificar com o teste que confere o exemplo do documento.
+- [x] 4.1 Atualizar `docs/contratos/envelope-resultado.md` e `docs/contratos/sofia-a2a.md` com vereditos, classes e detalhes; verificar com o teste que confere o exemplo do documento.
 - [ ] 4.2 Atualizar o cofre Obsidian e `docs/roteiro.md`; verificar a tabela de mudanças.
 
 ## 5. Fechamento
