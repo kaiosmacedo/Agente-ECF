@@ -77,6 +77,17 @@ public sealed class PersistenciaTests(BancoDeTeste banco) : IClassFixture<BancoD
         Assert.Contains("ConnectionStrings:Execucoes", erro.Message, StringComparison.Ordinal);
     }
 
+    [Fact(DisplayName = "REQ-CONFIG-002 Formato documentado da conexão é aceito, com TLS verificado")]
+    public void FormatoDocumentado()
+    {
+        var formato = File.ReadLines(Repositorio.Caminho("docs", "ci-cd.md")).Single(linha => linha.StartsWith("Host=<host>", StringComparison.Ordinal));
+
+        var conexao = new NpgsqlConnectionStringBuilder(formato);
+
+        Assert.Equal(SslMode.VerifyFull, conexao.SslMode);
+        Assert.Equal(ChannelBinding.Require, conexao.ChannelBinding);
+    }
+
     [Fact(DisplayName = "REQ-CONFIG-002 Conexão em formato de URI impede a inicialização e não revela a senha")]
     public async Task ConexaoEmUri()
     {

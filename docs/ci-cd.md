@@ -88,8 +88,10 @@ São dois segredos, com endereços diferentes do mesmo banco, porque a trava da 
 Os dois usam o formato do Npgsql, não o `postgresql://` que o Neon mostra por padrão. O serviço recusa a inicialização em outro formato, sem revelar o valor:
 
 ```text
-Host=<host>;Database=<banco>;Username=<usuario>;Password=<senha>;SSL Mode=Require;Maximum Pool Size=5
+Host=<host>;Database=<banco>;Username=<usuario>;Password=<senha>;SSL Mode=VerifyFull;Channel Binding=Require;Maximum Pool Size=5
 ```
+
+A integração do Neon com o Vercel também cria `DATABASE_URL` e variáveis parecidas no projeto. O serviço não as lê: elas só mostram os valores que entram no formato acima.
 
 O banco fica na região `aws-us-east-1`, perto das funções do Vercel, em `iad1`. Só dados sintéticos ou anonimizados por enquanto (SQ-12; DP-11 antes de dados reais).
 
