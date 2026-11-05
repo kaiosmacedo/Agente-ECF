@@ -8,6 +8,7 @@ internal static class Observabilidade
     public static WebApplicationBuilder AdicionarObservabilidade(this WebApplicationBuilder builder, IdentidadeServico identidade)
     {
         builder.Services.AddSingleton(identidade);
+        builder.Services.AdicionarTelemetria(builder.Configuration, identidade);
 
         builder.Logging.ClearProviders();
         builder.Logging.AddJsonConsole(opcoes =>
