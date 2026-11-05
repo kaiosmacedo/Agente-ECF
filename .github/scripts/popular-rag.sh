@@ -18,6 +18,7 @@ RELEASE=fontes-ecf-2026-11
 ARQUIVO_DA_CHAVE="${ARQUIVO_DA_CHAVE:-$HOME/source/repos/SofiaInfis/SofiaInfis.Api/appsettings.json}"
 
 RAIZ=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)
+MANIFESTO="${MANIFESTO:-$RAIZ/docs/fontes/manifesto-rag.json}"
 GH=$(command -v gh || echo "$HOME/.local/gh/bin/gh.exe")
 temporario=$(mktemp -d)
 trap 'rm -f "$temporario/.env.conexao"; rm -rf "$temporario" 2> /dev/null || true' EXIT
@@ -66,15 +67,31 @@ OpenAI__ApiKey=$(node -e '
 [ -n "$OpenAI__ApiKey" ] || parar "o arquivo não tem OpenAI:ApiKey."
 export OpenAI__ApiKey
 
-echo "2/4 Baixando os manuais do Release $RELEASE..."
 mkdir -p "$temporario/fontes"
 if [ "$MODO" = "avaliar" ]; then
+  echo "2/4 Preparando as perguntas de avaliação..."
   cp "$RAIZ/docs/avaliacao/perguntas.json" "$temporario/fontes/perguntas.json"
-else
+elif "$GH" release view "$RELEASE" --repo "$REPOSITORIO" > /dev/null 2>&1; then
+  echo "2/4 Baixando os manuais do Release $RELEASE..."
   "$GH" release download "$RELEASE" --repo "$REPOSITORIO" --pattern '*.pdf' --dir "$temporario/fontes" > /dev/null 2>&1 \
     || parar "não foi possível baixar os manuais do Release."
-  cp "$RAIZ/docs/fontes/manifesto-rag.json" "$temporario/fontes/manifesto-rag.json"
+else
+  # Primeira carga: baixa da Receita Federal, confere cada hash e guarda os originais em um Release privado (E04).
+  echo "2/4 Baixando os manuais dos endereços oficiais, conferindo os hashes e criando o Release privado $RELEASE..."
+  node -e '
+    const m = JSON.parse(require("fs").readFileSync(process.argv[1], "utf8"));
+    for (const d of m.documentos) console.log([d.arquivo, d.sha256, d.origem].join("\t"));
+  ' "$MANIFESTO" | tr -d '\r' > "$temporario/lista.tsv"
+  while IFS=$'\t' read -r arquivo esperado origem; do
+    curl -fsSL --max-time 300 -A agente-ecf-carga -o "$temporario/fontes/$arquivo" "$origem" || parar "não foi possível baixar $arquivo."
+    [ "$(sha256sum "$temporario/fontes/$arquivo" | cut -d' ' -f1)" = "$esperado" ] \
+      || parar "$arquivo mudou no portal: o hash é diferente do registrado. Atualize docs/fontes-oficiais.md e o manifesto."
+  done < "$temporario/lista.tsv"
+  "$GH" release create "$RELEASE" --repo "$REPOSITORIO" --title "Fontes oficiais da ECF, novembro de 2026" \
+    --notes "Cópia dos originais da página oficial da Receita Federal (E04 da mudança 05). O portal troca os arquivos sem mudar o endereço. Versões e hashes em docs/fontes-oficiais.md." \
+    "$temporario/fontes/"*.pdf > /dev/null 2>&1 || parar "não foi possível criar o Release."
 fi
+[ "$MODO" = "avaliar" ] || cp "$MANIFESTO" "$temporario/fontes/manifesto-rag.json"
 
 echo "3/4 Construindo a imagem da Api.RAG..."
 docker build -q -t agente-ecf-rag-carga "$RAIZ/src/Api.RAG" > /dev/null || parar "a imagem não foi construída."

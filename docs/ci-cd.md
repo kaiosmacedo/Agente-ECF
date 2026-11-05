@@ -121,7 +121,7 @@ A Api.RAG guarda os manuais oficiais em trechos com embeddings (`docs/fontes-ofi
 & "C:\Program Files\Git\bin\bash.exe" .github/scripts/popular-rag.sh leiaute-12
 ```
 
-O script baixa os PDFs do Release `fontes-ecf-2026-11`, confere os hashes e roda a Api.RAG em contêiner, com a chave e a conexão só em variáveis de ambiente. Rodar de novo não duplica nada. Use `avaliar` para medir a recuperação com `docs/avaliacao/perguntas.json` e `todos` para os seis manuais.
+O script baixa os PDFs do Release privado `fontes-ecf-2026-11` e roda a Api.RAG em contêiner, com a chave e a conexão só em variáveis de ambiente. Na primeira vez, ele baixa dos endereços oficiais, confere cada hash e cria esse Release; se o portal tiver trocado um arquivo, ele para sem gravar nada. Os hashes são conferidos de novo antes da carga. Rodar de novo não duplica nada. Use `avaliar` para medir a recuperação com `docs/avaliacao/perguntas.json` e `todos` para os seis manuais.
 
 **Manual novo:** baixe o arquivo, registre versão, tamanho e hash em `docs/fontes-oficiais.md` e no manifesto, publique o arquivo em um Release e rode o script. A versão anterior fica como substituída, para auditoria.
 
