@@ -26,7 +26,7 @@ A constitution exige registrar toda chamada a provedor de IA, inclusive retentat
 
 | ID | Pergunta | Resposta | Fonte ou responsável | Data | Bloqueante |
 | --- | --- | --- | --- | --- | --- |
-| E01 | Em que moeda registrar o custo (USD, como a OpenAI cobra, ou BRL com conversão) e qual a fonte da tabela de preços (DP-13)? | — | Kaio Macedo | — | Sim |
+| E01 | Em que moeda registrar o custo (USD, como a OpenAI cobra, ou BRL com conversão) e qual a fonte da tabela de preços (DP-13)? O `SofiaInfis` já tem uma tabela `OpenAI:Pricing` em USD por milhão de tokens (`docs/base-sofiainfis.md`). | — | Kaio Macedo | — | Sim |
 | E02 | É preciso um relatório consolidado dos dois serviços? Se sim, por consulta a cada serviço ou por exportação (DP-26)? | — | Kaio Macedo | — | Não |
 | E03 | Quem pode consultar os custos (perfil administrador, responsável financeiro)? | — | Kaio Macedo | — | Não |
 | E04 | Provedor de PostgreSQL gerenciado (o mesmo da mudança 03, E06). | — | Kaio Macedo | — | Sim, para persistir |
