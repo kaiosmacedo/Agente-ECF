@@ -1,5 +1,6 @@
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Api.Agente.Aplicacao.ContratoSofia;
 
@@ -29,7 +30,9 @@ internal sealed record ResultadoAnaliseSofia(
     string Analise,
     IReadOnlyList<AchadoSofia> Achados,
     IReadOnlyList<string> Observacoes,
-    ErroSofia? Erro);
+    ErroSofia? Erro,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? IdExecucaoAgente = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] bool? RevisaoHumana = null);
 
 internal sealed record AgenteSofia(string IdAgente, string Nome);
 
@@ -38,7 +41,10 @@ internal sealed record AchadoSofia(
     string Descricao,
     IReadOnlyList<string> IdDocumentos,
     IReadOnlyList<string> Evidencias,
-    string? Severidade);
+    string? Severidade,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Categoria = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Origem = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Regra = null);
 
 internal sealed record ErroSofia(string Codigo, string Mensagem);
 
@@ -47,6 +53,7 @@ internal static class ContratoSofiaV1
 {
     public const string Versao = "1.0";
 
+    public const string StatusConcluido = "concluido";
     public const string StatusParcial = "parcial";
     public const string StatusErro = "erro";
 

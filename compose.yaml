@@ -1,6 +1,7 @@
 # Agente-ECF na rede da Sofia (skill sofia-cors-rest-a2a). A rede é criada pelo compose do projeto SofiaInfis;
 # sem ele no ar, crie uma vez: docker network create sofia-infis_sofia_network
 # Na rede, a Sofia alcança o agente pelo nome do serviço, não por localhost. Só dados sintéticos ou anonimizados (SQ-12).
+# O banco das execuções só existe para desenvolvimento: sem senha, sem porta publicada e fora da rede da Sofia.
 # Painel local de traces e métricas, em http://localhost:18888:
 #   TELEMETRIA_ENDPOINT=http://painel:18890 docker compose --profile observabilidade up --build
 name: agente-ecf
@@ -11,11 +12,45 @@ services:
       context: src/Api.Agente
     environment:
       A2A__UrlPublica: ${A2A_URL_PUBLICA:-http://agente-ecf:8080/a2a}
+      ConnectionStrings__Execucoes: Host=banco-execucoes;Database=execucoes;Username=agente_ecf
       Telemetria__Endpoint: ${TELEMETRIA_ENDPOINT:-}
+    depends_on:
+      migrar-execucoes:
+        condition: service_completed_successfully
     ports:
       - "8085:8080"
     networks:
       - sofia_network
+      - banco
+
+  # Aplica as migrações e termina, como o CD faz em produção.
+  migrar-execucoes:
+    build:
+      context: src/Api.Agente
+    command: ["--migrar"]
+    environment:
+      ConnectionStrings__Execucoes: Host=banco-execucoes;Database=execucoes;Username=agente_ecf
+    depends_on:
+      banco-execucoes:
+        condition: service_healthy
+    networks:
+      - banco
+
+  banco-execucoes:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_DB: execucoes
+      POSTGRES_USER: agente_ecf
+      POSTGRES_HOST_AUTH_METHOD: trust
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -q -h 127.0.0.1 -U agente_ecf -d execucoes"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    volumes:
+      - dados-execucoes:/var/lib/postgresql/data
+    networks:
+      - banco
 
   painel:
     image: mcr.microsoft.com/dotnet/aspire-dashboard:9.5
@@ -28,7 +63,12 @@ services:
     networks:
       - sofia_network
 
+volumes:
+  dados-execucoes:
+
 networks:
+  banco:
+    internal: true
   sofia_network:
     external: true
     name: sofia-infis_sofia_network

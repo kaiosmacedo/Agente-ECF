@@ -2,22 +2,25 @@ using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using Api.Agente.Aplicacao.Execucoes;
+using Api.Agente.Dominio.Execucoes;
 
 namespace Api.Agente.Aplicacao.ContratoSofia;
 
 /// <summary>Desfecho do processamento: um resultado do contrato ou o motivo de não haver como correlacionar um.</summary>
 internal sealed record DesfechoDaSolicitacao(ResultadoAnaliseSofia? Resultado, string? MotivoDaRejeicao);
 
-/// <summary>
-/// Serviço de aplicação comum aos canais do agente (REQ-A2A-002). O conteúdo recebido é dado não
-/// confiável (P10). As etapas da análise chegam nas próximas mudanças; até lá, o status é parcial (P05, P08).
-/// </summary>
-internal sealed class ProcessadorDeSolicitacoes(long tamanhoMaximoDosDocumentosEmBytes)
-{
-    private const string ValidacoesNaoRealizadas =
-        "Validações não realizadas nesta versão: identificação do leiaute, validação estrutural, regras de negócio, consulta ao manual e análise por IA.";
+/// <summary>O que o processador precisa saber do ambiente, sem depender da infraestrutura.</summary>
+internal sealed record AmbienteDaAnalise(long TamanhoMaximoDosDocumentosEmBytes, string OrganizacaoPadrao, string VersaoDoServico);
 
-    public DesfechoDaSolicitacao Processar(string json)
+/// <summary>
+/// Serviço de aplicação comum aos canais do agente (REQ-A2A-002): cria e registra a execução e projeta o
+/// resultado. O conteúdo recebido é dado não confiável (P10). As etapas da análise chegam nas próximas
+/// mudanças; até lá, ficam como não executadas, e o status é parcial (P05, P08).
+/// </summary>
+internal sealed class ProcessadorDeSolicitacoes(IRepositorioDeExecucoes repositorio, AmbienteDaAnalise ambiente, TimeProvider relogio)
+{
+    public async Task<DesfechoDaSolicitacao> ProcessarAsync(string json, string? correlacao, CancellationToken cancelamento)
     {
         SolicitacaoAnaliseSofia? solicitacao;
         try
@@ -34,44 +37,86 @@ internal sealed class ProcessadorDeSolicitacoes(long tamanhoMaximoDosDocumentosE
             return new DesfechoDaSolicitacao(null, "identificadores_invalidos");
         }
 
-        return new DesfechoDaSolicitacao(Analisar(solicitacao), null);
+        try
+        {
+            // Retentativa da mesma chamada devolve o que já foi registrado (D7).
+            var envelope = await repositorio.BuscarPorSolicitacaoAsync(Guid.Parse(solicitacao.IdSolicitacao!), cancelamento)
+                ?? await repositorio.RegistrarAsync(Analisar(solicitacao, correlacao), cancelamento);
+            return new DesfechoDaSolicitacao(ProjecaoParaSofia.Projetar(envelope), null);
+        }
+        catch (FalhaDoRepositorio)
+        {
+            return new DesfechoDaSolicitacao(FalhaTecnica(solicitacao), null);
+        }
     }
 
-    private ResultadoAnaliseSofia Analisar(SolicitacaoAnaliseSofia solicitacao)
+    private EnvelopeDoResultado Analisar(SolicitacaoAnaliseSofia solicitacao, string? correlacao)
+    {
+        var execucao = Execucao.Criar(
+            Guid.Parse(solicitacao.IdExecucao!),
+            Guid.Parse(solicitacao.IdSolicitacao!),
+            IdentidadeDaRequisicao.Declarada(solicitacao.Usuario?.Nome, ambiente.OrganizacaoPadrao),
+            relogio.GetUtcNow());
+        execucao.ConcluirEtapa(Etapa.Recepcao);
+
+        var erro = ValidarEntrada(solicitacao);
+        string sintese;
+        if (erro is not null)
+        {
+            execucao.FalharEtapa(Etapa.ValidacaoDaEntrada);
+            sintese = $"A solicitação não pôde ser analisada. {erro.Mensagem}";
+        }
+        else
+        {
+            var documentos = solicitacao.Documentos!;
+            foreach (var documento in documentos)
+            {
+                execucao.RegistrarDocumento(new DocumentoRecebido(documento.IdDocumento!, Hash(documento.Texto!), documento.Texto!.Length));
+            }
+
+            execucao.ConcluirEtapa(Etapa.ValidacaoDaEntrada);
+            sintese = string.Create(
+                CultureInfo.InvariantCulture,
+                $"{documentos.Count} documento(s) recebido(s). Esta versão ainda não executa as validações da ECF: nenhum achado foi produzido e nenhuma conformidade é declarada.");
+        }
+
+        execucao.Concluir(relogio.GetUtcNow());
+        return MontadorDoEnvelope.Montar(execucao, correlacao, ambiente.VersaoDoServico, sintese, erro);
+    }
+
+    private ErroDoEnvelope? ValidarEntrada(SolicitacaoAnaliseSofia solicitacao)
     {
         if (solicitacao.VersaoContrato != ContratoSofiaV1.Versao)
         {
-            return Erro(solicitacao, "versao_contrato_nao_suportada", $"Este agente aceita somente a versão {ContratoSofiaV1.Versao} do contrato.");
+            return new ErroDoEnvelope("versao_contrato_nao_suportada", $"Este agente aceita somente a versão {ContratoSofiaV1.Versao} do contrato.");
         }
 
         var camposInvalidos = ValidadorDaSolicitacao.CamposInvalidos(solicitacao);
         if (camposInvalidos.Count > 0)
         {
-            return Erro(solicitacao, "solicitacao_invalida", $"Campos ausentes ou inválidos: {string.Join(", ", camposInvalidos)}.");
+            return new ErroDoEnvelope("solicitacao_invalida", $"Campos ausentes ou inválidos: {string.Join(", ", camposInvalidos)}.");
         }
 
-        var documentos = solicitacao.Documentos!;
-        if (documentos.Sum(documento => (long)Encoding.UTF8.GetByteCount(documento.Texto!)) > tamanhoMaximoDosDocumentosEmBytes)
-        {
-            return Erro(solicitacao, "documentos_acima_do_limite", $"O texto dos documentos ultrapassa o limite de {tamanhoMaximoDosDocumentosEmBytes} bytes; nada foi analisado.");
-        }
-
-        var analise = string.Create(
-            CultureInfo.InvariantCulture,
-            $"{documentos.Count} documento(s) recebido(s). Esta versão ainda não executa as validações da ECF: nenhum achado foi produzido e nenhuma conformidade é declarada.");
-        return Resultado(solicitacao, ContratoSofiaV1.StatusParcial, analise, [.. documentos.Select(Rastrear), ValidacoesNaoRealizadas], erro: null);
+        var tamanho = solicitacao.Documentos!.Sum(documento => (long)Encoding.UTF8.GetByteCount(documento.Texto!));
+        return tamanho > ambiente.TamanhoMaximoDosDocumentosEmBytes
+            ? new ErroDoEnvelope("documentos_acima_do_limite", $"O texto dos documentos ultrapassa o limite de {ambiente.TamanhoMaximoDosDocumentosEmBytes} bytes; nada foi analisado.")
+            : null;
     }
 
-    private static string Rastrear(DocumentoSofia documento)
+    private static ResultadoAnaliseSofia FalhaTecnica(SolicitacaoAnaliseSofia solicitacao)
     {
-        var hash = Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(documento.Texto!)));
-        return string.Create(CultureInfo.InvariantCulture, $"Documento {documento.IdDocumento} recebido: {documento.Texto!.Length} caracteres, SHA-256 {hash}.");
+        const string Mensagem = "O registro da execução não respondeu; tente novamente.";
+        return new ResultadoAnaliseSofia(
+            ContratoSofiaV1.Versao,
+            solicitacao.IdExecucao!,
+            solicitacao.IdSolicitacao!,
+            ContratoSofiaV1.Agente,
+            ContratoSofiaV1.StatusErro,
+            $"A solicitação não pôde ser analisada. {Mensagem}",
+            [],
+            [],
+            new ErroSofia("falha_tecnica", Mensagem));
     }
 
-    private static ResultadoAnaliseSofia Erro(SolicitacaoAnaliseSofia solicitacao, string codigo, string mensagem) =>
-        Resultado(solicitacao, ContratoSofiaV1.StatusErro, $"A solicitação não pôde ser analisada. {mensagem}", [], new ErroSofia(codigo, mensagem));
-
-    private static ResultadoAnaliseSofia Resultado(
-        SolicitacaoAnaliseSofia solicitacao, string status, string analise, IReadOnlyList<string> observacoes, ErroSofia? erro) =>
-        new(ContratoSofiaV1.Versao, solicitacao.IdExecucao!, solicitacao.IdSolicitacao!, ContratoSofiaV1.Agente, status, analise, [], observacoes, erro);
+    private static string Hash(string texto) => Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(texto)));
 }

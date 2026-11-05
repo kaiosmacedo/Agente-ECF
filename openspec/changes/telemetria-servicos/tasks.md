@@ -31,8 +31,8 @@ Skill: testes-agentes-ia
 
 ## 5. Fechamento
 
-- [ ] 5.1 Depois do merge, verificar que o CD publicou, que a saúde continua 200 e que os logs seguem em JSON.
-- [ ] 5.2 Atualizar o cofre Obsidian e `docs/roteiro.md`; executar `/opsx:verify` e conferir a Definition of Done (seção 7 da constitution).
+- [x] 5.1 Depois do merge, verificar que o CD publicou, que a saúde continua 200 e que os logs seguem em JSON.
+- [x] 5.2 Atualizar o cofre Obsidian e `docs/roteiro.md`; executar `/opsx:verify` e conferir a Definition of Done (seção 7 da constitution).
 
 ## Workflow follow-up
 

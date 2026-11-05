@@ -112,6 +112,8 @@ public sealed class ServidorA2ATests
         Assert.Equal(ContratoDeTeste.IdExecucao, resultado.RootElement.GetProperty("idExecucao").GetString());
         Assert.Equal(ContratoDeTeste.IdSolicitacao, resultado.RootElement.GetProperty("idSolicitacao").GetString());
         Assert.Equal("parcial", resultado.RootElement.GetProperty("status").GetString());
+        Assert.True(Guid.TryParse(resultado.RootElement.GetProperty("idExecucaoAgente").GetString(), out _));
+        Assert.True(resultado.RootElement.GetProperty("revisaoHumana").GetBoolean());
     }
 
     [Fact(DisplayName = "REQ-A2A-005 SendMessage no envelope da v1.0 devolve Task concluída com Artifact")]

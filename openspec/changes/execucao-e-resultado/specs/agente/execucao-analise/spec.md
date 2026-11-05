@@ -34,13 +34,13 @@ O status SHALL ser calculado por regra determinística a partir dos estados das 
 #### Scenario: Validação obrigatória não concluída
 - **GIVEN** uma execução sem achados cuja etapa 4 não foi executada
 - **WHEN** o status é calculado
-- **THEN** o status é de análise parcial ou de falha técnica
+- **THEN** o status é `parcial` ou `falha-tecnica`
 - **AND** o resultado não declara o documento conforme
 
 #### Scenario: Entrada rejeitada
 - **GIVEN** uma execução cuja etapa 2 rejeitou o arquivo
 - **WHEN** o status é calculado
-- **THEN** o status é de entrada rejeitada
+- **THEN** o status é `entrada-rejeitada`
 
 ### Requirement: REQ-EXEC-005 Consulta do resultado
 A Api.Agente SHALL expor `GET /analises/{id}`, que devolve o envelope do resultado. Na primeira versão, a consulta não exige credencial nem restringe por organização (SQ-12); a restrição entra na retomada da mudança 02.

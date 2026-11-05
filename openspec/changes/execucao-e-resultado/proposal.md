@@ -1,6 +1,6 @@
 # Proposal: Execução da análise e contrato de resultado
 
-> **Estado:** especificação aprovada por Kaio Macedo em 2026-10-29 (roteiro, mudança 03; PR #4). Próxima etapa: esclarecimentos. Plano técnico e tarefas só depois dos esclarecimentos bloqueantes.
+> **Estado:** especificação aprovada por Kaio Macedo em 2026-10-29 (roteiro, mudança 03; PR #4) e adequada à emenda v2.0.0. Esclarecimentos respondidos por ele em 2026-11-05. Plano técnico e tarefas aprovados por ele no mesmo dia.
 
 ## Why
 
@@ -29,13 +29,13 @@ A criação de execuções a partir do envio do arquivo entra na mudança 07; aq
 
 | ID | Pergunta | Resposta | Fonte ou responsável | Data | Bloqueante |
 | --- | --- | --- | --- | --- | --- |
-| E01 | Quais nomes de status usar internamente? A constitution exige distinguir ao menos entrada rejeitada, concluída, parcial e falha técnica (DP-08). Para a Sofia, o contrato v1.0 só admite `concluido`, `parcial` e `erro`, então cada status interno precisa de um mapeamento. | — | Kaio Macedo | — | Sim |
-| E02 | Qual o critério de cada severidade (DP-07)? O contrato SOFIA v1.0 fixa a escala em `baixa`, `media`, `alta` e `critica` (opcional no achado), e a nossa precisa ser compatível. | — | Kaio Macedo | — | Sim |
-| E03 | O resultado é entregue só em JSON ou também como relatório legível (HTML ou PDF)? Para quem (DP-15)? | — | Kaio Macedo | — | Não; o JSON vem primeiro |
-| E04 | Uma referência citada pelo LLM que não existe: o item é rejeitado ou reclassificado como ausência de evidências (DP-23)? | — | Kaio Macedo | — | Não; vale a partir da mudança 10 |
-| E05 | Por quanto tempo guardar execuções e resultados (DP-11)? | — | Kaio Macedo | — | Não, para dados sintéticos |
-| E06 | Qual provedor de PostgreSQL gerenciado usar com o Vercel (por exemplo, Neon ou Supabase), como no DIMP? | — | Kaio Macedo | — | Sim, para persistir |
-| E07 | Como a primeira versão obtém usuário e organização, sem autenticação (SQ-12)? Pelo contrato SOFIA, o usuário é `usuario.nome` (dado pessoal, minimizar persistência). O contrato não tem organização: usar valor padrão configurado ou cabeçalho declarado? | — | Kaio Macedo | — | Sim |
+| E01 | Quais nomes de status usar internamente? A constitution exige distinguir ao menos entrada rejeitada, concluída, parcial e falha técnica (DP-08). Para a Sofia, o contrato v1.0 só admite `concluido`, `parcial` e `erro`, então cada status interno precisa de um mapeamento. | Internos: `entrada-rejeitada`, `concluida`, `parcial` e `falha-tecnica`. Para a Sofia: `concluida` vira `concluido`, `parcial` continua `parcial`, e os outros dois viram `erro`. `concluida` não significa "conforme". | Kaio Macedo | 2026-11-05 | Não |
+| E02 | Qual o critério de cada severidade (DP-07)? O contrato SOFIA v1.0 fixa a escala em `baixa`, `media`, `alta` e `critica` (opcional no achado), e a nossa precisa ser compatível. | `baixa`, `media`, `alta` e `critica`, a escala do contrato; cada regra declara a sua. Critérios em `design.md`, D3. | Kaio Macedo | 2026-11-05 | Não |
+| E03 | O resultado é entregue só em JSON ou também como relatório legível (HTML ou PDF)? Para quem (DP-15)? | Só JSON por agora. O relatório legível fica para uma mudança própria. | Kaio Macedo | 2026-11-05 | Não |
+| E04 | Uma referência citada pelo LLM que não existe: o item é rejeitado ou reclassificado como ausência de evidências (DP-23)? | Decidir na mudança 10. | Kaio Macedo | 2026-11-05 | Não; vale a partir da mudança 10 |
+| E05 | Por quanto tempo guardar execuções e resultados (DP-11)? | Adiar: só dados sintéticos por enquanto. DP-11 continua exigida antes de dados reais. | Kaio Macedo | 2026-11-05 | Não, para dados sintéticos |
+| E06 | Qual provedor de PostgreSQL gerenciado usar com o Vercel (por exemplo, Neon ou Supabase), como no DIMP? | Neon. | Kaio Macedo | 2026-11-05 | Não |
+| E07 | Como a primeira versão obtém usuário e organização, sem autenticação (SQ-12)? Pelo contrato SOFIA, o usuário é `usuario.nome` (dado pessoal, minimizar persistência). O contrato não tem organização: usar valor padrão configurado ou cabeçalho declarado? | Usuário vem de `usuario.nome`, com persistência mínima e fora dos logs. Organização usa um valor padrão configurado. | Kaio Macedo | 2026-11-05 | Não |
 
 ## Fontes oficiais
 
@@ -44,7 +44,7 @@ Não se aplica: o contrato não contém regras fiscais. As regras que produzem a
 ## Princípios, decisões e dependências
 
 - **Princípios:** P03, P04, P05, P06, P08, P09, P12, P13, P19; GD-01 a GD-05; SQ-12.
-- **Decisões pendentes:** resolve DP-07, DP-08 e DP-25; depende de DP-11 para dados reais; DP-15 e DP-23 podem ser resolvidas aqui ou adiadas para as mudanças 10 e posteriores.
+- **Decisões pendentes:** resolve DP-07, DP-08 e DP-25; define DP-15 como só JSON por agora; depende de DP-11 para dados reais; DP-23 fica para a mudança 10.
 - **Depende de:** 01 `fundacao-solucao` e 13 `servidor-a2a` (contrato SOFIA). As exigências de autenticação ficam adiadas (SQ-12; `docs/roteiro.md`). A execução guarda `idExecucao` e `idSolicitacao` da Sofia, além do próprio identificador, e deduplica retentativas por `idSolicitacao` quando houver efeito persistido.
 - **Skills:** `sofia-a2a-contrato`, `testes-agentes-ia`, `github-versionamento`.
 
