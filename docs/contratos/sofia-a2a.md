@@ -2,7 +2,7 @@
 
 Como a Sofia aciona o Agente-ECF. Requisitos em `openspec/changes/servidor-a2a/` e regras em RA-07, SQ-12 e SQ-13 da constitution. O contrato de negócio é compartilhado entre os agentes da turma e está em [`.claude/skills/sofia-a2a-contrato/references/contrato-sofia-v1.md`](../../.claude/skills/sofia-a2a-contrato/references/contrato-sofia-v1.md).
 
-**Situação:** esqueleto da integração, em produção desde 2026-11-05. Protocolo e contrato são reais, mas a análise ainda não existe: toda solicitação válida vira uma execução registrada e responde com status `parcial`, sem achados, declarando as validações não realizadas. Sem autenticação nem token (SQ-12): use somente dados sintéticos ou anonimizados.
+**Situação:** em produção desde 2026-11-05. Desde a mudança 07, o agente reconhece a ECF, recusa o que não é ECF e identifica o leiaute pelo `COD_VER`. Ele ainda não valida o conteúdo: toda ECF aceita termina com status `parcial`, sem achados, e declara as validações não realizadas. Sem autenticação nem token (SQ-12): use somente dados sintéticos ou anonimizados.
 
 ## Identificação
 
@@ -138,7 +138,10 @@ Resposta (o texto do Artifact foi formatado aqui para leitura; ele chega como st
 
 | Situação | `task.status.state` | `status` do contrato | `erro.codigo` |
 | --- | --- | --- | --- |
-| Solicitação válida | `TASK_STATE_COMPLETED` | `parcial` | — |
+| Solicitação válida com uma ECF | `TASK_STATE_COMPLETED` | `parcial` | — |
+| Nenhum documento é ECF | `TASK_STATE_COMPLETED` | `erro` | `nenhuma_ecf` |
+| Mais de uma ECF no pedido | `TASK_STATE_COMPLETED` | `erro` | `mais_de_uma_ecf` |
+| Linha da ECF acima do limite, ou linhas demais | `TASK_STATE_COMPLETED` | `erro` | `linha_acima_do_limite` ou `linhas_acima_do_limite` |
 | Campo obrigatório ausente ou inválido, `idDocumento` repetido | `TASK_STATE_COMPLETED` | `erro` | `solicitacao_invalida` |
 | `versaoContrato` diferente de `1.0` | `TASK_STATE_COMPLETED` | `erro` | `versao_contrato_nao_suportada` |
 | Texto dos documentos acima do limite | `TASK_STATE_COMPLETED` | `erro` | `documentos_acima_do_limite` |
@@ -166,12 +169,37 @@ Resposta (o texto do Artifact foi formatado aqui para leitura; ele chega como st
 
 A resposta de `SendMessage` já é final, mesmo com `returnImmediately`. No Vercel, as instâncias não duram, então `GetTask` não é garantido. `ListTasks` responde sempre com lista vazia: sem identidade verificada, nenhum chamador vê as tarefas dos outros.
 
+## Guia para a Sofia
+
+Para quem mantém a Sofia e para o agente validador que recebe o resultado depois dela (mudança 07, D9 e D10).
+
+**Como reconhecer uma ECF:** é um texto cuja primeira linha começa com `|0000|LECF|` (Manual da ECF, leiaute 12, p. 32 e 63). O campo seguinte é o `COD_VER`, de `0007` a `0012` para os leiautes 7 a 12 (anos-calendário 2020 a 2025). O cartão do agente diz o mesmo, na descrição da skill `analisar_documentos`.
+
+**O que enviar:**
+
+- Uma ECF por pedido, com o texto inteiro em `documentos[].texto` e `tipo` `text/plain`.
+- Sem o corte de 20.000 caracteres: com o marcador `[DOCUMENTO TRUNCADO]`, o agente só identifica o leiaute e declara a limitação "documento cortado antes de chegar ao agente". Retirar o corte para os agentes é com quem mantém a Sofia.
+- Até 4 MiB de texto. Acima de cerca de 4,5 MB de corpo, o Vercel responde HTTP 413 sem JSON-RPC, e a Sofia deve tratar como falha técnica.
+- Outros documentos no mesmo pedido não atrapalham: ficam nas observações como "não analisado por este agente: não é uma ECF".
+
+**Como ler o resultado:**
+
+| Campo | Significado |
+| --- | --- |
+| `veredito` | Como a ECF está: `conforme`, `conforme-com-ressalvas`, `recusado`, `parcial` ou `nao-avaliado`. |
+| `achados` | O que corrigir, com registro, linha, campo, valor encontrado, orientação e fonte com página. |
+| `naoVerificados` e `observacoes` | O que ficou de fora, como o leiaute identificado, documentos que não são ECF e etapas não realizadas. |
+| `idExecucaoAgente` | Identificador para consultar `GET /analises/{id}`, com o envelope completo. |
+| `erro.codigo` | Por que nada foi analisado, na tabela de desfechos. |
+
+**Agente validador:** o Agente-ECF não chama outros agentes (RA-07): a Sofia leva o resultado adiante. O resultado mantém os mesmos `idExecucao` e `idSolicitacao`, e cada achado traz a evidência necessária para um terceiro conferir.
+
 ## Limite de tamanho
 
 | Onde | Limite | O que acontece acima dele |
 | --- | --- | --- |
 | Vercel (produção) | Corpo da requisição entre 4,4 MB e 4,6 MB, medido em 2026-11-05 | HTTP 413 `FUNCTION_PAYLOAD_TOO_LARGE`, sem resposta JSON-RPC. A Sofia deve tratar como falha técnica. |
-| Serviço | `A2A:TamanhoMaximoDosDocumentosEmBytes` (10 MiB) | Resultado com status `erro` e código `documentos_acima_do_limite`. Em produção, o limite do Vercel vem antes. |
+| Serviço | `Recepcao:TamanhoMaximoDosDocumentosEmBytes` (4 MiB), o mesmo no `POST /analises` | Resultado com status `erro` e código `documentos_acima_do_limite`. Em produção, o limite do Vercel vem antes para corpos acima de cerca de 4,5 MB. |
 | Kestrel (Docker) | 30 MB no corpo, padrão do ASP.NET Core | Erro HTTP 413. |
 
 O corpo inclui o envelope e o escape do JSON, então o texto útil é um pouco menor. A decisão para arquivos reais fica na mudança 07 (DP-05).
@@ -183,7 +211,9 @@ O corpo inclui o envelope e o escape do JSON, então o texto útil é um pouco m
 | Opção (variável de ambiente) | Padrão | Uso |
 | --- | --- | --- |
 | `A2A:UrlPublica` (`A2A__UrlPublica`) | Em produção, a URL do Vercel; fora dela, `http://localhost:8080/a2a` | Endereço anunciado no cartão |
-| `A2A:TamanhoMaximoDosDocumentosEmBytes` | `10485760` (provisório até DP-05, na mudança 07) | Limite do texto somado dos documentos |
+| `Recepcao:TamanhoMaximoDosDocumentosEmBytes` (`Recepcao__TamanhoMaximoDosDocumentosEmBytes`) | `4194304` | Limite do texto somado dos documentos, nos dois canais (mudança 07, D4) |
+| `Recepcao:TamanhoMaximoDaLinhaEmCaracteres` | Igual ao tamanho máximo | Limite de cada linha; o manual não limita o `ARQ_RTF` do Y800 |
+| `Recepcao:QuantidadeMaximaDeLinhas` | `1000000` | Limite de linhas da ECF |
 | `Cors:AllowedOrigins:<n>` (`Cors__AllowedOrigins__<n>`) | Vazio | Origens de navegador, só se houver frontend |
 | `Identidade:OrganizacaoPadrao` (`Identidade__OrganizacaoPadrao`) | `infis` | Organização registrada nas execuções |
 | `ConnectionStrings:Execucoes` (`ConnectionStrings__Execucoes`) | Nenhum: obrigatória | Banco das execuções, no formato `Host=...;Database=...;Username=...;Password=...` |

@@ -109,7 +109,7 @@ public sealed class ConsultaAoManualTests
         Assert.All(achado.TrechosDoManual!, trecho => Assert.Equal(("leiaute-12", 0.8), (trecho.Versao, trecho.Relevancia)));
     }
 
-    [Fact(DisplayName = "REQ-CONSULTA-006 O contrato SOFIA traz os trechos do achado, e o envelope está na versão 1.1")]
+    [Fact(DisplayName = "REQ-CONSULTA-006 O contrato SOFIA traz os trechos do achado, e o envelope está na versão 1.2")]
     public async Task TrechosNoContratoSofia()
     {
         var execucao = await Executar(new ConsultaFalsa(), 10, Estrutural("EST-TESTE-001", 3));
@@ -117,7 +117,7 @@ public sealed class ConsultaAoManualTests
 
         var json = JsonSerializer.SerializeToElement(ProjecaoParaSofia.Projetar(envelope), ContratoSofiaV1.Json);
 
-        Assert.Equal("1.1", envelope.VersaoContrato);
+        Assert.Equal("1.2", envelope.VersaoContrato);
         var trecho = json.GetProperty("achados")[0].GetProperty("trechosDoManual")[0];
         Assert.Equal("leiaute-12", trecho.GetProperty("versao").GetString());
         Assert.True(trecho.TryGetProperty("pagina", out _));

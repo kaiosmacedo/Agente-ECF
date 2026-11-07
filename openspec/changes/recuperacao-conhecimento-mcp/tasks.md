@@ -30,13 +30,13 @@
 ## 5. Avaliação
 
 - [x] 5.1 Acrescentar a `docs/avaliacao/perguntas.json` o código das perguntas que citam regra ou registro e 5 perguntas que o manual não responde (D4).
-- [ ] 5.2 Rodar `--avaliar` com e sem a busca por código, e com 3, 5 e 8 trechos; escolher o limiar pela distribuição das relevâncias; registrar o resultado e o custo em `docs/avaliacao/recuperacao.md` (GD-08; P11). Os valores só entram na configuração depois do registro.
+- [x] 5.2 Rodar `--avaliar` com e sem a busca por código, e com 3, 5 e 8 trechos; escolher o limiar pela distribuição das relevâncias; registrar o resultado e o custo em `docs/avaliacao/recuperacao.md` (GD-08; P11). Os valores só entram na configuração depois do registro.
 
 ## 6. Produção
 
 - [ ] 6.1 **(em aberto, por decisão de Kaio Macedo em 2026-11-07)** Kaio Macedo cadastra no Vercel a chave da OpenAI da Api.RAG (E04; SQ-03). Até lá, a busca fica desativada por configuração.
-- [ ] 6.2 Depois do merge, verificar em produção, só com dados sintéticos: `tools/list` e `tools/call` em `/mcp` vindos de instâncias diferentes, a busca desativada sem a chave e, com a chave, uma consulta com trechos do leiaute 12 (D1; ADR 0005). Se o transporte falhar no Vercel, seguir a alternativa do ADR.
-- [ ] 6.3 Verificar em produção uma análise que passa pela etapa 5, quando a mudança 07 estiver em produção.
+- [ ] 6.2 **(feito em parte em 2026-11-07: `tools/list` e `busca_desativada` em produção, com resposta `text/event-stream`; falta a consulta com trechos, que depende da chave)** Depois do merge, verificar em produção, só com dados sintéticos: `tools/list` e `tools/call` em `/mcp` vindos de instâncias diferentes, a busca desativada sem a chave e, com a chave, uma consulta com trechos do leiaute 12 (D1; ADR 0005). Se o transporte falhar no Vercel, seguir a alternativa do ADR.
+- [ ] 6.3 Verificar em produção uma análise que passa pela etapa 5, quando a mudança 08 ligar a etapa 5 ao fluxo (a etapa 5 só fundamenta achados, e eles vêm da validação estrutural).
 
 ## 7. Fechamento
 

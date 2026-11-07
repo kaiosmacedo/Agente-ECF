@@ -37,6 +37,7 @@
 
 - [ ] 5.1 Verificar por A2A, com Testcontainers, uma ECF sintética válida (`parcial`, sem achado estrutural) e uma com erro impeditivo (`recusado`, com o que corrigir).
 - [ ] 5.2 Atualizar o cartão para a versão 1.2.0 (D11) e a cópia em `docs/contratos/agent-card.json`; verificar com teste de contrato.
+- [ ] 5.3 Ligar a etapa 5 ao fluxo depois da etapa 4, com `EtapaDeConsultaAoManual` da mudança 06 (D7 dela), e verificar em contêineres a chamada da Api.Agente à Api.RAG com a busca desligada: etapa 5 não executada e limitação "consulta ao manual desativada" (REQ-CONSULTA-007).
 
 ## 6. Gabarito
 

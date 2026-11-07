@@ -187,6 +187,16 @@ Nenhuma chamada a provedor pago. A leitura de 4 MiB em fluxo é linear no tamanh
 3. Verificação em produção com ECF sintéticas: cartão, `SendMessage` com ECF, com NF-e, com marcador de corte, e `POST /analises`.
 4. Volta: reverter o deploy no Vercel. As colunas novas têm valor padrão e não quebram a versão anterior.
 
+## Ajustes na implementação (2026-11-07)
+
+Mudanças em relação ao plano aprovado, sem efeito nos requisitos:
+
+- **Sem migrações (D1, D7):** o envelope da execução já é guardado inteiro em JSON, então o `canal` e a causa da falha de cada etapa ficam nele, na versão 1.2, em vez de colunas novas (P16).
+- **Nome do arquivo (D3):** não é usado em lugar nenhum, nem nas observações. Ele não ajuda a análise e pode trazer dado do contribuinte.
+- **Corpo que não é multipart (D3):** recebe HTTP 415, como o ASP.NET Core faz para tipo de conteúdo não aceito; falta da parte `arquivo` recebe 400.
+- **Observações (D2):** o documento que não é ECF e o leiaute identificado vão para `observacoes`, que não mudam status nem veredito, em vez de limitações.
+- **Etapa 5 no fluxo:** a etapa 5 só fundamenta achados, e eles vêm da validação estrutural. Ligá-la ao fluxo passou para a mudança 08 (tarefa 5.3 dela).
+
 ## Open Questions
 
 Nenhuma bloqueante. A medição de ECF reais fica para antes de dados reais (D4).

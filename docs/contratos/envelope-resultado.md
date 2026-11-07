@@ -2,16 +2,16 @@
 
 Formato do resultado de uma execução, devolvido por `GET /analises/{id}`. Requisitos em `openspec/changes/execucao-e-resultado/` (REQ-RESULT-001 a 006, REQ-EXEC-001 a 006) e regras em P03 a P09, GD-03, GD-04 e GD-05 da constitution.
 
-**Situação:** a análise da ECF ainda não existe. Toda solicitação válida termina com status e veredito `parcial`, com a revisão humana indicada e sem achados. Sem autenticação (SQ-12): a consulta não exige credencial nem restringe por organização, então use somente dados sintéticos ou anonimizados.
+**Situação:** o agente recebe a ECF e identifica o leiaute (mudança 07), mas ainda não valida o conteúdo. Toda ECF aceita termina com status e veredito `parcial`, com a revisão humana indicada e sem achados. Sem autenticação (SQ-12): a consulta não exige credencial nem restringe por organização, então use somente dados sintéticos ou anonimizados.
 
 ## Exemplo
 
-Saída real do serviço para a solicitação de `tests/Api.Agente.Tests/Fixtures/Sofia/solicitacao-exemplo.json`. Um teste confere que este exemplo continua igual ao contrato.
+Saída real do serviço para a solicitação de `tests/Api.Agente.Tests/Fixtures/Sofia/solicitacao-exemplo.json`, com o primeiro documento trocado pela ECF sintética do leiaute 12 (`tests/Api.Agente.Tests/Dados/ecf/`), como nos testes. Um teste confere que este exemplo continua igual ao contrato.
 
 ```json
 {
-  "versaoContrato": "1.1",
-  "idExecucao": "14fa6878-4e5e-4189-8ac0-2897fd0aa555",
+  "versaoContrato": "1.2",
+  "idExecucao": "0b198f54-5004-4357-a3bb-2847f3eaad56",
   "idExecucaoSofia": "8b2f0ad6-c2e4-4a68-8bdd-20f785bc798e",
   "idSolicitacao": "e1b3a4cb-d729-4bd4-b796-b9c94be07b46",
   "idCorrelacao": "exemplo-doc-1",
@@ -23,66 +23,74 @@ Saída real do serviço para a solicitação de `tests/Api.Agente.Tests/Fixtures
     "graves": 0,
     "observacoes": 0
   },
-  "sintese": "Avaliação parcial: nem todas as validações foram realizadas. 2 documento(s) recebido(s). Esta versão ainda não executa as validações da ECF: nenhum achado foi produzido e nenhuma conformidade é declarada.",
+  "sintese": "Avaliação parcial: nem todas as validações foram realizadas. ECF do leiaute 12 recebida. Esta versão ainda não executa as validações de conteúdo: nenhum achado foi produzido e nenhuma conformidade é declarada.",
   "etapas": [
     {
       "numero": 1,
       "nome": "Recepção",
       "estado": "concluida",
-      "justificativa": null
+      "justificativa": null,
+      "causa": null
     },
     {
       "numero": 2,
       "nome": "Validação da entrada",
       "estado": "concluida",
-      "justificativa": null
+      "justificativa": null,
+      "causa": null
     },
     {
       "numero": 3,
       "nome": "Identificação do leiaute",
-      "estado": "nao-executada",
-      "justificativa": null
+      "estado": "concluida",
+      "justificativa": null,
+      "causa": null
     },
     {
       "numero": 4,
       "nome": "Validação estrutural",
       "estado": "nao-executada",
-      "justificativa": null
+      "justificativa": null,
+      "causa": null
     },
     {
       "numero": 5,
       "nome": "Consulta ao manual",
       "estado": "nao-executada",
-      "justificativa": null
+      "justificativa": null,
+      "causa": null
     },
     {
       "numero": 6,
       "nome": "Ferramentas externas",
       "estado": "nao-executada",
-      "justificativa": null
+      "justificativa": null,
+      "causa": null
     },
     {
       "numero": 7,
       "nome": "Análise com LLM",
       "estado": "nao-executada",
-      "justificativa": null
+      "justificativa": null,
+      "causa": null
     },
     {
       "numero": 8,
       "nome": "Validação da saída",
       "estado": "nao-executada",
-      "justificativa": null
+      "justificativa": null,
+      "causa": null
     },
     {
       "numero": 9,
       "nome": "Retorno do resultado",
       "estado": "concluida",
-      "justificativa": null
+      "justificativa": null,
+      "causa": null
     }
   ],
   "achados": [],
   "limitacoes": [
-    "Etapa não realizada: Identificação do leiaute. Motivo: ainda não implementada nesta versão.",
     "Etapa não realizada: Validação estrutural. Motivo: ainda não implementada nesta versão.",
     "Etapa não realizada: Consulta ao manual. Motivo: ainda não implementada nesta versão.",
     "Etapa não realizada: Ferramentas externas. Motivo: ainda não implementada nesta versão.",
@@ -118,8 +126,8 @@ Saída real do serviço para a solicitação de `tests/Api.Agente.Tests/Fixtures
   "documentos": [
     {
       "idDocumento": "doc-001",
-      "hash": "8d5e75d4a95a7e77b3e5f11e5d1a45aa6c0063b6708948a28ffc89f6657cbccf",
-      "caracteres": 50
+      "hash": "4fcc568d741837390469a2019c1eee5367d3bba78fdfa3ada09720e8e92f6701",
+      "caracteres": 140
     },
     {
       "idDocumento": "doc-002",
@@ -133,14 +141,27 @@ Saída real do serviço para a solicitação de `tests/Api.Agente.Tests/Fixtures
     "verificada": false
   },
   "versoes": {
-    "contrato": "1.1",
+    "contrato": "1.2",
     "servico": "0.1.0+local",
     "validadores": "nenhum"
   },
-  "criadaEm": "2026-11-07T02:41:36.8864682+00:00",
-  "concluidaEm": "2026-11-07T02:41:36.8905328+00:00",
-  "duracaoMs": 4.0646,
-  "erro": null
+  "criadaEm": "2026-11-07T23:22:55.0812409+00:00",
+  "concluidaEm": "2026-11-07T23:22:55.0882484+00:00",
+  "duracaoMs": 7.0075,
+  "erro": null,
+  "canal": "a2a",
+  "leiaute": {
+    "situacao": "identificado",
+    "tipo": "ECF",
+    "leiaute": 12,
+    "codVer": "0012",
+    "anoDoPeriodo": 2025,
+    "motivo": null
+  },
+  "observacoes": [
+    "Documento doc-002 não analisado por este agente: não é uma ECF.",
+    "Leiaute identificado no documento doc-001: 12 (COD_VER 0012, DT_FIN em 2025)."
+  ]
 }
 ```
 
@@ -150,7 +171,7 @@ Todos são preenchidos pelo sistema, nunca pelo modelo (P13).
 
 | Campo | Conteúdo |
 | --- | --- |
-| `versaoContrato` | Versão deste envelope, hoje `1.1`. A 1.1 acrescentou `trechosDoManual` aos achados, opcional (mudança 06). |
+| `versaoContrato` | Versão deste envelope, hoje `1.2`. A 1.1 acrescentou `trechosDoManual` aos achados (mudança 06); a 1.2, `canal`, `leiaute`, `observacoes` e a `causa` de cada etapa (mudança 07). Todos opcionais. |
 | `idExecucao` | Identificador da execução, gerado pelo agente. É o `{id}` da consulta. |
 | `idExecucaoSofia` | `idExecucao` recebido da Sofia. |
 | `idSolicitacao` | `idSolicitacao` recebido da Sofia. É único: uma retentativa devolve a execução já registrada. |
@@ -158,9 +179,12 @@ Todos são preenchidos pelo sistema, nunca pelo modelo (P13).
 | `status` | Se a análise rodou até o fim: status interno, na tabela abaixo. |
 | `veredito` | Como a ECF está: veredito, na tabela abaixo. |
 | `revisaoHumana` | Calculada pelo sistema; nenhuma recomendação do modelo a dispensa (P09). |
+| `canal` | `a2a` ou `rest`: por onde o pedido chegou (mudança 07, D1). |
+| `leiaute` | O que a etapa 3 identificou: `situacao` (`identificado`, `nao-suportado` ou `ambiguo`), `tipo` (`ECF`), `leiaute`, `codVer`, `anoDoPeriodo` (ano de `DT_FIN`) e `motivo`, quando não identificou (REQ-LEIAUTE-001 a 004). Vazio quando a entrada foi rejeitada antes. |
+| `observacoes` | Informações que não mudam status nem veredito, como o leiaute identificado e cada documento que não é ECF (REQ-RECEPCAO-006). |
 | `resumo` | Quantos achados há em cada classe: `impeditivas`, `graves` e `observacoes`. |
 | `sintese` | Texto curto sobre o resultado, a partir do veredito. |
-| `etapas` | As nove etapas de P03, sempre todas, cada uma com `numero`, `nome`, `estado` e `justificativa`. |
+| `etapas` | As nove etapas de P03, sempre todas, cada uma com `numero`, `nome`, `estado`, `justificativa` e `causa`. A `causa` só vem em etapa com falha: `tecnica` torna o status `falha-tecnica`; `documento`, como `COD_VER` ausente, deixa a análise `parcial` (mudança 07, D7). |
 | `achados` | Lista de achados, descritos abaixo. |
 | `limitacoes` | Cada validação obrigatória não realizada, com o motivo, e as demais limitações da análise. |
 | `naoVerificados` | O que o arquivo não prova, com `item` e `motivo`. Não muda o status nem o veredito, e fica vazio em `nao-avaliado`. |
@@ -168,7 +192,7 @@ Todos são preenchidos pelo sistema, nunca pelo modelo (P13).
 | `identidade` | `usuarioPseudonimo` (SHA-256 de `usuario.nome`), `organizacao` (valor configurado) e `verificada`, sempre `false` nesta versão. |
 | `versoes` | Versões do `contrato`, do `servico` e dos `validadores`. |
 | `criadaEm`, `concluidaEm`, `duracaoMs` | Datas em UTC e duração. |
-| `erro` | `codigo` e `mensagem`, quando a entrada é rejeitada; senão, `null`. |
+| `erro` | `codigo` e `mensagem`, quando a entrada é rejeitada; senão, `null`. Códigos: `solicitacao_invalida`, `versao_contrato_nao_suportada`, `documentos_acima_do_limite`, `nenhuma_ecf`, `mais_de_uma_ecf`, `linha_acima_do_limite` e `linhas_acima_do_limite` (mudança 07, D2). |
 
 Texto dos documentos, nome do usuário e pergunta não são guardados (GD-06, SQ-04). O pseudônimo é só minimização: um SHA-256 sem sal de um nome conhecido pode ser recalculado. Por isso, dados reais continuam dependendo de DP-11 e da retomada da autenticação (mudança 02).
 

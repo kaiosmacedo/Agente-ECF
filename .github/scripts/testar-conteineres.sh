@@ -4,6 +4,7 @@
 set -euo pipefail
 
 VERSAO="${VERSAO:-local}"
+TEMPORARIO=$(mktemp -d)
 
 # Banco descartável de cada serviço, na imagem do compose. Sem senha: só existe durante este teste, em rede própria.
 REDE=agente-ecf-ci
@@ -13,6 +14,7 @@ CONEXAO="Host=$BANCO;Database=postgres;Username=postgres"
 remover_banco() {
   docker rm -f "$BANCO" > /dev/null 2>&1 || true
   docker network rm "$REDE" > /dev/null 2>&1 || true
+  rm -rf "$TEMPORARIO" 2> /dev/null || true
 }
 
 subir_banco() {
@@ -55,7 +57,7 @@ testar_a2a() {
   local id="$1" corpo resposta execucao
   curl -fsS "http://localhost:8080/.well-known/agent-card.json" | jq -e '.supportedInterfaces[0].protocolVersion == "1.0" and .skills[0].id == "analisar_documentos"' > /dev/null \
     || falhar "$id" "Cartão do agente inválido."
-  corpo=$(jq -n --arg texto '{"versaoContrato":"1.0","idExecucao":"8b2f0ad6-c2e4-4a68-8bdd-20f785bc798e","idSolicitacao":"e1b3a4cb-d729-4bd4-b796-b9c94be07b46","usuario":{"nome":"Usuario Teste"},"pergunta":"Analise o documento","documentos":[{"idDocumento":"doc-001","nome":"teste.txt","texto":"Documento sintetico."}]}' \
+  corpo=$(jq -n --arg texto '{"versaoContrato":"1.0","idExecucao":"8b2f0ad6-c2e4-4a68-8bdd-20f785bc798e","idSolicitacao":"e1b3a4cb-d729-4bd4-b796-b9c94be07b46","usuario":{"nome":"Usuario Teste"},"pergunta":"Analise o documento","documentos":[{"idDocumento":"doc-001","nome":"ecf.txt","texto":"|0000|LECF|0012|11111111000191|EMPRESA SINTETICA DE TESTE|0|0|||01012025|31122025|N||0||\r\n|9999|2|\r\n"}]}' \
     '{jsonrpc:"2.0",id:"ci",method:"SendMessage",params:{message:{role:"ROLE_USER",messageId:"5f92c2ba-6870-4862-87ba-1ae8669a77f4",parts:[{text:$texto}]}}}')
   resposta=$(curl -fsS -X POST "http://localhost:8080/a2a" -H "Content-Type: application/json" -H "A2A-Version: 1.0" -d "$corpo")
   echo "$resposta" | jq -e '.result.task.status.state == "TASK_STATE_COMPLETED" and (.result.task.artifacts[0].parts[0].text | fromjson | .status == "parcial" and .veredito == "parcial" and .idSolicitacao == "e1b3a4cb-d729-4bd4-b796-b9c94be07b46")' > /dev/null \
@@ -66,8 +68,14 @@ testar_a2a() {
   curl -fsS -X POST "http://localhost:8080/a2a" -H "Content-Type: application/json" -H "A2A-Version: 1.0" -d "$corpo" \
     | jq -e --arg id "$execucao" '.result.task.artifacts[0].parts[0].text | fromjson | .idExecucaoAgente == $id' > /dev/null \
     || falhar "$id" "A retentativa criou outra execução."
-  curl -fsS "http://localhost:8080/openapi/v1.json" | jq -e '.paths["/analises/{id}"]' > /dev/null \
-    || falhar "$id" "O documento OpenAPI não descreve GET /analises/{id}."
+  curl -fsS "http://localhost:8080/openapi/v1.json" | jq -e '.paths["/analises/{id}"] and .paths["/analises"].post' > /dev/null \
+    || falhar "$id" "O documento OpenAPI não descreve /analises."
+  # REST com a mesma ECF sintética, em ISO 8859-1 e CR LF, como o manual pede (mudança 07, REQ-RECEPCAO-001 e 008).
+  mkdir -p "$TEMPORARIO"
+  printf '|0000|LECF|0012|11111111000191|EMPRESA SINTETICA DE TESTE|0|0|||01012025|31122025|N||0||\r\n|9999|2|\r\n' > "$TEMPORARIO/ecf.txt"
+  (cd "$TEMPORARIO" && curl -fsS -X POST "http://localhost:8080/analises" -F "arquivo=@ecf.txt;type=text/plain") \
+    | jq -e '.canal == "rest" and .status == "parcial" and .leiaute.leiaute == 12 and .leiaute.codVer == "0012"' > /dev/null \
+    || falhar "$id" "POST /analises não identificou o leiaute da ECF."
 }
 
 # A migração cria o banco; rodar de novo não muda nada, e a prontidão só fica verde com o banco no ar.

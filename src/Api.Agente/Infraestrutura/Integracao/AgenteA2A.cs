@@ -50,11 +50,15 @@ internal sealed partial class AgenteA2A(ProcessadorDeSolicitacoes processador, I
         eventQueue.Complete();
     }
 
+    /// <summary>
+    /// Cartão 1.1.0 (REQ-A2A-007, REQ-A2A-008; mudança 07, D8): diz à Sofia que documentos o agente analisa e o que
+    /// devolve, sem prometer validação que ainda não existe. O identificador da skill é o padrão da turma.
+    /// </summary>
     public static AgentCard Cartao(string url) => new()
     {
         Name = ContratoSofiaV1.Agente.Nome,
-        Description = "Analisa arquivos da Escrituração Contábil Fiscal (ECF) enviados pela Sofia INFIS.",
-        Version = "1.0.0",
+        Description = "Valida arquivos da Escrituração Contábil Fiscal (ECF) do SPED enviados pela Sofia INFIS e devolve o veredito, o que corrigir e o que não foi verificado.",
+        Version = "1.1.0",
         SupportedInterfaces = [new AgentInterface { Url = url, ProtocolBinding = "JSONRPC", ProtocolVersion = "1.0" }],
         Capabilities = new AgentCapabilities { Streaming = false, PushNotifications = false },
         DefaultInputModes = ["text/plain", "application/json"],
@@ -64,9 +68,20 @@ internal sealed partial class AgenteA2A(ProcessadorDeSolicitacoes processador, I
             new AgentSkill
             {
                 Id = "analisar_documentos",
-                Name = "Análise de arquivos da ECF",
-                Description = "Analisa o texto de arquivos da ECF enviados pela Sofia INFIS.",
-                Tags = ["infis", "sofia", "ecf"],
+                Name = "Validação de arquivos da ECF",
+                Description = "Recebe o texto de um arquivo da ECF (Escrituração Contábil Fiscal, do SPED) dos leiautes 7 a 12, anos-calendário 2020 a 2025. "
+                    + "Uma ECF é um texto cuja primeira linha começa com |0000|LECF|. Envie uma ECF por pedido, com o arquivo inteiro. "
+                    + "O agente identifica o leiaute pelo campo COD_VER e devolve o veredito, os achados com registro, linha e o que corrigir, e o que não foi verificado. "
+                    + "Não analisa outros documentos, como NF-e, ECD ou EFD.",
+                Tags = ["infis", "sofia", "ecf", "sped", "escrituracao-contabil-fiscal"],
+                Examples =
+                [
+                    "Valide esta ECF e diga o que precisa ser corrigido.",
+                    "Esta ECF do ano-calendário 2025 está correta?",
+                    "Quais erros desta ECF impedem a entrega?",
+                ],
+                InputModes = ["text/plain"],
+                OutputModes = ["application/json"],
             },
         ],
     };

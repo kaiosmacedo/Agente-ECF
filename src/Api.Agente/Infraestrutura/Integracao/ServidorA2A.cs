@@ -13,15 +13,8 @@ internal static class ServidorA2A
     public static IServiceCollection AdicionarServidorA2A(this IServiceCollection servicos, IConfiguration configuracao)
     {
         servicos.AdicionarOpcoesValidadas<OpcoesA2A>(configuracao, OpcoesA2A.Secao);
-        servicos.AdicionarOpcoesValidadas<OpcoesDaIdentidade>(configuracao, OpcoesDaIdentidade.Secao);
         servicos.AddHttpContextAccessor();
         servicos.AddSingleton(TimeProvider.System);
-        servicos.AddSingleton(provedor =>
-        {
-            var opcoes = provedor.GetRequiredService<IOptions<OpcoesA2A>>().Value;
-            var identidade = provedor.GetRequiredService<IOptions<OpcoesDaIdentidade>>().Value;
-            return new AmbienteDaAnalise(opcoes.TamanhoMaximo, identidade.OrganizacaoPadrao, provedor.GetRequiredService<IdentidadeServico>().Versao);
-        });
         servicos.AddSingleton<ProcessadorDeSolicitacoes>();
         servicos.AddSingleton<ITaskStore, ArmazemDeTarefas>();
 

@@ -1,5 +1,7 @@
 using System.Globalization;
+using Api.Agente.Aplicacao.Analise;
 using Api.Agente.Dominio.Execucoes;
+using Api.Agente.Dominio.Leiaute;
 
 namespace Api.Agente.Aplicacao.Execucoes;
 
@@ -28,9 +30,15 @@ internal sealed record EnvelopeDoResultado(
     DateTimeOffset CriadaEm,
     DateTimeOffset? ConcluidaEm,
     double DuracaoMs,
-    ErroDoEnvelope? Erro);
+    ErroDoEnvelope? Erro,
+    string? Canal = null,
+    LeiauteDoEnvelope? Leiaute = null,
+    IReadOnlyList<string>? Observacoes = null);
 
-internal sealed record EtapaDoEnvelope(int Numero, string Nome, string Estado, string? Justificativa);
+internal sealed record EtapaDoEnvelope(int Numero, string Nome, string Estado, string? Justificativa, string? Causa = null);
+
+/// <summary>O que a etapa 3 identificou (REQ-LEIAUTE-001): <c>situacao</c> é identificado, nao-suportado ou ambiguo.</summary>
+internal sealed record LeiauteDoEnvelope(string Situacao, string Tipo, int? Leiaute, string? CodVer, int? AnoDoPeriodo, string? Motivo);
 
 internal sealed record AchadoDoEnvelope(
     string IdAchado,
@@ -67,8 +75,11 @@ internal sealed record ErroDoEnvelope(string Codigo, string Mensagem);
 /// <summary>Monta o envelope a partir da execução, com os nomes públicos de status, categorias e severidades.</summary>
 internal static class MontadorDoEnvelope
 {
-    /// <summary>1.1: os achados ganham <c>trechosDoManual</c>, opcional (mudança 06, D8).</summary>
-    public const string VersaoDoContrato = "1.1";
+    /// <summary>
+    /// 1.1: os achados ganham <c>trechosDoManual</c> (mudança 06, D8). 1.2: <c>canal</c>, <c>leiaute</c>,
+    /// <c>observacoes</c> e a causa da falha de cada etapa (mudança 07). Todos opcionais.
+    /// </summary>
+    public const string VersaoDoContrato = "1.2";
 
     /// <summary>O que nenhum arquivo prova sozinho (docs/classificacao-das-regras.md; decisão 4 da pesquisa).</summary>
     private static readonly ItemNaoVerificado[] NaoVerificadosSempre =
@@ -98,7 +109,7 @@ internal static class MontadorDoEnvelope
     };
 
     public static EnvelopeDoResultado Montar(
-        Execucao execucao, string? correlacao, string versaoDoServico, string sintese, ErroDoEnvelope? erro) =>
+        Execucao execucao, string? correlacao, string versaoDoServico, string sintese, ErroDoEnvelope? erro, CanalDaAnalise canal = CanalDaAnalise.A2A) =>
         new(
             VersaoDoContrato,
             execucao.Id,
@@ -110,7 +121,7 @@ internal static class MontadorDoEnvelope
             execucao.ExigeRevisaoHumana,
             Resumo(execucao),
             $"{TextoDoVeredito(execucao)} {sintese}",
-            [.. execucao.Etapas.Select(etapa => new EtapaDoEnvelope((int)etapa.Etapa, NomeDaEtapa[etapa.Etapa], NomeDoEstado(etapa.Estado), etapa.Justificativa))],
+            [.. execucao.Etapas.Select(etapa => new EtapaDoEnvelope((int)etapa.Etapa, NomeDaEtapa[etapa.Etapa], NomeDoEstado(etapa.Estado), etapa.Justificativa, NomeDaCausa(etapa.Causa)))],
             [.. execucao.Achados.Select(achado => Achado(achado, execucao))],
             [.. ValidacoesNaoRealizadas(execucao), .. execucao.Limitacoes],
             execucao.Veredito == VereditoDaExecucao.NaoAvaliado ? [] : NaoVerificadosSempre,
@@ -120,7 +131,30 @@ internal static class MontadorDoEnvelope
             execucao.CriadaEm,
             execucao.ConcluidaEm,
             execucao.ConcluidaEm is { } fim ? (fim - execucao.CriadaEm).TotalMilliseconds : 0,
-            erro);
+            erro,
+            canal == CanalDaAnalise.Rest ? "rest" : "a2a",
+            execucao.Leiaute is { } leiaute ? Leiaute(leiaute) : null,
+            execucao.Observacoes);
+
+    private static LeiauteDoEnvelope Leiaute(IdentificacaoDoLeiaute leiaute) => new(
+        leiaute.Situacao switch
+        {
+            SituacaoDaIdentificacao.Identificado => "identificado",
+            SituacaoDaIdentificacao.VersaoNaoSuportada => "nao-suportado",
+            _ => "ambiguo",
+        },
+        leiaute.Tipo,
+        leiaute.Leiaute,
+        leiaute.CodVer,
+        leiaute.AnoDoPeriodo,
+        leiaute.Motivo);
+
+    private static string? NomeDaCausa(CausaDaFalha? causa) => causa switch
+    {
+        CausaDaFalha.Tecnica => "tecnica",
+        CausaDaFalha.Documento => "documento",
+        _ => null,
+    };
 
     public static string NomeDoStatus(StatusDaExecucao status) => status switch
     {

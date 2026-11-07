@@ -23,8 +23,15 @@ internal enum EstadoDaEtapa
     ComFalha,
 }
 
-/// <summary>Estado atual de uma etapa e a justificativa, quando não for aplicável.</summary>
-internal sealed record EtapaDaExecucao(Etapa Etapa, EstadoDaEtapa Estado, string? Justificativa = null);
+/// <summary>De quem é a falha de uma etapa: do sistema ou do documento recebido (mudança 07, D7).</summary>
+internal enum CausaDaFalha
+{
+    Tecnica,
+    Documento,
+}
+
+/// <summary>Estado atual de uma etapa, a justificativa, quando não for aplicável, e a causa, quando falhar.</summary>
+internal sealed record EtapaDaExecucao(Etapa Etapa, EstadoDaEtapa Estado, string? Justificativa = null, CausaDaFalha? Causa = null);
 
 /// <summary>Dependências entre as etapas (REQ-EXEC-002) e quais validações são obrigatórias (P05).</summary>
 internal static class FluxoDeEtapas
