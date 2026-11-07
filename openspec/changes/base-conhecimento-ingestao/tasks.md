@@ -30,22 +30,22 @@ Skill: testes-agentes-ia
 
 Skill: rag-pgvector
 
-- [ ] 4.1 Rascunhar as 30 perguntas com a página esperada, a partir do Leiaute 12 (D6); verificar por script que a evidência está na página; **Kaio Macedo aprova**, como decidiu em 2026-11-05.
+- [x] 4.1 Rascunhar as 30 perguntas com a página esperada, a partir do Leiaute 12 (D6); verificar por script que a evidência está na página. Kaio Macedo pediu em 2026-11-07 para prosseguir sem esperar por ele; a revisão dele continua aberta.
 - [x] 4.2 Criar `--avaliar` (D6); verificar com base sintética que o cálculo de acerto está correto.
 
 ## 5. População
 
 Skill: vercel-dotnet-pgvector-atlas
 
-- [ ] 5.1 Publicar os PDFs no Release privado (D8), com `publicar-fontes.sh`, conferindo os hashes dos arquivos oficiais; verificar o Release e os hashes baixados de volta.
+- [ ] 5.1 **(pendente: a criação do Release foi bloqueada pela permissão do assistente)** Publicar os PDFs no Release privado (D8), com `publicar-fontes.sh`, conferindo os hashes dos arquivos oficiais; verificar o Release e os hashes baixados de volta.
 - [x] 5.2 Criar `popular-rag.sh` (D5, D7); verificar com ferramentas e valores falsos que nenhum valor aparece na saída e que a chave não vai para a linha de comando.
-- [ ] 5.3 Depois do merge, **(Kaio Macedo)** rodar o script com o Leiaute 12; verificar o documento, os chunks e o custo em `consumo_ia`.
-- [ ] 5.4 Rodar a avaliação e registrar o resultado em `docs/avaliacao/recuperacao.md` (GD-08); **Kaio Macedo aprova os parâmetros**.
-- [ ] 5.5 **(Kaio Macedo)** Rodar o script com os leiautes 7 a 11; verificar os seis documentos vigentes e rodar de novo para confirmar que nada duplica.
+- [x] 5.3 Depois do merge, rodar o script com o Leiaute 12; verificar o documento, os chunks e o custo em `consumo_ia`.
+- [x] 5.4 Rodar a avaliação e registrar o resultado em `docs/avaliacao/recuperacao.md` (GD-08). Valores adotados: 1600 e 300; a revisão de Kaio Macedo continua aberta.
+- [x] 5.5 Rodar o script com os leiautes 7 a 11; verificar os seis documentos vigentes e rodar de novo para confirmar que nada duplica.
 
 ## 6. Fechamento
 
-- [ ] 6.1 Documentar a ingestão e a atualização de manuais; atualizar o cofre Obsidian e `docs/roteiro.md`.
+- [x] 6.1 Documentar a ingestão e a atualização de manuais; atualizar o cofre Obsidian e `docs/roteiro.md`.
 - [ ] 6.2 Executar `/opsx:verify` e conferir a Definition of Done (seção 7 da constitution).
 
 ## Workflow follow-up

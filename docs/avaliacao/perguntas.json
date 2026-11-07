@@ -26,7 +26,8 @@
       "tipo": "manual-ecf",
       "versao": "leiaute-12",
       "paginas": [
-        38
+        38,
+        40
       ],
       "evidencia": "Validação de Estrutura - Nível 1.1"
     },
@@ -37,6 +38,7 @@
       "versao": "leiaute-12",
       "paginas": [
         39,
+        64,
         66,
         68
       ],
