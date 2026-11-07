@@ -28,7 +28,7 @@ Skill: testes-agentes-ia
 ## 4. Documentação
 
 - [x] 4.1 Atualizar `docs/contratos/envelope-resultado.md` e `docs/contratos/sofia-a2a.md` com vereditos, classes e detalhes; verificar com o teste que confere o exemplo do documento.
-- [ ] 4.2 Atualizar o cofre Obsidian e `docs/roteiro.md`; verificar a tabela de mudanças.
+- [x] 4.2 Atualizar o cofre Obsidian e `docs/roteiro.md`; verificar a tabela de mudanças.
 
 ## 5. Decisões da pesquisa
 
@@ -40,8 +40,8 @@ Skill: testes-agentes-ia
 
 ## 6. Fechamento
 
-- [ ] 6.1 Depois do merge, verificar em produção, com dados sintéticos, que `SendMessage` e `GET /analises/{id}` trazem o veredito `parcial`.
-- [ ] 6.2 Executar `/opsx:verify` e conferir a Definition of Done (seção 7 da constitution).
+- [x] 6.1 Depois do merge, verificar em produção, com dados sintéticos, que `SendMessage` e `GET /analises/{id}` trazem o veredito `parcial`.
+- [x] 6.2 Executar `/opsx:verify` e conferir a Definition of Done (seção 7 da constitution).
 
 ## Workflow follow-up
 

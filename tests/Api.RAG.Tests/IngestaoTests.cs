@@ -389,6 +389,7 @@ public sealed class IngestaoTests(BancoDeTeste banco) : IClassFixture<BancoDeTes
 
         Assert.Equal((2, 1, 0.5), (resultado.Perguntas, resultado.Acertos, resultado.AcertoNosCinco));
         Assert.Equal(["P2"], resultado.Erradas);
+        Assert.NotEmpty(resultado.PaginasDasErradas["P2"]);
         Assert.True(resultado.PosicaoReciprocaMedia is > 0 and <= 0.5);
     }
 
@@ -402,6 +403,7 @@ public sealed class IngestaoTests(BancoDeTeste banco) : IClassFixture<BancoDeTes
         Assert.Equal(2, paginas.Count);
         Assert.DoesNotContain("Anexo", paginas[0].Texto, StringComparison.Ordinal);
         Assert.Contains("Conteudo", paginas[1].Texto, StringComparison.Ordinal);
+        Assert.Empty(extrator.Extrair(Pdf("Registro K155: Saldos ................................ 147"))[0].Texto.Trim());
         Assert.Throws<ArquivoIlegivel>(() => extrator.Extrair(Encoding.UTF8.GetBytes("%PDF-1.7 corrompido")));
     }
 

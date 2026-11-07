@@ -33,7 +33,8 @@ A base precisa guardar os manuais dos leiautes 7 a 12 (`docs/fontes-oficiais.md`
 ### D3. Extração e segmentação (E05; DP-03; REQ-INGEST-002, 004, 007)
 
 - **Extração:** `PdfPig` 0.1.16, a última versão estável. O `SofiaInfis` usa uma versão alpha. Texto extraído por página, com `ContentOrderTextExtractor`, sem o cabeçalho e o rodapé repetidos. Em teste com o Manual do Leiaute 12, as tabelas de regras saíram legíveis, em 4 segundos. A seção vem dos títulos ("Capítulo", "Seção", "Registro X:", "Bloco X:"), e um trecho novo começa em cada título. O conteúdo é sempre dado (P10).
-- **Segmentação:** valor inicial de 1200 caracteres com sobreposição de 200, configurável, sem atravessar páginas, para a página citada estar sempre certa. É só o ponto de partida: os valores finais saem da avaliação de D6.
+- **Segmentação:** 1600 caracteres com sobreposição de 300, configurável, sem atravessar páginas, para a página citada estar sempre certa. O valor inicial era 1200 e 200; os atuais saíram da avaliação de D6 (`docs/avaliacao/recuperacao.md`).
+- **Sumário:** as linhas com pontilhado não são ingeridas, porque apareciam acima do conteúdo na busca (ajuste da avaliação).
 - **Limites:** só PDF, até 10 MB, recusado antes de extrair.
 
 ### D4. Fluxo sem chunks parciais (REQ-INGEST-003, 005, 006)
@@ -63,7 +64,7 @@ Sem a chave em produção, a Api.RAG não consegue gerar embeddings por lá. A m
 
 ### D8. Originais (E04)
 
-Os PDFs ficam em um Release privado do repositório, com os hashes de `docs/fontes-oficiais.md`, porque o portal troca o arquivo sem mudar o endereço. Na primeira carga, `popular-rag.sh` baixa dos endereços oficiais, confere os hashes e cria o Release. As Tabelas Dinâmicas entram no Release quando a mudança 08 as usar.
+Os PDFs ficam em um Release privado do repositório, com os hashes de `docs/fontes-oficiais.md`, porque o portal troca o arquivo sem mudar o endereço. `publicar-fontes.sh` baixa dos endereços oficiais, confere os hashes e cria o Release. Enquanto ele não existir, `popular-rag.sh` baixa dos mesmos endereços, com a mesma conferência. As Tabelas Dinâmicas entram no Release quando a mudança 08 as usar.
 
 ### D9. Administração (REQ-BASE-001 a 003)
 

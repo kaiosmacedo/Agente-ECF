@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 # Popula a base de conhecimento com os manuais oficiais, sem exibir a chave nem a conexão (mudança 05, D5 e D7; SQ-03).
-# Quem roda é o responsável pelas contas, depois de o banco existir e de o CD ter aplicado as migrações.
+# Roda depois de o banco existir e de o CD ter aplicado as migrações.
 #
 #   bash .github/scripts/popular-rag.sh leiaute-12    # um leiaute, para avaliar os parâmetros antes da carga completa
 #   bash .github/scripts/popular-rag.sh avaliar       # mede a recuperação com as perguntas de docs/avaliacao
 #   bash .github/scripts/popular-rag.sh todos         # os seis manuais; o que já estiver na base não é refeito
 #
+# Para comparar parâmetros (D6): TAMANHO_DO_TRECHO, SOBREPOSICAO_DO_TRECHO e REPROCESSAR=1, que refaz o que já está na base.
 # A chave da OpenAI vem do arquivo do projeto SofiaInfis, como Kaio Macedo autorizou. Para usar outra, informe ARQUIVO_DA_CHAVE.
 # Ela vai só para o processo em contêiner, por variável de ambiente: nunca para o repositório, os logs, o Vercel ou o GitHub.
 set -euo pipefail
@@ -76,8 +77,8 @@ elif "$GH" release view "$RELEASE" --repo "$REPOSITORIO" > /dev/null 2>&1; then
   "$GH" release download "$RELEASE" --repo "$REPOSITORIO" --pattern '*.pdf' --dir "$temporario/fontes" > /dev/null 2>&1 \
     || parar "não foi possível baixar os manuais do Release."
 else
-  # Primeira carga: baixa da Receita Federal, confere cada hash e guarda os originais em um Release privado (E04).
-  echo "2/4 Baixando os manuais dos endereços oficiais, conferindo os hashes e criando o Release privado $RELEASE..."
+  # Sem o Release, baixa da Receita Federal e confere cada hash. Para guardar os originais: publicar-fontes.sh (E04).
+  echo "2/4 Baixando os manuais dos endereços oficiais e conferindo os hashes..."
   node -e '
     const m = JSON.parse(require("fs").readFileSync(process.argv[1], "utf8"));
     for (const d of m.documentos) console.log([d.arquivo, d.sha256, d.origem].join("\t"));
@@ -87,18 +88,20 @@ else
     [ "$(sha256sum "$temporario/fontes/$arquivo" | cut -d' ' -f1)" = "$esperado" ] \
       || parar "$arquivo mudou no portal: o hash é diferente do registrado. Atualize docs/fontes-oficiais.md e o manifesto."
   done < "$temporario/lista.tsv"
-  "$GH" release create "$RELEASE" --repo "$REPOSITORIO" --title "Fontes oficiais da ECF, novembro de 2026" \
-    --notes "Cópia dos originais da página oficial da Receita Federal (E04 da mudança 05). O portal troca os arquivos sem mudar o endereço. Versões e hashes em docs/fontes-oficiais.md." \
-    "$temporario/fontes/"*.pdf > /dev/null 2>&1 || parar "não foi possível criar o Release."
 fi
 [ "$MODO" = "avaliar" ] || cp "$MANIFESTO" "$temporario/fontes/manifesto-rag.json"
+
+[ -z "${REPROCESSAR:-}" ] || argumentos+=(--reprocessar)
+ajustes=()
+[ -z "${TAMANHO_DO_TRECHO:-}" ] || ajustes+=(-e "Ingestao__TamanhoDoTrecho=$TAMANHO_DO_TRECHO")
+[ -z "${SOBREPOSICAO_DO_TRECHO:-}" ] || ajustes+=(-e "Ingestao__SobreposicaoDoTrecho=$SOBREPOSICAO_DO_TRECHO")
 
 echo "3/4 Construindo a imagem da Api.RAG..."
 docker build -q -t agente-ecf-rag-carga "$RAIZ/src/Api.RAG" > /dev/null || parar "a imagem não foi construída."
 
 echo "4/4 Rodando. A carga completa leva alguns minutos."
 MSYS_NO_PATHCONV=1 docker run --rm \
-  -e OpenAI__ApiKey -e ConnectionStrings__Conhecimento -e Observabilidade__NivelMinimo=Warning \
+  -e OpenAI__ApiKey -e ConnectionStrings__Conhecimento -e Observabilidade__NivelMinimo=Warning "${ajustes[@]}" \
   -v "$(caminho_para_docker "$temporario/fontes"):/fontes:ro" \
   agente-ecf-rag-carga "${argumentos[@]}" || parar "o comando terminou com falha. A chave e a conexão não foram exibidas."
 

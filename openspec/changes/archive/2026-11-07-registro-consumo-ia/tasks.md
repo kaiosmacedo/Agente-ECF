@@ -29,12 +29,12 @@ Skill: testes-agentes-ia
 ## 4. Produção
 
 - [x] 4.1 **(Kaio Macedo)** Rodar o script para criar o banco da Api.RAG e cadastrar as conexões, antes do merge; verificar pelos nomes, sem exibir os valores (SQ-03).
-- [ ] 4.2 Depois do merge, verificar que o CD aplicou a migração e publicou e que `/health/ready` e `GET /consumo` funcionam em produção.
+- [x] 4.2 Depois do merge, verificar que o CD aplicou a migração e publicou e que `/health/ready` e `GET /consumo` funcionam em produção.
 
 ## 5. Fechamento
 
-- [ ] 5.1 Documentar a tabela de preços e a consulta; atualizar o cofre Obsidian e `docs/roteiro.md`.
-- [ ] 5.2 Executar `/opsx:verify` e conferir a Definition of Done (seção 7 da constitution).
+- [x] 5.1 Documentar a tabela de preços e a consulta; atualizar o cofre Obsidian e `docs/roteiro.md`.
+- [x] 5.2 Executar `/opsx:verify` e conferir a Definition of Done (seção 7 da constitution).
 
 ## Workflow follow-up
 

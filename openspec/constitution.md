@@ -2,10 +2,10 @@
 
 | Campo | Valor |
 | --- | --- |
-| Versão | 2.0.1 |
-| Estado | Vigente (ratificada na v1.1.0; emendas v1.2.0, v1.3.0, v2.0.0 e v2.0.1 aprovadas) |
+| Versão | 2.0.2 |
+| Estado | Vigente (ratificada na v1.1.0; emendas v1.2.0, v1.3.0, v2.0.0, v2.0.1 e v2.0.2 aprovadas) |
 | Criada em | 2026-10-29 |
-| Última alteração | 2026-11-05 |
+| Última alteração | 2026-11-07 |
 | Ratificada em | 2026-10-29, por Kaio Macedo (versão 1.1.0) |
 | Responsáveis pela aprovação | Kaio Macedo, responsável pelo projeto, com aprovação única (DP-19) |
 | Fonte normativa | `openspec/constitution.md` neste repositório |
@@ -824,6 +824,7 @@ Sínteses desta constitution, como a nota do cofre Obsidian, MUST indicar a vers
 | 1.3.1 | 2026-10-29 | PATCH: DP-17 e DP-18 movidas para as decisões resolvidas, conforme os ADRs 0001 e 0002 aceitos e a mudança `fundacao-solucao` arquivada. Sem efeito normativo. | Registro de decisões aprovadas por Kaio Macedo; merge por delegação (6.6). |
 | 2.0.0 | 2026-11-05 | MAJOR: primeira versão sem autenticação (SQ-12), com SQ-01 e SQ-02 suspensas e RA-03, RA-04, DoD-14 e DP-09 ajustadas; integração com a Sofia pelas skills da turma: RA-07 redefinida (protocolo A2A v1.0 e contrato SOFIA v1.0), CORS (SQ-13) e ajustes em GD-01, GD-06, SQ-04 e SQ-09. Especificações das mudanças 03 a 13 e `docs/roteiro.md` adequadas no mesmo PR; a mudança 02 fica congelada. | Aprovada por Kaio Macedo em 2026-11-05 (PR #8), com as duas travas da SQ-12, o protocolo A2A v1.0 e a integração sem token. |
 | 2.0.1 | 2026-11-05 | PATCH: DP-07, DP-08 e DP-25 movidas para as decisões resolvidas, conforme a mudança `execucao-e-resultado` arquivada. Sem efeito normativo. | Registro de decisões aprovado por Kaio Macedo em 2026-11-05. |
+| 2.0.2 | 2026-11-07 | PATCH: DP-13 e DP-26 movidas para as decisões resolvidas, e DP-07 e DP-08 complementadas com classes e veredito, conforme as mudanças `registro-consumo-ia` e `classificacao-e-veredito` arquivadas. Sem efeito normativo. | Decisões aprovadas por Kaio Macedo em 2026-11-05 e 2026-11-06. |
 
 ---
 
@@ -843,14 +844,12 @@ As decisões abaixo não estão definidas. Elas MUST NOT ser tratadas como requi
 | DP-10 | Ferramentas externas necessárias, suas fontes e suas políticas de autorização. | Especificação de cada ferramenta. | Especificação | Etapa 6 do fluxo. |
 | DP-11 | Política de retenção e exclusão de arquivos, resultados, memória, logs e consumo, com a base legal (LGPD). | Antes do uso com dados reais. | ADR ou política aprovada | Uso com dados reais. |
 | DP-12 | Política de dados com a OpenAI: retenção no provedor, região, uso para treinamento, minimização e anonimização. | Antes do envio de dados reais ao provedor. | ADR | Envio de dados reais ao LLM. |
-| DP-13 | Fonte e moeda da tabela de preços e forma de atualização. | Plano técnico da mudança de consumo. | Design | Estimativa de custos. |
 | DP-14 | Valores da política de retentativas e dos timeouts do LLM e das ferramentas. | Plano técnico das mudanças de análise e ferramentas. | Design | Configuração de produção. |
 | DP-15 | Formato do relatório entregue ao usuário (apenas JSON ou também documento legível) e seu público. | Especificação do resultado. | Especificação | Etapa 9 do fluxo. |
 | DP-16 | Escopo, capacidades expostas, autenticação e priorização do servidor A2A. Consumidora prevista: Sofia INFIS (1.1). | Especificação dedicada, quando priorizada. | Especificação | Implementação do A2A. |
 | DP-22 | Processamento síncrono ou assíncrono das análises e tratamento de arquivos grandes. | Especificação e plano técnico da recepção. | Especificação e design | Etapa 2 do fluxo. |
 | DP-23 | Política de rejeição ou reclassificação de itens com referência não verificável (P07). | Especificação do contrato de resultado. | Especificação | Validação semântica. |
 | DP-24 | Conjunto representativo de exemplos para avaliar a recuperação e a análise: origem, anonimização e resultados esperados. | Especificação de avaliação, antes da definição de parâmetros. | Especificação | Aprovação de parâmetros (P11) e de modelos. |
-| DP-26 | Consolidação do consumo da Api.RAG (embeddings de ingestão e de consulta) sem violar a propriedade dos dados (P15). | Plano técnico da mudança de consumo. | Design | Relatórios consolidados de custo. |
 
 ### 9.1 Decisões resolvidas
 
@@ -861,6 +860,8 @@ As decisões abaixo não estão definidas. Elas MUST NOT ser tratadas como requi
 | DP-21 | Revisão da constitution a cada nova versão do leiaute da ECF adotada e a cada emenda MAJOR. | 2026-10-29 | Seção 8.4. |
 | DP-17 | Um projeto por serviço, com camadas em pastas verificadas por testes de arquitetura; xUnit e Testcontainers. | 2026-10-29 | ADR 0001 (aceito); mudança `fundacao-solucao`. |
 | DP-18 | Vercel com contêineres, dois projetos, somente produção, CD pelo GitHub Actions após o CI na `main`. Ficam para as mudanças seguintes: provedores de banco (esclarecimentos de 03 e 04) e viabilidade de MCP e A2A no Vercel (provas de conceito de 06 e 13). | 2026-10-29 | ADR 0002 (aceito); mudança `fundacao-solucao`. |
-| DP-07 | Severidade: `baixa`, `media`, `alta` e `critica`, a escala do contrato SOFIA v1.0, com critérios no design. É uma escala do produto, não da Receita Federal. | 2026-11-05 | Mudança `execucao-e-resultado`, D3. |
-| DP-08 | Status: `entrada-rejeitada`, `falha-tecnica`, `parcial` e `concluida`, com regra de cálculo e mapeamento para os três status do contrato SOFIA. | 2026-11-05 | Mudança `execucao-e-resultado`, D2. |
+| DP-07 | Severidade: `baixa`, `media`, `alta` e `critica`, a escala do contrato SOFIA v1.0, com critérios no design. É uma escala do produto, não da Receita Federal. A classe do achado (`impeditiva`, `grave`, `observacao`) é calculada por ela, com critérios em `docs/classificacao-das-regras.md`. | 2026-11-06 | Mudanças `execucao-e-resultado`, D3, e `classificacao-e-veredito`. |
+| DP-08 | Status: `entrada-rejeitada`, `falha-tecnica`, `parcial` e `concluida`, com regra de cálculo e mapeamento para os três status do contrato SOFIA. O veredito (`conforme`, `conforme-com-ressalvas`, `recusado`, `parcial`, `nao-avaliado`) é calculado à parte. | 2026-11-06 | Mudanças `execucao-e-resultado`, D2, e `classificacao-e-veredito`, D1. |
 | DP-25 | PostgreSQL no Neon, com banco próprio da Api.Agente, Dapper e migrações em SQL. Texto, nome e pergunta nunca são guardados. | 2026-11-05 | Mudança `execucao-e-resultado`, D6. |
+| DP-13 | Custos em USD, a moeda da OpenAI, com tabela de preços versionada na configuração, com vigência e fonte na página oficial do provedor. | 2026-11-05 | Mudança `registro-consumo-ia`, D3. |
+| DP-26 | Sem consolidação por enquanto: cada serviço responde pelo seu consumo, em `GET /consumo`, sem acesso cruzado a dados (P15). | 2026-11-05 | Mudança `registro-consumo-ia`, D5. |
