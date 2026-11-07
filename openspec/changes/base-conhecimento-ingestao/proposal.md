@@ -1,6 +1,6 @@
 # Proposal: Base de conhecimento e ingestão de manuais
 
-> **Estado:** especificação aprovada por Kaio Macedo em 2026-10-29 (roteiro, mudança 05; PR #4). Esclarecimentos respondidos em 2026-11-05. Plano técnico e tarefas aguardam a aprovação de Kaio Macedo.
+> **Estado:** especificação aprovada por Kaio Macedo em 2026-10-29 (roteiro, mudança 05; PR #4). Esclarecimentos respondidos em 2026-11-05. Plano técnico e tarefas aprovados por Kaio Macedo em 2026-11-05 (PR #15).
 
 ## Why
 
@@ -30,7 +30,7 @@ O agente precisa consultar o manual oficial da versão do leiaute identificada (
 | --- | --- | --- | --- | --- | --- |
 | E01 | A primeira ingestão é só o Manual da ECF, leiaute 12, ou inclui outros documentos oficiais (tabelas, regras de validação, manuais de anos anteriores) (DP-04)? | Os manuais em PDF dos leiautes 7 a 12 (anos-calendário 2020 a 2025), a janela de retificação citada na seção 1.14 do manual. As Tabelas Dinâmicas ficam como dados para os validadores, fora do RAG. Registro em `docs/fontes-oficiais.md`. | Kaio Macedo | 2026-11-05 | Não |
 | E02 | Qual modelo de embeddings e dimensão (DP-02)? O ADR compara as opções da OpenAI disponíveis na conta; o `SofiaInfis` usa `text-embedding-3-small`, com 1536 dimensões. | `text-embedding-3-small`, com 1536 dimensões, registrado em ADR. A chave é a do projeto `SofiaInfis`, autorizada por Kaio Macedo para esse uso: lida na execução, nunca copiada para o repositório ou para os logs (SQ-03). | Kaio Macedo | 2026-11-05 | Não |
-| E03 | Quem monta o conjunto de avaliação: perguntas sobre o manual e os trechos esperados (DP-24)? | O assistente rascunha as perguntas e os trechos esperados, com localização no manual, e quem conhece ECF confere. | Kaio Macedo | 2026-11-05 | Não |
+| E03 | Quem monta o conjunto de avaliação: perguntas sobre o manual e os trechos esperados (DP-24)? | O assistente rascunha as perguntas e os trechos esperados, com localização no manual, e Kaio Macedo aprova. | Kaio Macedo | 2026-11-05 | Não |
 | E04 | Os PDFs originais devem ser guardados? O disco do Vercel não é durável; seria preciso armazenamento de objetos (por exemplo, Vercel Blob). | Sim, porque o portal troca o arquivo sem mudar o endereço. Os originais ficam em um Release privado do repositório, sem novo fornecedor. | Kaio Macedo | 2026-11-05 | Não |
 | E05 | Tamanho máximo esperado de um documento a ingerir (MB)? | 10 MB. O maior manual da janela tem 7 MB. | Kaio Macedo | 2026-11-05 | Não |
 

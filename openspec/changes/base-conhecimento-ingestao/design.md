@@ -26,12 +26,13 @@ A base precisa guardar os manuais dos leiautes 7 a 12 (`docs/fontes-oficiais.md`
 ### D2. Esquema (GD-07; REQ-INGEST-001, 004, 005)
 
 - `documentos`: identificador, emissor, título, tipo (`manual-ecf`), versão (`leiaute-12`), ano-calendário, versão da publicação, vigência, hash único, endereço de origem, tamanho, páginas, estado (`processando`, `vigente`, `substituido`, `desativado`, `falhou`) e data de ingestão.
-- `chunks`: identificador, documento, ordem, página, seção, texto, hash, modelo, dimensão e `embedding vector(1536)`, com índice HNSW por cosseno.
-- A migração cria a extensão `vector`. O índice é criado depois da carga, para não atrasar a inserção.
+- `chunks`: identificador, documento, ordem, página, seção, texto, hash, modelo, dimensão e `embedding vector(1536)`.
+- A migração cria a extensão `vector`.
+- **Sem índice vetorial (ajuste na implementação):** a busca sempre filtra por tipo e versão (P11), e cada manual tem cerca de 2 mil trechos. A busca exata é rápida nesse tamanho, enquanto um índice HNSW perde resultados com filtro, porque escolhe os candidatos antes de filtrar. Registrado no ADR 0004.
 
 ### D3. Extração e segmentação (E05; DP-03; REQ-INGEST-002, 004, 007)
 
-- **Extração:** `PdfPig` 0.1.16, a última versão estável. O `SofiaInfis` usa uma versão alpha. Texto extraído por página, sem o cabeçalho e o rodapé repetidos ("Anexo ao Ato...", "Página N de 622"). A seção vem do cabeçalho da página e dos títulos "Registro X:". O conteúdo é sempre dado (P10).
+- **Extração:** `PdfPig` 0.1.16, a última versão estável. O `SofiaInfis` usa uma versão alpha. Texto extraído por página, com `ContentOrderTextExtractor`, sem o cabeçalho e o rodapé repetidos. Em teste com o Manual do Leiaute 12, as tabelas de regras saíram legíveis, em 4 segundos. A seção vem dos títulos ("Capítulo", "Seção", "Registro X:", "Bloco X:"), e um trecho novo começa em cada título. O conteúdo é sempre dado (P10).
 - **Segmentação:** valor inicial de 1200 caracteres com sobreposição de 200, configurável, sem atravessar páginas, para a página citada estar sempre certa. É só o ponto de partida: os valores finais saem da avaliação de D6.
 - **Limites:** só PDF, até 10 MB, recusado antes de extrair.
 
@@ -52,7 +53,7 @@ O limite do Vercel recusa o PDF no endpoint, e a função não dura o suficiente
 
 ### D6. Avaliação antes da carga completa (E03; DP-24; GD-08; P11)
 
-Carrega primeiro só o Leiaute 12. O assistente rascunha 30 perguntas com a página esperada, cobrindo regras, registros e tabelas, e quem conhece ECF confere. Um comando `--avaliar` mede o acerto nos 5 primeiros trechos, com 2 ou 3 combinações de tamanho e sobreposição. O resultado fica em `docs/avaliacao/recuperacao.md`, e os valores aprovados valem para os demais manuais. `topK` e limiares ficam para a mudança 06.
+Carrega primeiro só o Leiaute 12. O assistente rascunha 30 perguntas com a página esperada, cobrindo regras, registros e tabelas, um script confere que a evidência está na página, e Kaio Macedo aprova: não há especialista fiscal na equipe por enquanto. Um comando `--avaliar` mede o acerto nos 5 primeiros trechos, com 2 ou 3 combinações de tamanho e sobreposição. O resultado fica em `docs/avaliacao/recuperacao.md`, e os valores aprovados valem para os demais manuais. `topK` e limiares ficam para a mudança 06.
 
 ### D7. Chave da OpenAI (E02; SQ-03)
 
@@ -62,7 +63,7 @@ Sem a chave em produção, a Api.RAG não consegue gerar embeddings por lá. A m
 
 ### D8. Originais (E04)
 
-Os PDFs ficam em um Release privado do repositório, com os hashes de `docs/fontes-oficiais.md`, porque o portal troca o arquivo sem mudar o endereço.
+Os PDFs ficam em um Release privado do repositório, com os hashes de `docs/fontes-oficiais.md`, porque o portal troca o arquivo sem mudar o endereço. Na primeira carga, `popular-rag.sh` baixa dos endereços oficiais, confere os hashes e cria o Release. As Tabelas Dinâmicas entram no Release quando a mudança 08 as usar.
 
 ### D9. Administração (REQ-BASE-001 a 003)
 
@@ -96,7 +97,6 @@ Estimativa a partir do texto extraído dos seis manuais: 12,2 milhões de caract
 ## Open Questions
 
 - E01 da mudança 06: o MCP funciona no Vercel?
-- Quem confere o conjunto de avaliação (E03).
 
 ## Skills aplicáveis
 

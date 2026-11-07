@@ -21,7 +21,8 @@ Agente de IA que analisa arquivos da Escrituração Contábil Fiscal (ECF), vali
 | `.github/` | CI (`workflows/ci.yml`), CD (`workflows/cd.yml`), teste de contêineres, modelo de PR e Dependabot. |
 | `docs/ci-cd.md` | Pipeline de CI/CD, configuração do Vercel, rotação do token e rollback. |
 | `docs/base-sofiainfis.md` | O que reaproveitar do projeto `SofiaInfis`, por mudança, e o que não copiar. |
-| `docs/fontes-oficiais.md` | Fontes oficiais da ECF: onde estão, versão e hash de cada arquivo. |
+| `docs/fontes-oficiais.md`, `docs/fontes/` | Fontes oficiais da ECF: onde estão, versão e hash de cada arquivo, e o manifesto da carga do RAG. |
+| `docs/avaliacao/` | Perguntas e resultados da avaliação da recuperação. |
 | `docs/classificacao-das-regras.md`, `docs/pesquisa/` | Critérios aprovados de gravidade e a pesquisa que os fundamenta. |
 | `docs/contratos/` | Integração com a Sofia: contrato, cartão, erros, configuração e como executar. |
 | `compose.yaml` | Api.Agente com o banco local das execuções, na rede `sofia_network`, para a integração com a Sofia. |
