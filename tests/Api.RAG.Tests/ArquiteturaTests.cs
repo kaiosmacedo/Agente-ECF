@@ -14,7 +14,7 @@ public sealed class ArquiteturaTests
     private static readonly string[] Infraestrutura =
     [
         "Microsoft.AspNetCore", "Microsoft.EntityFrameworkCore", "Microsoft.SemanticKernel", "OpenAI",
-        "ModelContextProtocol", "Npgsql", "Pgvector", "MongoDB", "StackExchange.Redis",
+        "ModelContextProtocol", "Npgsql", "Dapper", "Pgvector", "MongoDB", "StackExchange.Redis",
     ];
 
     [Fact(DisplayName = "REQ-QUALIDADE-003 Dominio não depende de outras camadas nem de infraestrutura")]

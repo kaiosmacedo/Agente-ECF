@@ -1,6 +1,6 @@
 # Proposal: Registro de consumo e custos de IA
 
-> **Estado:** especificação aprovada por Kaio Macedo em 2026-10-29 (roteiro, mudança 04; PR #4). Plano técnico e tarefas aguardam a aprovação de Kaio Macedo.
+> **Estado:** especificação aprovada por Kaio Macedo em 2026-10-29 (roteiro, mudança 04; PR #4). Plano técnico e tarefas aprovados por Kaio Macedo em 2026-11-05 (PR #15).
 
 ## Why
 
@@ -26,9 +26,9 @@ A constitution exige registrar toda chamada a provedor de IA, inclusive retentat
 
 | ID | Pergunta | Resposta | Fonte ou responsável | Data | Bloqueante |
 | --- | --- | --- | --- | --- | --- |
-| E01 | Em que moeda registrar o custo (USD, como a OpenAI cobra, ou BRL com conversão) e qual a fonte da tabela de preços (DP-13)? O `SofiaInfis` já tem uma tabela `OpenAI:Pricing` em USD por milhão de tokens (`docs/base-sofiainfis.md`). | USD, a moeda da OpenAI, com tabela versionada na configuração e fonte na página oficial de preços (`design.md`, D3). | Assistente; Kaio Macedo confirma na aprovação do plano | 2026-11-05 | Não |
-| E02 | É preciso um relatório consolidado dos dois serviços? Se sim, por consulta a cada serviço ou por exportação (DP-26)? | Não por agora: cada serviço responde pelo seu consumo (`design.md`, D5). | Assistente; Kaio Macedo confirma na aprovação do plano | 2026-11-05 | Não |
-| E03 | Quem pode consultar os custos (perfil administrador, responsável financeiro)? | Sem restrição na primeira versão (SQ-12); entra na retomada da mudança 02. | Assistente; Kaio Macedo confirma na aprovação do plano | 2026-11-05 | Não |
+| E01 | Em que moeda registrar o custo (USD, como a OpenAI cobra, ou BRL com conversão) e qual a fonte da tabela de preços (DP-13)? O `SofiaInfis` já tem uma tabela `OpenAI:Pricing` em USD por milhão de tokens (`docs/base-sofiainfis.md`). | USD, a moeda da OpenAI, com tabela versionada na configuração e fonte na página oficial de preços (`design.md`, D3). | Kaio Macedo, na aprovação do plano | 2026-11-05 | Não |
+| E02 | É preciso um relatório consolidado dos dois serviços? Se sim, por consulta a cada serviço ou por exportação (DP-26)? | Não por agora: cada serviço responde pelo seu consumo (`design.md`, D5). | Kaio Macedo, na aprovação do plano | 2026-11-05 | Não |
+| E03 | Quem pode consultar os custos (perfil administrador, responsável financeiro)? | Sem restrição na primeira versão (SQ-12); entra na retomada da mudança 02. | Kaio Macedo, na aprovação do plano | 2026-11-05 | Não |
 | E04 | Provedor de PostgreSQL gerenciado (o mesmo da mudança 03, E06). | Neon, com banco próprio da Api.RAG, como na mudança 03. | Kaio Macedo | 2026-11-05 | Não |
 
 ## Fontes oficiais

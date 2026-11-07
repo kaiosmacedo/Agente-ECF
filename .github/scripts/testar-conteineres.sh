@@ -5,7 +5,7 @@ set -euo pipefail
 
 VERSAO="${VERSAO:-local}"
 
-# Banco descartável da Api.Agente, na imagem do compose. Sem senha: só existe durante este teste, em rede própria.
+# Banco descartável de cada serviço, na imagem do compose. Sem senha: só existe durante este teste, em rede própria.
 REDE=agente-ecf-ci
 BANCO=agente-ecf-ci-banco
 CONEXAO="Host=$BANCO;Database=postgres;Username=postgres"
@@ -72,10 +72,10 @@ testar_a2a() {
 
 # A migração cria o banco; rodar de novo não muda nada, e a prontidão só fica verde com o banco no ar.
 testar_migracao() {
-  local imagem="$1" saida aplicadas
-  saida=$(docker run --rm --network "$REDE" -e "ConnectionStrings__Execucoes=$CONEXAO" "$imagem" --migrar 2>&1)
+  local imagem="$1" variavel="$2" saida aplicadas
+  saida=$(docker run --rm --network "$REDE" -e "$variavel=$CONEXAO" "$imagem" --migrar 2>&1)
   aplicadas=$(docker exec "$BANCO" psql -U postgres -tAc "SELECT count(*) FROM migracoes")
-  saida+=$(docker run --rm --network "$REDE" -e "ConnectionStrings__Execucoes=$CONEXAO" "$imagem" --migrar 2>&1)
+  saida+=$(docker run --rm --network "$REDE" -e "$variavel=$CONEXAO" "$imagem" --migrar 2>&1)
   echo "$saida" | jq -e -s 'all(.[]; type == "object")' > /dev/null \
     || { echo "$saida"; echo "::error::A migração escreveu fora do JSON."; exit 1; }
   [ "$aplicadas" -gt 0 ] && [ "$(docker exec "$BANCO" psql -U postgres -tAc "SELECT count(*) FROM migracoes")" = "$aplicadas" ] \
@@ -88,17 +88,15 @@ for servico in Api.Agente Api.RAG; do
 
   docker build --build-arg VERSAO="$VERSAO" -t "$imagem" "src/$servico"
 
-  # A Api.Agente exige o banco: sem a conexão, ela não sobe.
-  ambiente=()
-  if [ "$servico" = "Api.Agente" ]; then
-    if docker run --rm "$imagem" --migrar > /dev/null 2>&1; then
-      echo "::error::$servico iniciou sem a conexão com o banco."
-      exit 1
-    fi
-    subir_banco
-    testar_migracao "$imagem"
-    ambiente=(--network "$REDE" -e "ConnectionStrings__Execucoes=$CONEXAO")
+  # Os dois serviços exigem o banco: sem a conexão, eles não sobem.
+  if [ "$servico" = "Api.Agente" ]; then variavel=ConnectionStrings__Execucoes; else variavel=ConnectionStrings__Conhecimento; fi
+  if docker run --rm "$imagem" --migrar > /dev/null 2>&1; then
+    echo "::error::$servico iniciou sem a conexão com o banco."
+    exit 1
   fi
+  subir_banco
+  testar_migracao "$imagem" "$variavel"
+  ambiente=(--network "$REDE" -e "$variavel=$CONEXAO")
 
   # Sem PORT: porta 8080, vivacidade em até 30 s e logs em JSON com correlação.
   id=$(docker run -d "${ambiente[@]}" -p 8080:8080 "$imagem")
@@ -109,12 +107,17 @@ for servico in Api.Agente Api.RAG; do
     || falhar "$id" "$servico gerou log que não é JSON."
   docker logs "$id" 2>&1 | jq -e -s 'any(.[]; any(.Scopes[]?; type == "object" and .CorrelationId? == "ci-conteiner"))' > /dev/null \
     || falhar "$id" "$servico não registrou o identificador de correlação no log."
+  curl -fsS "http://localhost:8080/health/ready" > /dev/null || falhar "$id" "$servico não ficou pronto com o banco no ar."
   if [ "$servico" = "Api.Agente" ]; then
-    curl -fsS "http://localhost:8080/health/ready" > /dev/null || falhar "$id" "$servico não ficou pronto com o banco no ar."
     testar_a2a "$id"
-    docker logs "$id" 2>&1 | jq -e -s 'all(.[]; type == "object")' > /dev/null \
-      || falhar "$id" "$servico gerou log que não é JSON depois de usar o banco."
+  else
+    curl -fsS "http://localhost:8080/consumo" | jq -e '.moeda == "USD" and (.modelos | type == "array")' > /dev/null \
+      || falhar "$id" "GET /consumo não respondeu."
+    curl -fsS "http://localhost:8080/openapi/v1.json" | jq -e '.paths["/consumo"]' > /dev/null \
+      || falhar "$id" "O documento OpenAPI não descreve GET /consumo."
   fi
+  docker logs "$id" 2>&1 | jq -e -s 'all(.[]; type == "object")' > /dev/null \
+    || falhar "$id" "$servico gerou log que não é JSON depois de usar o banco."
   docker rm -f "$id" > /dev/null
 
   # Com PORT=3000: a porta informada pela plataforma é respeitada.

@@ -1,17 +1,35 @@
 #!/usr/bin/env bash
-# Cria o banco das execuções no Neon, pela integração do Vercel, e cadastra as duas conexões sem exibir os valores
-# (mudança 03, tarefas 8.1 e 8.2; SQ-03). Quem roda é o dono das contas: a criação pede o aceite dos termos do Neon.
+# Cria o banco de um serviço no Neon, pela integração do Vercel, e cadastra as duas conexões sem exibir os valores
+# (mudanças 03 e 04; SQ-03). Quem roda é o dono das contas: a primeira criação pede o aceite dos termos do Neon.
 #
-#   bash .github/scripts/cadastrar-banco-neon.sh
+#   bash .github/scripts/cadastrar-banco-neon.sh agente
+#   bash .github/scripts/cadastrar-banco-neon.sh rag
 #
 # Pode rodar de novo, por exemplo depois de trocar a senha do banco: o banco é mantido, e as conexões, sobrescritas.
 set -euo pipefail
 umask 077
 
 TIME=agent-ecf
-PROJETO=agente-ecf-agente
-BANCO=agente-ecf-execucoes
 REPOSITORIO=kaiosmacedo/Agente-ECF
+
+case "${1:-agente}" in
+  agente)
+    PROJETO=agente-ecf-agente
+    BANCO=agente-ecf-execucoes
+    VARIAVEL_VERCEL=ConnectionStrings__Execucoes
+    SEGREDO_GITHUB=CONEXAO_MIGRACAO_EXECUCOES
+    ;;
+  rag)
+    PROJETO=agente-ecf-rag
+    BANCO=agente-ecf-conhecimento
+    VARIAVEL_VERCEL=ConnectionStrings__Conhecimento
+    SEGREDO_GITHUB=CONEXAO_MIGRACAO_CONHECIMENTO
+    ;;
+  *)
+    echo "ERRO: use agente ou rag." >&2
+    exit 1
+    ;;
+esac
 
 GH=$(command -v gh || echo "$HOME/.local/gh/bin/gh.exe")
 temporario=$(mktemp -d)
@@ -85,12 +103,12 @@ case "$senha$usuario$banco_neon" in
 esac
 
 echo "4/4 Cadastrando as conexões..."
-conexao "$host_pooling" | vercel env add ConnectionStrings__Execucoes production --sensitive --force > /dev/null 2>&1 \
-  || parar "ConnectionStrings__Execucoes não foi cadastrada no Vercel."
-conexao "$host_direto" | "$GH" secret set CONEXAO_MIGRACAO_EXECUCOES --env producao --repo "$REPOSITORIO" > /dev/null 2>&1 \
-  || parar "ConnectionStrings__Execucoes foi cadastrada, mas CONEXAO_MIGRACAO_EXECUCOES não. Rode de novo."
+conexao "$host_pooling" | vercel env add "$VARIAVEL_VERCEL" production --sensitive --force > /dev/null 2>&1 \
+  || parar "$VARIAVEL_VERCEL não foi cadastrada no Vercel."
+conexao "$host_direto" | "$GH" secret set "$SEGREDO_GITHUB" --env producao --repo "$REPOSITORIO" > /dev/null 2>&1 \
+  || parar "$VARIAVEL_VERCEL foi cadastrada, mas $SEGREDO_GITHUB não. Rode de novo."
 
 echo
 echo "Pronto. Nenhum valor foi exibido, e os arquivos temporários são apagados agora."
-echo "  Vercel, $PROJETO, Production: ConnectionStrings__Execucoes (com pooling)"
-echo "  GitHub, Environment producao: CONEXAO_MIGRACAO_EXECUCOES (direto)"
+echo "  Vercel, $PROJETO, Production: $VARIAVEL_VERCEL (com pooling)"
+echo "  GitHub, Environment producao: $SEGREDO_GITHUB (direto)"
