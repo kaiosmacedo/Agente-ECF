@@ -5,6 +5,9 @@ using Api.RAG.Infraestrutura.Configuracao;
 using Api.RAG.Infraestrutura.Persistencia;
 using Api.RAG.Tests.Infra;
 using Dapper;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using Testcontainers.PostgreSql;
 
@@ -14,10 +17,30 @@ namespace Api.RAG.Tests;
 public sealed class BancoDeTeste : IAsyncLifetime
 {
     private readonly PostgreSqlContainer conteiner = new PostgreSqlBuilder("pgvector/pgvector:pg16").Build();
+    private readonly List<FabricaApi> fabricas = [];
 
     internal NpgsqlDataSource Banco { get; private set; } = null!;
 
     public string Conexao => conteiner.GetConnectionString();
+
+    /// <summary>Serviço com o banco real e o provedor falso; sem provedor, fica o real, que não tem a chave nos testes.</summary>
+    internal FabricaApi Criar(Aplicacao.Consumo.IProvedorDeEmbeddings? provedor, params (string Chave, string Valor)[] ajustes)
+    {
+        var fabrica = new FabricaApi(Conexao).Com(builder =>
+        {
+            foreach (var (chave, valor) in ajustes)
+            {
+                builder.UseSetting(chave, valor);
+            }
+
+            if (provedor is not null)
+            {
+                builder.ConfigureTestServices(servicos => servicos.AddSingleton(provedor));
+            }
+        });
+        fabricas.Add(fabrica);
+        return fabrica;
+    }
 
     public async ValueTask InitializeAsync()
     {
@@ -28,6 +51,11 @@ public sealed class BancoDeTeste : IAsyncLifetime
 
     public async ValueTask DisposeAsync()
     {
+        foreach (var fabrica in fabricas)
+        {
+            await fabrica.DisposeAsync();
+        }
+
         await Banco.DisposeAsync();
         await conteiner.DisposeAsync();
     }

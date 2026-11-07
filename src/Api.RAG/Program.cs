@@ -1,5 +1,6 @@
 using Api.RAG.Endpoints;
 using Api.RAG.Infraestrutura.Configuracao;
+using Api.RAG.Infraestrutura.Conhecimento;
 using Api.RAG.Infraestrutura.Consumo;
 using Api.RAG.Infraestrutura.Hospedagem;
 using Api.RAG.Infraestrutura.Observabilidade;
@@ -13,6 +14,7 @@ builder.AdicionarObservabilidade(IdentidadeServico.De("Api.RAG", typeof(Program)
 builder.Services.AddHealthChecks();
 builder.Services.AdicionarPersistencia(builder.Configuration);
 builder.Services.AdicionarConsumo(builder.Configuration);
+builder.Services.AdicionarBaseDeConhecimento(builder.Configuration);
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
@@ -24,9 +26,17 @@ if (args.Contains("--migrar"))
     return;
 }
 
+// Operações eventuais, fora do Vercel: ver docs/ci-cd.md.
+if (args.Contains("--ingerir") || args.Contains("--avaliar"))
+{
+    Environment.ExitCode = await ComandosDeLinha.ExecutarAsync(args, app.Services, Console.Out);
+    return;
+}
+
 app.UseMiddleware<CorrelacaoMiddleware>();
 app.MapearSaude();
 app.MapearConsumo();
+app.MapearDocumentos();
 app.MapOpenApi();
 
 await app.RunAsync();
