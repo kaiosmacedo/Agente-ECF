@@ -28,7 +28,7 @@ Skill: testes-agentes-ia
 
 ## 4. Produção
 
-- [ ] 4.1 **(Kaio Macedo)** Rodar o script para criar o banco da Api.RAG e cadastrar as conexões, antes do merge; verificar pelos nomes, sem exibir os valores (SQ-03).
+- [x] 4.1 **(Kaio Macedo)** Rodar o script para criar o banco da Api.RAG e cadastrar as conexões, antes do merge; verificar pelos nomes, sem exibir os valores (SQ-03).
 - [ ] 4.2 Depois do merge, verificar que o CD aplicou a migração e publicou e que `/health/ready` e `GET /consumo` funcionam em produção.
 
 ## 5. Fechamento
