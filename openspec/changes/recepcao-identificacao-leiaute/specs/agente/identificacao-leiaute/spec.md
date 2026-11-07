@@ -6,7 +6,7 @@ Identificar o tipo de documento e a versão do leiaute de cada arquivo recebido,
 
 ### Requirement: REQ-LEIAUTE-001 Identificação pelo manual oficial
 A etapa 3 SHALL identificar o tipo de documento e a versão do leiaute a partir do registro e dos campos definidos no manual oficial, e registrar ambos na execução.
-Fonte: Manual da ECF, leiaute 12 (20/05/2026); registro e campos de identificação a extrair em E05.
+Fonte: Manual da ECF, leiaute 12 (23/07/2026); registro e campos de identificação a extrair em E05.
 
 #### Scenario: Arquivo do leiaute 12
 - **GIVEN** um arquivo sintético que informa a versão 12 nos campos de identificação definidos no manual

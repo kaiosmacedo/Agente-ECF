@@ -60,7 +60,15 @@ Hoje o banco não guarda nada vindo do arquivo além de hash e tamanho. O valor 
 - `ResultadoAnaliseSofia` ganha `veredito` e `resumoAchados`, e `AchadoSofia` ganha `classe`, `registros`, `orientacao` e `fonte`, todos opcionais, como em D4 da mudança 03.
 - A síntese é montada pelo sistema a partir do veredito. Em `conforme`, ela informa que o resultado vale para as validações realizadas e é apoio à conferência (seção 1.3 da constitution).
 
-### D6. Testes
+### D6. Decisões da pesquisa (2026-11-06)
+
+Kaio Macedo aprovou as decisões de `docs/classificacao-das-regras.md`, que ajustam este plano:
+
+- **Não verificado (decisão 4):** campo `naoVerificados`, com item e motivo, fora do cálculo do status. Colocar a lista em limitações deixaria toda ECF em `parcial`, e como achado, toda ECF com ressalva. A lista é fixa, vem da pesquisa e fica vazia em `nao-avaliado`.
+- **Domínio (decisão 7):** `TipoDaRegra` ganha "não declarado", porque 19 aplicações do manual não trazem tipo. O nível fica opcional, porque só o 1.1 é declarado. `critica` sem regra só para leiaute. `grave` aciona revisão humana, acima do mínimo de P09. A síntese de `conforme-com-ressalvas` separa graves de observações.
+- **Migração `0003`:** preenche `naoVerificados` nas execuções já gravadas.
+
+### D7. Testes
 
 - Domínio: uma linha por condição da tabela de D1 e cada combinação proibida de D3.
 - Contrato: round-trip do envelope, os testes da mudança 13 continuam passando, e o cliente A2A real recebe os campos novos.

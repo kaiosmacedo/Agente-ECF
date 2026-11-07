@@ -6,7 +6,7 @@ Verificar de forma determinística as regras de negócio da ECF, incluindo a apu
 
 ### Requirement: REQ-NEGOCIO-001 Regra de negócio com fonte e validador
 Cada regra de negócio SHALL ter identificador, fonte oficial registrada (documento, versão e localização) e um validador determinístico com testes de caso válido e inválido. Regra sem fonte MUST NOT ser implementada.
-Fonte: Manual da ECF, leiaute 12 (20/05/2026) e demais fontes registradas em E03; localização por regra.
+Fonte: Manual da ECF, leiaute 12 (23/07/2026) e demais fontes registradas em E03; localização por regra.
 
 #### Scenario: Regra sem fonte registrada
 - **GIVEN** uma regra de cruzamento proposta sem fonte oficial

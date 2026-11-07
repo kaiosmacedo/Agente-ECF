@@ -47,6 +47,8 @@ As contagens são automáticas, sobre o texto extraído, e precisam ser conferid
 | 8 | 408 | 336 | 176 |
 | 7 | 406 | 331 | 182 |
 
+A medição mais precisa, feita na versão em Word do Leiaute 12, dá 382 códigos e 808 aplicações: 523 `Erro`, 231 `Aviso`, 32 `Habilita`, 19 sem tipo e 3 condicionais (`docs/pesquisa/avaliacao-da-ecf-alem-do-manual.md`). O catálogo de regras deve partir da versão em Word, porque a extração do PDF desalinha a coluna de tipo.
+
 São 462 regras distintas nos seis leiautes. A maior parte se repete, então o catálogo pode começar pelo 12 e registrar as diferenças dos anteriores. Mesmo com o mesmo nome, uma regra pode ter mudado de um leiaute para outro, o que também precisa ser conferido.
 
 ## Como o manual classifica as regras
@@ -65,10 +67,11 @@ O capítulo 3 do Manual do Leiaute 12 (página 38) traz os dois tipos oficiais e
 | 2, campos | "Utilizada na edição e verificação de pendências." |
 | 3, entre registros | "Utilizada somente na verificação de pendencias." |
 
-As tabelas de regras trazem número, código, descrição, "como obter" e tipo. A divisão entre grave e em observação não vem do manual: é uma escala do produto (mudança `classificacao-e-veredito`).
+As tabelas de regras trazem número, código, descrição, "como obter" e tipo. A divisão entre grave e em observação não vem do manual: é uma escala do produto, em `docs/classificacao-das-regras.md`.
 
 ## Divergências registradas
 
+- **Regras com tipo conflitante no manual:** há regras que dizem `Erro` em uma página e `Aviso` em outra, como K155 e K355 (páginas 148 e 153 contra 156, 159, 160 e 162). A precedência está em `docs/classificacao-das-regras.md`, decisão 3, com Kaio Macedo como responsável (P01).
 - **Versão do manual do Leiaute 12:** DP-04 e as propostas de 07 e 08 citam a publicação de 20/05/2026. O endereço ainda tem `20_05_2026` no nome, mas hoje entrega a atualização de 23/07/2026. Vale a mais recente; DP-04 será atualizada ao ser resolvida.
 - **Mesmo endereço, conteúdo novo:** o portal troca o arquivo sem mudar o endereço. Por isso o hash identifica a versão, e o endereço sozinho não basta para auditoria.
 - **Data da página e do documento:** a página cita a atualização de 29/09/2025 para o Leiaute 11, e a capa diz "Janeiro/2025". Para o Leiaute 10, a página cita 01/04/2024, e a capa, "Dezembro/2023". Vale o hash registrado acima.

@@ -27,15 +27,15 @@ A etapa 4 do fluxo (P03) valida estrutura, registros e campos do arquivo segundo
 | ID | Pergunta | Resposta | Fonte ou responsável | Data | Bloqueante |
 | --- | --- | --- | --- | --- | --- |
 | E01 | Quais grupos de regras estruturais do manual entram na primeira entrega (por exemplo: registros existentes, hierarquia, campos obrigatórios, tipos e tamanhos)? | — | Kaio Macedo | — | Sim |
-| E02 | O catálogo de regras é extraído do Manual da ECF, leiaute 12, pelo assistente e validado por quem tem responsabilidade de domínio? Quem valida (P01)? | — | Kaio Macedo | — | Sim |
-| E03 | Qual a relação com o programa validador oficial da ECF: reproduzir suas regras, complementar, ou só referenciar (DP-04)? | — | Kaio Macedo | — | Sim |
+| E02 | O catálogo de regras é extraído do Manual da ECF, leiaute 12, pelo assistente e validado por quem tem responsabilidade de domínio? Quem valida (P01)? | O assistente extrai o catálogo da versão em Word do manual, com uma versão por regra, e Kaio Macedo aprova. Sem especialista fiscal na equipe (`docs/classificacao-das-regras.md`). | Kaio Macedo | 2026-11-06 | Não |
+| E03 | Qual a relação com o programa validador oficial da ECF: reproduzir suas regras, complementar, ou só referenciar (DP-04)? | As regras vêm do manual. O programa oficial serve de gabarito: uma pessoa roda arquivos sintéticos, sem assinar nem transmitir, antes de fechar esta mudança (decisão 6). | Kaio Macedo | 2026-11-06 | Não |
 | E04 | Regras que dependem de tabelas publicadas à parte do manual: quais tabelas e em que versão? | — | Kaio Macedo | — | Não; ficam como validações não realizadas até a fonte ser registrada |
 
 ## Fontes oficiais
 
 | Documento | Emissor | Versão ou vigência | Localização |
 | --- | --- | --- | --- |
-| Manual da ECF, leiaute 12 | Receita Federal do Brasil, portal SPED | Publicado em 20/05/2026 | Seções de leiaute dos registros: a extrair por regra (E02) |
+| Manual da ECF, leiaute 12 | Receita Federal do Brasil, portal SPED | Publicado em 23/07/2026 | Seções de leiaute dos registros: a extrair por regra (E02) |
 
 Nenhuma regra estrutural é aprovada sem localização no manual.
 
