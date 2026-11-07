@@ -41,5 +41,6 @@ internal static class ProjecaoParaSofia
         achado.Classe,
         achado.Registros,
         achado.Orientacao,
-        achado.Fonte);
+        achado.Fonte,
+        achado.TrechosDoManual);
 }

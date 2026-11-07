@@ -38,6 +38,12 @@ internal sealed class RepositorioDeConsumoEmMemoria : IRepositorioDeConsumo
 
     public Task<bool> DisponivelAsync(CancellationToken cancelamento) => Task.FromResult(!Indisponivel);
 
+    public Task<long> ContarConsultasDesdeAsync(DateTimeOffset desde, CancellationToken cancelamento)
+    {
+        LancarSeIndisponivel();
+        return Task.FromResult((long)Registros.Count(r => r.Finalidade == FinalidadeDaChamada.Consulta && r.Tentativa == 1 && r.CriadaEm >= desde));
+    }
+
     private void LancarSeIndisponivel()
     {
         if (Indisponivel)

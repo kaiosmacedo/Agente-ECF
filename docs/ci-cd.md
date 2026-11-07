@@ -127,7 +127,20 @@ O script baixa os PDFs do Release privado `fontes-ecf-2026-11`, ou dos endereço
 
 **Endpoint:** `POST /documentos` fica desligado em produção (`Ingestao:EndpointHabilitado`), porque é público nesta versão e aciona provedor pago (SQ-12). `GET /documentos`, `GET /documentos/{id}` e `POST /documentos/{id}/desativar` não acionam o provedor.
 
-**Chave da OpenAI:** não fica no Vercel nem no GitHub. Sem ela, a Api.RAG funciona, mas não gera embeddings. A busca da mudança 06 vai precisar dela em produção.
+**Chave da OpenAI:** não fica no Vercel nem no GitHub. Sem ela, a Api.RAG funciona, mas não gera embeddings.
+
+**Busca por MCP (mudança 06):** a ferramenta `buscar_no_manual` fica em `/mcp` da Api.RAG ([contrato](contratos/mcp-buscar-no-manual.md)), e a Api.Agente a chama pelo endereço de `Conhecimento:UrlDoServidorMcp`, definido em `appsettings.Production.json`. Nenhuma das opções abaixo é segredo, exceto a chave.
+
+| Serviço | Opção | Padrão | Uso |
+| --- | --- | --- | --- |
+| Api.RAG | `Busca:Habilitada` | `false` | Liga a busca. Ligada, exige `OpenAI:ApiKey` na inicialização. |
+| Api.RAG | `Busca:LimiteDeConsultasPorDia` | `2000` | Consultas por dia (UTC), contadas no `consumo_ia` com finalidade `consulta`. |
+| Api.RAG | `Busca:QuantidadePadrao` / `QuantidadeMaxima` | `5` / `10` | Trechos por consulta. |
+| Api.Agente | `Conhecimento:UrlDoServidorMcp` | `http://localhost:8081/mcp` | Endereço da ferramenta; em produção, `https://agente-ecf-rag.vercel.app/mcp`. |
+| Api.Agente | `Conhecimento:TimeoutEmSegundos` | `10` | Timeout de cada tentativa. |
+| Api.Agente | `Conhecimento:MaximoDeConsultasPorExecucao` | `10` | Regras consultadas por execução. |
+
+**Em aberto:** a chave da OpenAI de produção para a busca, por decisão de Kaio Macedo em 2026-11-07. Até ele decidir, a busca fica desligada, e a etapa 5 registra a limitação "consulta ao manual desativada". Para ligar: ele cadastra `OpenAI__ApiKey` no projeto `agente-ecf-rag` (tipo sensível), muda `Busca__Habilitada` para `true` e o assistente redeploya. A recomendação é uma chave própria do Agente-ECF, com limite de gasto no painel da OpenAI.
 
 ## Telemetria
 

@@ -26,6 +26,7 @@
 - [ ] 4.1 Criar `POST /analises` (D3), com a migração `0004_canal`; verificar o envio válido, o arquivo acima do limite, a leitura em ISO 8859-1 e o nome `../../etc/passwd` (REQ-RECEPCAO-001, REQ-RECEPCAO-002, REQ-RECEPCAO-004).
 - [ ] 4.2 Verificar com Testcontainers que a mesma ECF sintética pelos dois canais produz o mesmo status, veredito e achados (REQ-RECEPCAO-008).
 - [ ] 4.3 Atualizar o cartão para a versão 1.1.0 (D8) e a cópia em `docs/contratos/agent-card.json`; verificar os cenários de REQ-A2A-007 e REQ-A2A-008 com teste de contrato.
+- [ ] 4.4 Ligar a etapa 5 ao fluxo depois da identificação, com `EtapaDeConsultaAoManual` da mudança 06 (D7 dela), e verificar em contêineres a chamada da Api.Agente à Api.RAG, com a busca desligada: etapa 5 não executada e limitação "consulta ao manual desativada" (REQ-CONSULTA-007).
 
 ## 5. Segurança e qualidade
 

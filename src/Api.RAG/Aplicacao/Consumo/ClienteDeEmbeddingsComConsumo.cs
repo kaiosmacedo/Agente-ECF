@@ -64,7 +64,8 @@ internal sealed class ClienteDeEmbeddingsComConsumo(
             OrigemDoValor.NaoAplicavel,
             custo.CustoUsd,
             custo.Origem,
-            custo.VersaoDaTabela);
+            custo.VersaoDaTabela,
+            contexto.Finalidade);
 
         // O registro não pode ser cancelado junto com a chamada: a tentativa já aconteceu (P17).
         return registrador.RegistrarAsync(registro, CancellationToken.None);

@@ -7,6 +7,7 @@
 #   bash .github/scripts/popular-rag.sh todos         # os seis manuais; o que já estiver na base não é refeito
 #
 # Para comparar parâmetros (D6): TAMANHO_DO_TRECHO, SOBREPOSICAO_DO_TRECHO e REPROCESSAR=1, que refaz o que já está na base.
+# Na avaliação, COM_CODIGO=1 usa a busca por código da mudança 06 (D4).
 # A chave da OpenAI vem do arquivo do projeto SofiaInfis, como Kaio Macedo autorizou. Para usar outra, informe ARQUIVO_DA_CHAVE.
 # Ela vai só para o processo em contêiner, por variável de ambiente: nunca para o repositório, os logs, o Vercel ou o GitHub.
 set -euo pipefail
@@ -92,6 +93,7 @@ fi
 [ "$MODO" = "avaliar" ] || cp "$MANIFESTO" "$temporario/fontes/manifesto-rag.json"
 
 [ -z "${REPROCESSAR:-}" ] || argumentos+=(--reprocessar)
+[ -z "${COM_CODIGO:-}" ] || argumentos+=(--com-codigo)
 ajustes=()
 [ -z "${TAMANHO_DO_TRECHO:-}" ] || ajustes+=(-e "Ingestao__TamanhoDoTrecho=$TAMANHO_DO_TRECHO")
 [ -z "${SOBREPOSICAO_DO_TRECHO:-}" ] || ajustes+=(-e "Ingestao__SobreposicaoDoTrecho=$SOBREPOSICAO_DO_TRECHO")

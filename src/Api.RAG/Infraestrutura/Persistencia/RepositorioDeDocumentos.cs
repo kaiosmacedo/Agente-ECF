@@ -133,19 +133,30 @@ internal sealed class RepositorioDeDocumentos(NpgsqlDataSource banco) : IReposit
                 "DELETE FROM documentos WHERE id = @Id", new { Id = id }, cancellationToken: cancelamento)),
             cancelamento);
 
-    public Task<IReadOnlyList<TrechoEncontrado>> BuscarSemelhantesAsync(float[] vetor, string tipo, string versao, int quantidade, CancellationToken cancelamento) =>
+    public Task<IReadOnlyList<TrechoEncontrado>> BuscarSemelhantesAsync(float[] vetor, string tipo, string versao, int quantidade, CancellationToken cancelamento, string? codigo = null) =>
         Protegido<IReadOnlyList<TrechoEncontrado>>(
             async conexao => [.. await conexao.QueryAsync<TrechoEncontrado>(new CommandDefinition(
+                // Busca exata, sem índice aproximado (ADR 0004). O código é parâmetro, nunca concatenado (SQ-05).
                 """
-                SELECT c.pagina AS Pagina, c.secao AS Secao, c.texto AS Texto, 1 - (c.embedding <=> CAST(@Vetor AS vector)) AS Similaridade
+                SELECT c.id AS IdTrecho, d.id AS IdDocumento, d.titulo AS Titulo, d.versao AS Versao, c.pagina AS Pagina,
+                       c.secao AS Secao, c.texto AS Texto, 1 - (c.embedding <=> CAST(@Vetor AS vector)) AS Similaridade,
+                       (CAST(@Codigo AS text) IS NOT NULL AND strpos(c.texto, CAST(@Codigo AS text)) > 0) AS ContemCodigo
                 FROM chunks c
                 JOIN documentos d ON d.id = c.documento_id
                 WHERE d.estado = 'vigente' AND d.tipo = @Tipo AND d.versao = @Versao
-                ORDER BY c.embedding <=> CAST(@Vetor AS vector)
+                ORDER BY ContemCodigo DESC, c.embedding <=> CAST(@Vetor AS vector), c.id
                 LIMIT @Quantidade
                 """,
-                new { Vetor = ComoTexto(vetor), Tipo = tipo, Versao = versao, Quantidade = quantidade },
+                new { Vetor = ComoTexto(vetor), Tipo = tipo, Versao = versao, Quantidade = quantidade, Codigo = codigo },
                 cancellationToken: cancelamento))],
+            cancelamento);
+
+    public Task<bool> HaVigenteAsync(string tipo, string versao, CancellationToken cancelamento) =>
+        Protegido(
+            async conexao => await conexao.ExecuteScalarAsync<bool>(new CommandDefinition(
+                "SELECT EXISTS (SELECT 1 FROM documentos WHERE estado = 'vigente' AND tipo = @Tipo AND versao = @Versao)",
+                new { Tipo = tipo, Versao = versao },
+                cancellationToken: cancelamento)),
             cancelamento);
 
     private static string ComoTexto(float[] vetor) =>

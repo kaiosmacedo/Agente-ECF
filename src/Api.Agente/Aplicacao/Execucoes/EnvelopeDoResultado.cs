@@ -44,7 +44,8 @@ internal sealed record AchadoDoEnvelope(
     string Classe,
     RegraDoEnvelope? Regra,
     FonteDoAchado? Fonte,
-    string? Orientacao);
+    string? Orientacao,
+    IReadOnlyList<TrechoConsultado>? TrechosDoManual = null);
 
 /// <summary>Quantos achados há em cada classe (REQ-RESULT-011).</summary>
 internal sealed record ResumoDosAchados(int Impeditivas, int Graves, int Observacoes);
@@ -66,7 +67,8 @@ internal sealed record ErroDoEnvelope(string Codigo, string Mensagem);
 /// <summary>Monta o envelope a partir da execução, com os nomes públicos de status, categorias e severidades.</summary>
 internal static class MontadorDoEnvelope
 {
-    public const string VersaoDoContrato = "1.0";
+    /// <summary>1.1: os achados ganham <c>trechosDoManual</c>, opcional (mudança 06, D8).</summary>
+    public const string VersaoDoContrato = "1.1";
 
     /// <summary>O que nenhum arquivo prova sozinho (docs/classificacao-das-regras.md; decisão 4 da pesquisa).</summary>
     private static readonly ItemNaoVerificado[] NaoVerificadosSempre =
@@ -109,7 +111,7 @@ internal static class MontadorDoEnvelope
             Resumo(execucao),
             $"{TextoDoVeredito(execucao)} {sintese}",
             [.. execucao.Etapas.Select(etapa => new EtapaDoEnvelope((int)etapa.Etapa, NomeDaEtapa[etapa.Etapa], NomeDoEstado(etapa.Estado), etapa.Justificativa))],
-            [.. execucao.Achados.Select(Achado)],
+            [.. execucao.Achados.Select(achado => Achado(achado, execucao))],
             [.. ValidacoesNaoRealizadas(execucao), .. execucao.Limitacoes],
             execucao.Veredito == VereditoDaExecucao.NaoAvaliado ? [] : NaoVerificadosSempre,
             execucao.Documentos,
@@ -188,7 +190,7 @@ internal static class MontadorDoEnvelope
         _ => throw new ArgumentOutOfRangeException(nameof(estado)),
     };
 
-    private static AchadoDoEnvelope Achado(Achado achado) => new(
+    private static AchadoDoEnvelope Achado(Achado achado, Execucao execucao) => new(
         achado.IdAchado,
         achado.Categoria switch
         {
@@ -227,5 +229,6 @@ internal static class MontadorDoEnvelope
         },
         achado.Regra is { } regra ? new RegraDoEnvelope(regra.Codigo, NomeDoTipo(regra.Tipo), regra.Nivel) : null,
         achado.Fonte,
-        achado.Orientacao);
+        achado.Orientacao,
+        achado.Deterministico && execucao.TrechosConsultados.TryGetValue(achado.ChaveDaRegra, out var trechos) ? trechos : null);
 }

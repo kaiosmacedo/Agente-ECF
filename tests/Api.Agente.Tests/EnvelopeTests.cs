@@ -31,7 +31,7 @@ public sealed class EnvelopeTests
     {
         var envelope = Montar();
 
-        Assert.Equal("1.0", envelope.VersaoContrato);
+        Assert.Equal("1.1", envelope.VersaoContrato);
         Assert.NotEqual(Guid.Empty, envelope.IdExecucao);
         Assert.Equal("corr-1", envelope.IdCorrelacao);
         Assert.Equal("parcial", envelope.Status);
@@ -447,7 +447,7 @@ public sealed class AnalisesEndpointsTests
 
         Assert.Equal(2, raiz.GetProperty("documentos").GetArrayLength());
         Assert.Equal(64, raiz.GetProperty("documentos")[0].GetProperty("hash").GetString()!.Length);
-        Assert.Equal("1.0", raiz.GetProperty("versoes").GetProperty("contrato").GetString());
+        Assert.Equal("1.1", raiz.GetProperty("versoes").GetProperty("contrato").GetString());
         Assert.False(string.IsNullOrWhiteSpace(raiz.GetProperty("versoes").GetProperty("servico").GetString()));
         Assert.DoesNotContain("Maria Oliveira", corpo, StringComparison.Ordinal);
         Assert.DoesNotContain("texto extraído", corpo, StringComparison.Ordinal);

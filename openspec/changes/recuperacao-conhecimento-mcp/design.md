@@ -40,15 +40,15 @@ Entrada:
 | Campo | Tipo | Regra |
 | --- | --- | --- |
 | `consulta` | texto | Obrigatório, de 1 a 500 caracteres. |
-| `tipoDocumento` | texto | Obrigatório. Hoje só `ECF`. |
-| `versao` | texto | Obrigatório. Número do leiaute, como `12`. |
+| `tipoDocumento` | texto | Obrigatório. Tipo na base, hoje `manual-ecf`. |
+| `versao` | texto | Obrigatório. Versão na base, como `leiaute-12`. |
 | `quantidade` | inteiro | De 1 a 10; padrão 5 (E02). |
 | `codigo` | texto | Opcional. Letras maiúsculas, dígitos e sublinhado, até 60 caracteres (REQ-RECUP-005). |
 | `idExecucao` | UUID | Opcional. Execução da Api.Agente, para o consumo (D9). |
 
 Saída: `versaoContrato` (`1.0`), `motivo` (`versao_indisponivel` quando não há documento vigente) e `trechos`, cada um com `idTrecho`, `idDocumento`, `titulo`, `versao`, `pagina`, `secao`, `relevancia` (de 0 a 1), `contemCodigo` e `texto`.
 
-Erros da ferramenta, com código e mensagem sem dado sensível: `argumento_invalido`, `busca_desativada`, `limite_de_uso_atingido` e `falha_do_provedor`. O schema fica em `docs/contratos/mcp-buscar-no-manual.md`. Mudança incompatível vira 2.0, com convivência.
+Erros da ferramenta, com código e mensagem sem dado sensível: `argumento_invalido`, `busca_desativada`, `limite_de_uso_atingido`, `falha_do_provedor` e `falha_tecnica`. O schema fica em `docs/contratos/mcp-buscar-no-manual.md`. Mudança incompatível vira 2.0, com convivência.
 
 ### D3. Consulta ao banco com busca por código (REQ-RECUP-002, 005)
 
@@ -74,7 +74,7 @@ O resultado e o custo vão para `docs/avaliacao/recuperacao.md`. Até lá, valem
 | Opção | Padrão | Uso |
 | --- | --- | --- |
 | `Busca:Habilitada` | `false` | Sem a chave da OpenAI em produção, a ferramenta responde `busca_desativada`. |
-| `Busca:LimiteDeConsultasPorDia` | `2000` | Contado no `consumo_ia`: embeddings de consulta desde 00:00 UTC. Ao atingir, `limite_de_uso_atingido`. |
+| `Busca:LimiteDeConsultasPorDia` | `2000` | Contado no `consumo_ia`: embeddings de consulta desde 00:00 UTC, pela coluna `finalidade` da migração `0003_finalidade_do_consumo`. Ao atingir, `limite_de_uso_atingido`. |
 
 As duas verificações vêm antes de gerar o embedding. Cada consulta tem cerca de 20 tokens, ou US$ 0,0000004 a US$ 0,02 por milhão; 2.000 por dia custam menos de US$ 0,001. O limite protege contra abuso do endpoint público, não contra o custo. A contagem por dia aceita uma pequena folga com chamadas simultâneas, registrada como risco.
 
@@ -106,7 +106,7 @@ A causa da falha da etapa vem da mudança 07 (D7 dela). Se a 06 for implementada
 
 ### D8. Trechos na execução e no resultado (REQ-CONSULTA-002, 004, 006; P07, P19)
 
-- A migração `0006_trechos_consultados` cria a tabela `trechos_consultados`: execução, regra, `idTrecho`, `idDocumento`, versão, página e relevância. O texto do trecho não é guardado: ele pode ser lido de novo na Api.RAG pelo identificador.
+- Os trechos ficam no envelope guardado da execução (coluna `conteudo`, em JSON), em cada achado: `idTrecho`, `idDocumento`, versão, página e relevância. O texto do trecho não é guardado: ele pode ser lido de novo na Api.RAG pelo identificador.
 - Cada achado ganha `trechosDoManual`, com as referências da sua regra. No contrato SOFIA, entra como campo opcional do achado; no envelope, a versão sobe para 1.1, compatível.
 - Para a mudança 10, o texto recebido fica disponível só em memória, delimitado como `<fonte id="..." documento="..." versao="..." pagina="...">`, e nunca concatenado às instruções (P10).
 
@@ -150,6 +150,15 @@ A validação de inicialização exige a chave só quando a busca está habilita
 1. Deploy da Api.RAG com `Busca:Habilitada` `false`, depois da Api.Agente, com a migração `0006`.
 2. Quando Kaio Macedo decidir a chave (E04, em aberto), ele a cadastra, `Busca:Habilitada` passa a `true`, e o assistente redeploya e verifica (tarefas 6.1 e 6.2).
 3. Volta: `Busca:Habilitada` `false` desliga a busca sem deploy de código; a etapa 5 vira limitação.
+
+## Ajustes na implementação (2026-11-07)
+
+Mudanças em relação ao plano aprovado, sem efeito nos requisitos:
+
+- **Identificadores da base (D2):** `tipoDocumento` e `versao` usam os valores da base (`manual-ecf`, `leiaute-12`), em vez de `ECF` e `12`. Assim a Api.RAG não esconde uma conversão de nomes; quem converte o leiaute identificado é a Api.Agente (`ManualDaVersao.DaEcf`).
+- **Trechos no envelope (D8):** o envelope da execução já é guardado inteiro em JSON, então a tabela `trechos_consultados` ficou desnecessária (P16). Nenhuma migração na Api.Agente.
+- **Código `falha_tecnica` (D2):** separa a falha do banco da Api.RAG da falha do provedor.
+- **Teste ponta a ponta (tarefa 4.1):** o teste dos contêineres chama a ferramenta MCP na imagem real da Api.RAG. A chamada da Api.Agente à Api.RAG em contêineres entra na mudança 07, que liga a etapa 5 ao fluxo.
 
 ## Open Questions
 

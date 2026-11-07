@@ -42,7 +42,8 @@
         66,
         68
       ],
-      "evidencia": "REGRA_DT_FINAL_ESCRITURACAO"
+      "evidencia": "REGRA_DT_FINAL_ESCRITURACAO",
+      "codigo": "REGRA_DT_FINAL_ESCRITURACAO"
     },
     {
       "id": "P05",
@@ -52,7 +53,8 @@
       "paginas": [
         39
       ],
-      "evidencia": "REGRA_ANO_DIFERENTEs"
+      "evidencia": "REGRA_ANO_DIFERENTEs",
+      "codigo": "REGRA_ANO_DIFERENTE"
     },
     {
       "id": "P06",
@@ -82,7 +84,8 @@
       "paginas": [
         71
       ],
-      "evidencia": "Registro 0010:"
+      "evidencia": "Registro 0010:",
+      "codigo": "0010"
     },
     {
       "id": "P09",
@@ -92,7 +95,8 @@
       "paginas": [
         81
       ],
-      "evidencia": "Registro 0020:"
+      "evidencia": "Registro 0020:",
+      "codigo": "0020"
     },
     {
       "id": "P10",
@@ -102,7 +106,8 @@
       "paginas": [
         104
       ],
-      "evidencia": "Registro 0930:"
+      "evidencia": "Registro 0930:",
+      "codigo": "0930"
     },
     {
       "id": "P11",
@@ -112,7 +117,8 @@
       "paginas": [
         133
       ],
-      "evidencia": "Registro J050:"
+      "evidencia": "Registro J050:",
+      "codigo": "J050"
     },
     {
       "id": "P12",
@@ -122,7 +128,8 @@
       "paginas": [
         136
       ],
-      "evidencia": "Registro J051:"
+      "evidencia": "Registro J051:",
+      "codigo": "J051"
     },
     {
       "id": "P13",
@@ -132,7 +139,8 @@
       "paginas": [
         147
       ],
-      "evidencia": "Registro K155:"
+      "evidencia": "Registro K155:",
+      "codigo": "K155"
     },
     {
       "id": "P14",
@@ -145,7 +153,8 @@
         156,
         157
       ],
-      "evidencia": "REGRA_COMPATIBILIDADE_E155_K155"
+      "evidencia": "REGRA_COMPATIBILIDADE_E155_K155",
+      "codigo": "REGRA_COMPATIBILIDADE_E155_K155"
     },
     {
       "id": "P15",
@@ -156,7 +165,8 @@
         147,
         148
       ],
-      "evidencia": "REGRA_NATUREZA_PERMITIDA_PATRIMONIAL"
+      "evidencia": "REGRA_NATUREZA_PERMITIDA_PATRIMONIAL",
+      "codigo": "REGRA_NATUREZA_PERMITIDA_PATRIMONIAL"
     },
     {
       "id": "P16",
@@ -166,7 +176,8 @@
       "paginas": [
         245
       ],
-      "evidencia": "Registro M300:"
+      "evidencia": "Registro M300:",
+      "codigo": "M300"
     },
     {
       "id": "P17",
@@ -176,7 +187,8 @@
       "paginas": [
         257
       ],
-      "evidencia": "Registro M350:"
+      "evidencia": "Registro M350:",
+      "codigo": "M350"
     },
     {
       "id": "P18",
@@ -186,7 +198,8 @@
       "paginas": [
         269
       ],
-      "evidencia": "Registro M410:"
+      "evidencia": "Registro M410:",
+      "codigo": "M410"
     },
     {
       "id": "P19",
@@ -196,7 +209,8 @@
       "paginas": [
         272
       ],
-      "evidencia": "Registro M500:"
+      "evidencia": "Registro M500:",
+      "codigo": "M500"
     },
     {
       "id": "P20",
@@ -206,7 +220,8 @@
       "paginas": [
         299
       ],
-      "evidencia": "Registro N630:"
+      "evidencia": "Registro N630:",
+      "codigo": "N630"
     },
     {
       "id": "P21",
@@ -216,7 +231,8 @@
       "paginas": [
         302
       ],
-      "evidencia": "Registro N650:"
+      "evidencia": "Registro N650:",
+      "codigo": "N650"
     },
     {
       "id": "P22",
@@ -226,7 +242,8 @@
       "paginas": [
         340
       ],
-      "evidencia": "Registro P200:"
+      "evidencia": "Registro P200:",
+      "codigo": "P200"
     },
     {
       "id": "P23",
@@ -236,7 +253,8 @@
       "paginas": [
         344
       ],
-      "evidencia": "Registro P300:"
+      "evidencia": "Registro P300:",
+      "codigo": "P300"
     },
     {
       "id": "P24",
@@ -246,7 +264,8 @@
       "paginas": [
         413
       ],
-      "evidencia": "Registro U180:"
+      "evidencia": "Registro U180:",
+      "codigo": "U180"
     },
     {
       "id": "P25",
@@ -256,7 +275,8 @@
       "paginas": [
         565
       ],
-      "evidencia": "Registro Y570:"
+      "evidencia": "Registro Y570:",
+      "codigo": "Y570"
     },
     {
       "id": "P26",
@@ -266,7 +286,8 @@
       "paginas": [
         571
       ],
-      "evidencia": "Registro Y600:"
+      "evidencia": "Registro Y600:",
+      "codigo": "Y600"
     },
     {
       "id": "P27",
@@ -276,7 +297,8 @@
       "paginas": [
         614
       ],
-      "evidencia": "Registro 9100:"
+      "evidencia": "Registro 9100:",
+      "codigo": "9100"
     },
     {
       "id": "P28",
@@ -312,6 +334,46 @@
         600
       ],
       "evidencia": "[Mm]ulta por [Aa]traso"
+    },
+    {
+      "id": "P31",
+      "pergunta": "Qual é a alíquota do ISS para serviços de informática no município de São Paulo?",
+      "tipo": "manual-ecf",
+      "versao": "leiaute-12",
+      "paginas": [],
+      "evidencia": ""
+    },
+    {
+      "id": "P32",
+      "pergunta": "Como cadastrar a biometria facial no aplicativo gov.br?",
+      "tipo": "manual-ecf",
+      "versao": "leiaute-12",
+      "paginas": [],
+      "evidencia": ""
+    },
+    {
+      "id": "P33",
+      "pergunta": "Qual o valor do salário mínimo regional do estado do Paraná?",
+      "tipo": "manual-ecf",
+      "versao": "leiaute-12",
+      "paginas": [],
+      "evidencia": ""
+    },
+    {
+      "id": "P34",
+      "pergunta": "Como calcular as férias proporcionais de um empregado doméstico?",
+      "tipo": "manual-ecf",
+      "versao": "leiaute-12",
+      "paginas": [],
+      "evidencia": ""
+    },
+    {
+      "id": "P35",
+      "pergunta": "Qual o prazo para pedir o seguro-desemprego depois da demissão?",
+      "tipo": "manual-ecf",
+      "versao": "leiaute-12",
+      "paginas": [],
+      "evidencia": ""
     }
   ]
 }

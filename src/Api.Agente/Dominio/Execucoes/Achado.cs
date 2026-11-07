@@ -106,6 +106,12 @@ internal sealed record Achado
 
     public string? Orientacao { get; init; }
 
+    /// <summary>A regra que agrupa os achados na consulta ao manual: o código do manual, ou o fundamento (REQ-CONSULTA-005).</summary>
+    public string ChaveDaRegra => Regra?.Codigo ?? Fundamento;
+
+    /// <summary>Só os achados de validador ou ferramenta são fundamentados no manual pela etapa 5.</summary>
+    public bool Deterministico => Categoria is CategoriaDoAchado.ErroEstrutural or CategoriaDoAchado.InconsistenciaDeNegocio;
+
     public ClasseDoAchado Classe => Severidade switch
     {
         SeveridadeDoAchado.Critica => ClasseDoAchado.Impeditiva,

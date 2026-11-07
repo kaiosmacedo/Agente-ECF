@@ -10,11 +10,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.WebHost.UseUrls(EnderecoDeEscuta.Resolver(builder.Configuration["PORT"]));
 builder.Services.AdicionarOpcoesValidadas<OpcoesObservabilidade>(builder.Configuration, OpcoesObservabilidade.Secao);
-builder.AdicionarObservabilidade(IdentidadeServico.De("Api.RAG", typeof(Program).Assembly));
+var identidade = IdentidadeServico.De("Api.RAG", typeof(Program).Assembly);
+builder.AdicionarObservabilidade(identidade);
 builder.Services.AddHealthChecks();
 builder.Services.AdicionarPersistencia(builder.Configuration);
 builder.Services.AdicionarConsumo(builder.Configuration);
 builder.Services.AdicionarBaseDeConhecimento(builder.Configuration);
+builder.Services.AdicionarBusca(builder.Configuration);
+builder.Services.AdicionarServidorMcp(identidade.Versao);
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
@@ -37,6 +40,7 @@ app.UseMiddleware<CorrelacaoMiddleware>();
 app.MapearSaude();
 app.MapearConsumo();
 app.MapearDocumentos();
+app.MapearMcp();
 app.MapOpenApi();
 
 await app.RunAsync();

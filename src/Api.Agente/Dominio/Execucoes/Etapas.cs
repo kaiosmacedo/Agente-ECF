@@ -29,6 +29,9 @@ internal sealed record EtapaDaExecucao(Etapa Etapa, EstadoDaEtapa Estado, string
 /// <summary>Dependências entre as etapas (REQ-EXEC-002) e quais validações são obrigatórias (P05).</summary>
 internal static class FluxoDeEtapas
 {
+    /// <summary>A etapa 5 só consulta o manual para fundamentar achados (REQ-CONSULTA-005).</summary>
+    public const string JustificativaSemAchadoAFundamentar = "Nenhum achado a fundamentar no manual.";
+
     private static readonly Dictionary<Etapa, Etapa[]> Dependentes = new()
     {
         [Etapa.Recepcao] = [Etapa.ValidacaoDaEntrada],
@@ -43,6 +46,7 @@ internal static class FluxoDeEtapas
     /// <summary>Justificativas previstas para uma etapa não se aplicar (REQ-EXEC-003).</summary>
     private static readonly Dictionary<Etapa, string[]> JustificativasPrevistas = new()
     {
+        [Etapa.ConsultaAoManual] = [JustificativaSemAchadoAFundamentar],
         [Etapa.FerramentasExternas] = ["Nenhuma ferramenta externa é necessária nesta análise."],
     };
 
