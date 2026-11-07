@@ -6,7 +6,7 @@ Validar de forma determinística a estrutura, os registros e os campos do arquiv
 
 ### Requirement: REQ-ESTRUT-001 Regra com fonte e validador
 Cada regra estrutural SHALL ter identificador, fonte (documento, versão e localização no manual) e um validador determinístico com testes de caso válido e inválido. Regra sem localização no manual MUST NOT ser implementada.
-Fonte: Manual da ECF, leiaute 12 (20/05/2026); localização registrada por regra no catálogo (E02).
+Fonte: Manual da ECF, leiaute 12 (23/07/2026); localização registrada por regra no catálogo (E02).
 
 #### Scenario: Regra sem localização
 - **GIVEN** uma regra candidata sem localização no manual
@@ -15,7 +15,7 @@ Fonte: Manual da ECF, leiaute 12 (20/05/2026); localização registrada por regr
 
 ### Requirement: REQ-ESTRUT-002 Catálogo de validações obrigatórias por versão
 O catálogo SHALL declarar quais regras são obrigatórias para cada versão do leiaute. Regras obrigatórias ainda não implementadas MUST constar do resultado como validações não realizadas.
-Fonte: Manual da ECF, leiaute 12 (20/05/2026); conjunto obrigatório definido em E01.
+Fonte: Manual da ECF, leiaute 12 (23/07/2026); conjunto obrigatório definido em E01.
 
 #### Scenario: Regra obrigatória pendente
 - **GIVEN** uma regra obrigatória do leiaute 12 sem validador implementado

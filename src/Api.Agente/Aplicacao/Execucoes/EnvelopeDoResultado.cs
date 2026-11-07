@@ -21,6 +21,7 @@ internal sealed record EnvelopeDoResultado(
     IReadOnlyList<EtapaDoEnvelope> Etapas,
     IReadOnlyList<AchadoDoEnvelope> Achados,
     IReadOnlyList<string> Limitacoes,
+    IReadOnlyList<ItemNaoVerificado> NaoVerificados,
     IReadOnlyList<DocumentoRecebido> Documentos,
     IdentidadeDoEnvelope Identidade,
     VersoesDoEnvelope Versoes,
@@ -48,8 +49,11 @@ internal sealed record AchadoDoEnvelope(
 /// <summary>Quantos achados há em cada classe (REQ-RESULT-011).</summary>
 internal sealed record ResumoDosAchados(int Impeditivas, int Graves, int Observacoes);
 
-/// <summary>A regra do manual, com o tipo pelo nome usado no manual (REQ-RESULT-008).</summary>
-internal sealed record RegraDoEnvelope(string Codigo, string Tipo, string Nivel);
+/// <summary>A regra do manual, com o tipo pelo nome usado no manual. O nível só vem se o manual o declarar (REQ-RESULT-008).</summary>
+internal sealed record RegraDoEnvelope(string Codigo, string Tipo, string? Nivel);
+
+/// <summary>O que o arquivo não prova, com o motivo. Não muda o status nem o veredito (REQ-RESULT-013).</summary>
+internal sealed record ItemNaoVerificado(string Item, string Motivo);
 
 /// <summary>Identidade como veio declarada: nesta versão, nunca é verificada (SQ-12).</summary>
 internal sealed record IdentidadeDoEnvelope(string UsuarioPseudonimo, string Organizacao, bool Verificada);
@@ -63,6 +67,17 @@ internal sealed record ErroDoEnvelope(string Codigo, string Mensagem);
 internal static class MontadorDoEnvelope
 {
     public const string VersaoDoContrato = "1.0";
+
+    /// <summary>O que nenhum arquivo prova sozinho (docs/classificacao-das-regras.md; decisão 4 da pesquisa).</summary>
+    private static readonly ItemNaoVerificado[] NaoVerificadosSempre =
+    [
+        new("Confronto do IRPJ e da CSLL com DCTF, DCOMP e pagamentos", "Depende de dados da Receita Federal ou de relatórios que não vêm no arquivo."),
+        new("Certificado e procuração, ECD e ECF anterior na base, hash na base, cadastro do CNPJ, versão do programa e recepção", "São conferidos na transmissão ou na base da Receita Federal."),
+        new("Pagamento efetivo, PGFN, parcelamento, intimação, aviso de malha, autos de infração e Sintonia", "Estão em sistemas da Receita Federal, com acesso autenticado."),
+        new("e-Financeira, EFD-Reinf e eSocial de terceiros, DIRF de fontes pagadoras e Siscomex", "São dados prestados por terceiros."),
+        new("Documentos que comprovam prejuízo fiscal e base negativa, e guarda de documentos", "Estão fora da ECF."),
+        new("REGRA_DV_RECIBO, REGRA_VALIDA_HASH_ARQUIVO, regras das tabelas dinâmicas fora do manual e fórmulas com funções sem definição", "Não há algoritmo ou fonte acessível, e adotar um violaria P01."),
+    ];
 
     /// <summary>Nenhum validador existe ainda: entram nas mudanças 08 e 09.</summary>
     private const string VersaoDosValidadores = "nenhum";
@@ -96,6 +111,7 @@ internal static class MontadorDoEnvelope
             [.. execucao.Etapas.Select(etapa => new EtapaDoEnvelope((int)etapa.Etapa, NomeDaEtapa[etapa.Etapa], NomeDoEstado(etapa.Estado), etapa.Justificativa))],
             [.. execucao.Achados.Select(Achado)],
             [.. ValidacoesNaoRealizadas(execucao), .. execucao.Limitacoes],
+            execucao.Veredito == VereditoDaExecucao.NaoAvaliado ? [] : NaoVerificadosSempre,
             execucao.Documentos,
             new IdentidadeDoEnvelope(execucao.Identidade.UsuarioPseudonimo, execucao.Identidade.Organizacao, Verificada: false),
             new VersoesDoEnvelope(VersaoDoContrato, versaoDoServico, VersaoDosValidadores),
@@ -136,7 +152,7 @@ internal static class MontadorDoEnvelope
         return execucao.Veredito switch
         {
             VereditoDaExecucao.Conforme => $"De acordo e verificada. {Apoio}",
-            VereditoDaExecucao.ConformeComRessalvas => string.Create(CultureInfo.InvariantCulture, $"De acordo, com ressalvas: nenhuma regra impeditiva violada e {resumo.Graves + resumo.Observacoes} ponto(s) a verificar. {Apoio}"),
+            VereditoDaExecucao.ConformeComRessalvas => string.Create(CultureInfo.InvariantCulture, $"De acordo, com ressalvas: nenhuma regra impeditiva violada, {resumo.Graves} ponto(s) grave(s) e {resumo.Observacoes} em observação. {Apoio}"),
             VereditoDaExecucao.Recusado => string.Create(CultureInfo.InvariantCulture, $"Recusada na avaliação: {resumo.Impeditivas} regra(s) impeditiva(s) violada(s). {Apoio}"),
             VereditoDaExecucao.Parcial => "Avaliação parcial: nem todas as validações foram realizadas.",
             _ => "Não foi possível avaliar.",
@@ -154,6 +170,14 @@ internal static class MontadorDoEnvelope
             yield return $"Etapa não realizada: {NomeDaEtapa[obrigatoria]}. Motivo: {motivo}.";
         }
     }
+
+    private static string NomeDoTipo(TipoDaRegra tipo) => tipo switch
+    {
+        TipoDaRegra.Erro => "Erro",
+        TipoDaRegra.Aviso => "Aviso",
+        TipoDaRegra.NaoDeclarado => "Não declarado",
+        _ => throw new ArgumentOutOfRangeException(nameof(tipo)),
+    };
 
     private static string NomeDoEstado(EstadoDaEtapa estado) => estado switch
     {
@@ -201,7 +225,7 @@ internal static class MontadorDoEnvelope
             ClasseDoAchado.Grave => "grave",
             _ => "observacao",
         },
-        achado.Regra is { } regra ? new RegraDoEnvelope(regra.Codigo, regra.Tipo == TipoDaRegra.Erro ? "Erro" : "Aviso", regra.Nivel) : null,
+        achado.Regra is { } regra ? new RegraDoEnvelope(regra.Codigo, NomeDoTipo(regra.Tipo), regra.Nivel) : null,
         achado.Fonte,
         achado.Orientacao);
 }

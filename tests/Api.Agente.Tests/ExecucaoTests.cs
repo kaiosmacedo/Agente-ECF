@@ -117,7 +117,7 @@ public sealed class ExecucaoTests
         var execucao = Completa();
 
         execucao.AdicionarAchado(Achado.Criar(
-            "ach-1", CategoriaDoAchado.ErroEstrutural, OrigemDoAchado.Validador, "Regra de teste", "Campo ausente.", SeveridadeDoAchado.Alta, [new RegistroEnvolvido("doc-1", "R1", 3, "CAMPO")]));
+            "ach-1", CategoriaDoAchado.ErroEstrutural, OrigemDoAchado.Validador, "Regra de teste", "Campo ausente.", SeveridadeDoAchado.Media, [new RegistroEnvolvido("doc-1", "R1", 3, "CAMPO")]));
 
         Assert.Equal(StatusDaExecucao.Concluida, execucao.Status);
         Assert.False(execucao.ExigeRevisaoHumana);
@@ -210,6 +210,44 @@ public sealed class ExecucaoTests
 
     [Fact(DisplayName = "REQ-RESULT-008 Regra do tipo Aviso não pode ser impeditiva")]
     public void AvisoCritico() => Assert.Throws<ExcecaoDeDominio>(() => DeRegra(TipoDaRegra.Aviso, SeveridadeDoAchado.Critica));
+
+    [Fact(DisplayName = "REQ-RESULT-008 Regra sem tipo declarado não pode ser impeditiva, mas pode ser grave")]
+    public void RegraSemTipo()
+    {
+        Assert.Throws<ExcecaoDeDominio>(() => DeRegra(TipoDaRegra.NaoDeclarado, SeveridadeDoAchado.Critica));
+        Assert.Equal(ClasseDoAchado.Grave, DeRegra(TipoDaRegra.NaoDeclarado, SeveridadeDoAchado.Alta).Classe);
+    }
+
+    [Fact(DisplayName = "REQ-RESULT-008 Nível só vem quando o manual o declara")]
+    public void NivelNaoDeclarado()
+    {
+        var achado = Achado.Criar(
+            "ach-1", CategoriaDoAchado.ErroEstrutural, OrigemDoAchado.Validador, "Regra", "Descrição.", SeveridadeDoAchado.Critica, [new RegistroEnvolvido("doc-1", "R1")],
+            regra: new RegraDoManual("REGRA", TipoDaRegra.Erro), fonte: new FonteDoAchado("Manual", "12", "p. 1"), orientacao: "Corrija.");
+
+        Assert.Null(achado.Regra!.Nivel);
+    }
+
+    [Fact(DisplayName = "REQ-RESULT-009 Sem regra do tipo Erro, só a violação de leiaute pode ser impeditiva")]
+    public void ImpeditivaSemRegra()
+    {
+        Assert.Throws<ExcecaoDeDominio>(() => Achado.Criar(
+            "ach-1", CategoriaDoAchado.InconsistenciaDeNegocio, OrigemDoAchado.Validador, "Fonte", "Descrição.", SeveridadeDoAchado.Critica, [new RegistroEnvolvido("doc-1", "R1")]));
+        Assert.Equal(ClasseDoAchado.Impeditiva, Achado.Criar(
+            "ach-2", CategoriaDoAchado.ErroEstrutural, OrigemDoAchado.Validador, "Leiaute", "Linha fora da estrutura.", SeveridadeDoAchado.Critica, [new RegistroEnvolvido("doc-1", "R1")]).Classe);
+    }
+
+    [Fact(DisplayName = "REQ-RESULT-005 Achado grave exige revisão humana")]
+    public void RevisaoComGrave()
+    {
+        var execucao = Completa();
+
+        execucao.AdicionarAchado(Achado.Criar(
+            "ach-1", CategoriaDoAchado.InconsistenciaDeNegocio, OrigemDoAchado.Validador, "Regra", "Compensação acima do limite.", SeveridadeDoAchado.Alta, [new RegistroEnvolvido("doc-1", "M300")]));
+
+        Assert.True(execucao.ExigeRevisaoHumana);
+        Assert.Equal(VereditoDaExecucao.ConformeComRessalvas, execucao.Veredito);
+    }
 
     [Fact(DisplayName = "REQ-RESULT-008 Regra com nível fora do manual é rejeitada")]
     public void NivelInvalido() =>

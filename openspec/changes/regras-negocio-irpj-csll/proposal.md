@@ -28,14 +28,14 @@ O objetivo do agente inclui verificar a consistência da apuração do IRPJ e da
 | --- | --- | --- | --- | --- | --- |
 | E01 | Quais regras de IRPJ, CSLL e cruzamentos entram na primeira entrega (DP-06)? | — | Kaio Macedo | — | Sim |
 | E02 | Para comparar com períodos anteriores, o usuário envia a ECF anterior? A escrituração contábil (ECD) também entra (DP-06)? | — | Kaio Macedo | — | Sim, para as regras que dependem disso |
-| E03 | Quais fontes oficiais além do manual da ECF fundamentam as regras (por exemplo, legislação ou atos normativos)? Cada uma precisa de registro com versão e localização (P01). | — | Kaio Macedo | — | Sim |
-| E04 | Quem tem responsabilidade de domínio fiscal para validar cada regra antes da implementação? | — | Kaio Macedo | — | Sim |
+| E03 | Quais fontes oficiais além do manual da ECF fundamentam as regras (por exemplo, legislação ou atos normativos)? Cada uma precisa de registro com versão e localização (P01). | As registradas em `docs/classificacao-das-regras.md` e na pesquisa (`docs/pesquisa/`). Cada regra cita documento, versão e localização. | Kaio Macedo | 2026-11-06 | Não |
+| E04 | Quem tem responsabilidade de domínio fiscal para validar cada regra antes da implementação? | Kaio Macedo aprova, a partir das fontes pesquisadas, sem especialista fiscal na equipe. Revisão pontual por contador continua recomendada. | Kaio Macedo | 2026-11-06 | Não |
 
 ## Fontes oficiais
 
 | Documento | Emissor | Versão ou vigência | Localização |
 | --- | --- | --- | --- |
-| Manual da ECF, leiaute 12 | Receita Federal do Brasil, portal SPED | Publicado em 20/05/2026 | A extrair por regra (E01, E03) |
+| Manual da ECF, leiaute 12 | Receita Federal do Brasil, portal SPED | Publicado em 23/07/2026 | A extrair por regra (E01, E03) |
 
 Outras fontes entram somente quando registradas em E03.
 

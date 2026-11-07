@@ -11,7 +11,7 @@ Saída real do serviço para a solicitação de `tests/Api.Agente.Tests/Fixtures
 ```json
 {
   "versaoContrato": "1.0",
-  "idExecucao": "ad27a5cb-794e-48af-b3ad-30f2b4759022",
+  "idExecucao": "14fa6878-4e5e-4189-8ac0-2897fd0aa555",
   "idExecucaoSofia": "8b2f0ad6-c2e4-4a68-8bdd-20f785bc798e",
   "idSolicitacao": "e1b3a4cb-d729-4bd4-b796-b9c94be07b46",
   "idCorrelacao": "exemplo-doc-1",
@@ -89,6 +89,32 @@ Saída real do serviço para a solicitação de `tests/Api.Agente.Tests/Fixtures
     "Etapa não realizada: Análise com LLM. Motivo: ainda não implementada nesta versão.",
     "Etapa não realizada: Validação da saída. Motivo: ainda não implementada nesta versão."
   ],
+  "naoVerificados": [
+    {
+      "item": "Confronto do IRPJ e da CSLL com DCTF, DCOMP e pagamentos",
+      "motivo": "Depende de dados da Receita Federal ou de relatórios que não vêm no arquivo."
+    },
+    {
+      "item": "Certificado e procuração, ECD e ECF anterior na base, hash na base, cadastro do CNPJ, versão do programa e recepção",
+      "motivo": "São conferidos na transmissão ou na base da Receita Federal."
+    },
+    {
+      "item": "Pagamento efetivo, PGFN, parcelamento, intimação, aviso de malha, autos de infração e Sintonia",
+      "motivo": "Estão em sistemas da Receita Federal, com acesso autenticado."
+    },
+    {
+      "item": "e-Financeira, EFD-Reinf e eSocial de terceiros, DIRF de fontes pagadoras e Siscomex",
+      "motivo": "São dados prestados por terceiros."
+    },
+    {
+      "item": "Documentos que comprovam prejuízo fiscal e base negativa, e guarda de documentos",
+      "motivo": "Estão fora da ECF."
+    },
+    {
+      "item": "REGRA_DV_RECIBO, REGRA_VALIDA_HASH_ARQUIVO, regras das tabelas dinâmicas fora do manual e fórmulas com funções sem definição",
+      "motivo": "Não há algoritmo ou fonte acessível, e adotar um violaria P01."
+    }
+  ],
   "documentos": [
     {
       "idDocumento": "doc-001",
@@ -111,9 +137,9 @@ Saída real do serviço para a solicitação de `tests/Api.Agente.Tests/Fixtures
     "servico": "0.1.0+local",
     "validadores": "nenhum"
   },
-  "criadaEm": "2026-11-05T18:42:49.4669191+00:00",
-  "concluidaEm": "2026-11-05T18:42:49.4710257+00:00",
-  "duracaoMs": 4.1066,
+  "criadaEm": "2026-11-07T02:41:36.8864682+00:00",
+  "concluidaEm": "2026-11-07T02:41:36.8905328+00:00",
+  "duracaoMs": 4.0646,
   "erro": null
 }
 ```
@@ -137,6 +163,7 @@ Todos são preenchidos pelo sistema, nunca pelo modelo (P13).
 | `etapas` | As nove etapas de P03, sempre todas, cada uma com `numero`, `nome`, `estado` e `justificativa`. |
 | `achados` | Lista de achados, descritos abaixo. |
 | `limitacoes` | Cada validação obrigatória não realizada, com o motivo, e as demais limitações da análise. |
+| `naoVerificados` | O que o arquivo não prova, com `item` e `motivo`. Não muda o status nem o veredito, e fica vazio em `nao-avaliado`. |
 | `documentos` | Para cada documento: `idDocumento`, `hash` (SHA-256 do texto) e `caracteres`. O texto nunca é guardado. |
 | `identidade` | `usuarioPseudonimo` (SHA-256 de `usuario.nome`), `organizacao` (valor configurado) e `verificada`, sempre `false` nesta versão. |
 | `versoes` | Versões do `contrato`, do `servico` e dos `validadores`. |
@@ -183,12 +210,12 @@ Calculadas pela severidade, sem criar outra escala (REQ-RESULT-007).
 | `classe` | `severidade` | Critério |
 | --- | --- | --- |
 | `impeditiva` | `critica` | Regra do tipo `Erro` no manual: "impede a conclusão com sucesso da funcionalidade" (Manual do Leiaute 12, capítulo 3, página 38). Só erro estrutural e inconsistência de negócio podem ser impeditivos. |
-| `grave` | `alta` | Não impede, mas precisa de correção. Critério do produto. |
+| `grave` | `alta` | Não impede, mas a checagem é determinística com fonte oficial, o valor afeta tributo, saldo do ano seguinte ou gatilho oficial, e há consequência oficial nomeada. Critério do produto, em `docs/classificacao-das-regras.md`. |
 | `observacao` | `media`, `baixa` | Regra do tipo `Aviso` no manual ("alerta apenas informativo") e demais pontos a verificar. |
 
 ## Revisão humana
 
-`revisaoHumana` é `true` com falha técnica, validação obrigatória não concluída, indício da IA ou ausência de evidências (REQ-RESULT-005).
+`revisaoHumana` é `true` com falha técnica, validação obrigatória não concluída, indício da IA, ausência de evidências ou achado da classe `grave` (REQ-RESULT-005).
 
 ## Achados
 
@@ -203,7 +230,7 @@ Calculadas pela severidade, sem criar outra escala (REQ-RESULT-007).
 | `evidencias` | Trechos que sustentam o achado. |
 | `severidade` | `baixa`, `media`, `alta` ou `critica`. Obrigatória. |
 | `classe` | `impeditiva`, `grave` ou `observacao`, calculada pela severidade. |
-| `regra` | `codigo`, `tipo` (`Erro` ou `Aviso`) e `nivel` (1.1, 1.2, 2 ou 3), como no manual, quando o achado vem de regra do manual. |
+| `regra` | `codigo`, `tipo` (`Erro`, `Aviso` ou `Não declarado`) e `nivel` (1.1, 1.2, 2 ou 3), quando o achado vem de regra do manual. O nível só vem quando o manual o declara. |
 | `fonte` | `documento`, `versao` e `localizacao`, obrigatória em achado de regra do manual. |
 | `orientacao` | Como corrigir, obrigatória em achado de regra do manual. O agente orienta, mas não altera o arquivo. |
 

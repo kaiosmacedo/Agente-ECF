@@ -148,6 +148,56 @@ public sealed class EnvelopeTests
         Assert.EndsWith("Detalhe.", envelope.Sintese, StringComparison.Ordinal);
     }
 
+    [Fact(DisplayName = "REQ-RESULT-013 Lista do não verificado não muda o status, o veredito nem a revisão humana")]
+    public void NaoVerificadosNaoMudamOResultado()
+    {
+        var execucao = Completa();
+        execucao.Concluir(DateTimeOffset.UtcNow);
+
+        var envelope = MontadorDoEnvelope.Montar(execucao, null, "1.0.0", "Detalhe.", null);
+
+        Assert.Equal(("concluida", "conforme", false), (envelope.Status, envelope.Veredito, envelope.RevisaoHumana));
+        Assert.Empty(envelope.Limitacoes);
+        Assert.Contains(envelope.NaoVerificados, item => item.Item.Contains("DCTF", StringComparison.Ordinal));
+        Assert.All(envelope.NaoVerificados, item => Assert.False(string.IsNullOrWhiteSpace(item.Motivo)));
+        Assert.Equal(envelope.NaoVerificados, ProjecaoParaSofia.Projetar(envelope).NaoVerificados);
+    }
+
+    [Fact(DisplayName = "REQ-RESULT-013 Sem avaliação, a lista do não verificado fica vazia")]
+    public void SemAvaliacaoSemLista()
+    {
+        var envelope = Montar(execucao => execucao.FalharEtapa(Etapa.ValidacaoDaEntrada));
+
+        Assert.Equal("nao-avaliado", envelope.Veredito);
+        Assert.Empty(envelope.NaoVerificados);
+    }
+
+    [Fact(DisplayName = "REQ-RESULT-010 Síntese com ressalvas separa os pontos graves dos em observação")]
+    public void SinteseComRessalvas()
+    {
+        var execucao = Completa();
+        execucao.AdicionarAchado(Achado.Criar(
+            "ach-1", CategoriaDoAchado.InconsistenciaDeNegocio, OrigemDoAchado.Validador, "Regra", "Divergência.", SeveridadeDoAchado.Alta, [new RegistroEnvolvido("doc-1", "M300")]));
+        execucao.AdicionarAchado(Achado.Criar(
+            "ach-2", CategoriaDoAchado.ErroEstrutural, OrigemDoAchado.Validador, "Regra", "Aviso.", SeveridadeDoAchado.Media, [new RegistroEnvolvido("doc-1", "J051")]));
+        execucao.Concluir(DateTimeOffset.UtcNow);
+
+        var envelope = MontadorDoEnvelope.Montar(execucao, null, "1.0.0", "Detalhe.", null);
+
+        Assert.Equal("conforme-com-ressalvas", envelope.Veredito);
+        Assert.Contains("1 ponto(s) grave(s) e 1 em observação", envelope.Sintese, StringComparison.Ordinal);
+    }
+
+    [Fact(DisplayName = "REQ-RESULT-008 Regra sem tipo declarado aparece assim, e não como Aviso")]
+    public void TipoNaoDeclaradoNoEnvelope()
+    {
+        var envelope = Montar(execucao => execucao.AdicionarAchado(Achado.Criar(
+            "ach-1", CategoriaDoAchado.InconsistenciaDeNegocio, OrigemDoAchado.Validador, "REGRA_SEM_TIPO", "Saldos divergentes.", SeveridadeDoAchado.Alta, [new RegistroEnvolvido("doc-1", "M010")],
+            regra: new RegraDoManual("REGRA_SEM_TIPO", TipoDaRegra.NaoDeclarado), fonte: new FonteDoAchado("Manual", "12", "p. 239"), orientacao: "Confira os saldos.")));
+
+        Assert.Equal(new RegraDoEnvelope("REGRA_SEM_TIPO", "Não declarado", null), envelope.Achados[0].Regra);
+    }
+
     [Fact(DisplayName = "REQ-RESULT-011 Achado traz regra, registro, linha, campo, valor, orientação e fonte, e o resumo conta por classe")]
     public void DetalheDoAchado()
     {

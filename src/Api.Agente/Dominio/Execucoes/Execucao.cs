@@ -108,7 +108,8 @@ internal sealed class Execucao
     public bool ExigeRevisaoHumana =>
         HaFalhaTecnica
         || HaObrigatoriaNaoConcluida
-        || achados.Any(achado => achado.Categoria is CategoriaDoAchado.IndicioDaIa or CategoriaDoAchado.AusenciaDeEvidencias);
+        || achados.Any(achado => achado.Categoria is CategoriaDoAchado.IndicioDaIa or CategoriaDoAchado.AusenciaDeEvidencias
+            || achado.Classe == ClasseDoAchado.Grave);
 
     private bool HaFalhaTecnica =>
         etapas.Values.Any(etapa => etapa.Estado == EstadoDaEtapa.ComFalha)

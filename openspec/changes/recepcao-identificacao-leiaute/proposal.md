@@ -33,13 +33,14 @@ As etapas 1 a 3 do fluxo (P03) recebem o arquivo, validam tamanho, formato e con
 | E04 | O arquivo recebido deve ser guardado? Por quanto tempo e onde (DP-11, GD-06)? | — | Kaio Macedo | — | Sim, para dados reais |
 | E05 | Registro e campos do Manual da ECF, leiaute 12, que identificam o tipo e a versão do leiaute, e a codificação de caracteres do arquivo. A extração é feita do manual e validada por Kaio Macedo (P01). | — | Extração do manual, validação de Kaio Macedo | — | Sim |
 | E07 | A Sofia corta cada arquivo em 20.000 caracteres e acrescenta `[DOCUMENTO TRUNCADO]`. O corte será retirado para os agentes? Enquanto existir, o agente deve detectar o marcador e declarar a limitação, sem validar um arquivo cortado como se estivesse inteiro. | — | Kaio Macedo | — | Sim |
-| E06 | A primeira entrega suporta só o leiaute 12, ou também versões anteriores (DP-04)? | — | Kaio Macedo | — | Sim |
+| E06 | A primeira entrega suporta só o leiaute 12, ou também versões anteriores (DP-04)? | Os leiautes 7 a 12, os anos que ainda podem ser retificados (manual, seção 1.14). O catálogo começa pelo 12 e registra as diferenças dos anteriores. | Kaio Macedo | 2026-11-06 | Não |
+| E08 | O agente recebe o TXT de importação ou o arquivo exportado do programa oficial? Os blocos C e E e as linhas calculadas só existem no segundo. | Os dois, e o agente identifica qual recebeu. Quando o regime exige recuperação, só o exportado pode chegar a `conforme`; o TXT termina em `parcial` (`docs/classificacao-das-regras.md`, decisão 5). | Kaio Macedo | 2026-11-06 | Não |
 
 ## Fontes oficiais
 
 | Documento | Emissor | Versão ou vigência | Localização |
 | --- | --- | --- | --- |
-| Manual da ECF, leiaute 12 | Receita Federal do Brasil, portal SPED | Publicado em 20/05/2026 | Registro e campos de identificação: a extrair (E05) |
+| Manual da ECF, leiaute 12 | Receita Federal do Brasil, portal SPED | Publicado em 23/07/2026 | Registro e campos de identificação: a extrair (E05) |
 
 ## Princípios, decisões e dependências
 

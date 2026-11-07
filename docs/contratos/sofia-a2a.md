@@ -69,35 +69,61 @@ Resposta (o texto do Artifact foi formatado aqui para leitura; ele chega como st
           "parts": [
             {
               "text": {
-                  "versaoContrato": "1.0",
-                  "idExecucao": "8b2f0ad6-c2e4-4a68-8bdd-20f785bc798e",
-                  "idSolicitacao": "e1b3a4cb-d729-4bd4-b796-b9c94be07b46",
-                  "agente": {
-                    "idAgente": "agente-ecf",
-                    "nome": "Agente ECF"
+                "versaoContrato": "1.0",
+                "idExecucao": "8b2f0ad6-c2e4-4a68-8bdd-20f785bc798e",
+                "idSolicitacao": "e1b3a4cb-d729-4bd4-b796-b9c94be07b46",
+                "agente": {
+                  "idAgente": "agente-ecf",
+                  "nome": "Agente ECF"
+                },
+                "status": "parcial",
+                "analise": "Avaliação parcial: nem todas as validações foram realizadas. 2 documento(s) recebido(s). Esta versão ainda não executa as validações da ECF: nenhum achado foi produzido e nenhuma conformidade é declarada.",
+                "achados": [],
+                "observacoes": [
+                  "Documento doc-001 recebido: 50 caracteres, SHA-256 8d5e75d4a95a7e77b3e5f11e5d1a45aa6c0063b6708948a28ffc89f6657cbccf.",
+                  "Documento doc-002 recebido: 30 caracteres, SHA-256 c0e8a6303b06ec5cfb98b65c05b9c551036a4d4101a23c7cea64031fe8fc7a73.",
+                  "Etapa não realizada: Identificação do leiaute. Motivo: ainda não implementada nesta versão.",
+                  "Etapa não realizada: Validação estrutural. Motivo: ainda não implementada nesta versão.",
+                  "Etapa não realizada: Consulta ao manual. Motivo: ainda não implementada nesta versão.",
+                  "Etapa não realizada: Ferramentas externas. Motivo: ainda não implementada nesta versão.",
+                  "Etapa não realizada: Análise com LLM. Motivo: ainda não implementada nesta versão.",
+                  "Etapa não realizada: Validação da saída. Motivo: ainda não implementada nesta versão."
+                ],
+                "erro": null,
+                "idExecucaoAgente": "14fa6878-4e5e-4189-8ac0-2897fd0aa555",
+                "revisaoHumana": true,
+                "veredito": "parcial",
+                "resumoAchados": {
+                  "impeditivas": 0,
+                  "graves": 0,
+                  "observacoes": 0
+                },
+                "naoVerificados": [
+                  {
+                    "item": "Confronto do IRPJ e da CSLL com DCTF, DCOMP e pagamentos",
+                    "motivo": "Depende de dados da Receita Federal ou de relatórios que não vêm no arquivo."
                   },
-                  "status": "parcial",
-                  "analise": "Avaliação parcial: nem todas as validações foram realizadas. 2 documento(s) recebido(s). Esta versão ainda não executa as validações da ECF: nenhum achado foi produzido e nenhuma conformidade é declarada.",
-                  "achados": [],
-                  "observacoes": [
-                    "Documento doc-001 recebido: 50 caracteres, SHA-256 8d5e75d4a95a7e77b3e5f11e5d1a45aa6c0063b6708948a28ffc89f6657cbccf.",
-                    "Documento doc-002 recebido: 30 caracteres, SHA-256 c0e8a6303b06ec5cfb98b65c05b9c551036a4d4101a23c7cea64031fe8fc7a73.",
-                    "Etapa não realizada: Identificação do leiaute. Motivo: ainda não implementada nesta versão.",
-                    "Etapa não realizada: Validação estrutural. Motivo: ainda não implementada nesta versão.",
-                    "Etapa não realizada: Consulta ao manual. Motivo: ainda não implementada nesta versão.",
-                    "Etapa não realizada: Ferramentas externas. Motivo: ainda não implementada nesta versão.",
-                    "Etapa não realizada: Análise com LLM. Motivo: ainda não implementada nesta versão.",
-                    "Etapa não realizada: Validação da saída. Motivo: ainda não implementada nesta versão."
-                  ],
-                  "erro": null,
-                  "idExecucaoAgente": "ad27a5cb-794e-48af-b3ad-30f2b4759022",
-                  "revisaoHumana": true,
-                  "veredito": "parcial",
-                  "resumoAchados": {
-                    "impeditivas": 0,
-                    "graves": 0,
-                    "observacoes": 0
+                  {
+                    "item": "Certificado e procuração, ECD e ECF anterior na base, hash na base, cadastro do CNPJ, versão do programa e recepção",
+                    "motivo": "São conferidos na transmissão ou na base da Receita Federal."
+                  },
+                  {
+                    "item": "Pagamento efetivo, PGFN, parcelamento, intimação, aviso de malha, autos de infração e Sintonia",
+                    "motivo": "Estão em sistemas da Receita Federal, com acesso autenticado."
+                  },
+                  {
+                    "item": "e-Financeira, EFD-Reinf e eSocial de terceiros, DIRF de fontes pagadoras e Siscomex",
+                    "motivo": "São dados prestados por terceiros."
+                  },
+                  {
+                    "item": "Documentos que comprovam prejuízo fiscal e base negativa, e guarda de documentos",
+                    "motivo": "Estão fora da ECF."
+                  },
+                  {
+                    "item": "REGRA_DV_RECIBO, REGRA_VALIDA_HASH_ARQUIVO, regras das tabelas dinâmicas fora do manual e fórmulas com funções sem definição",
+                    "motivo": "Não há algoritmo ou fonte acessível, e adotar um violaria P01."
                   }
+                ]
               }
             }
           ]
@@ -121,7 +147,7 @@ Resposta (o texto do Artifact foi formatado aqui para leitura; ele chega como st
 
 `concluido` fica reservado para quando todas as validações obrigatórias existirem (P05).
 
-**Campos opcionais:** além dos da v1.0, o resultado traz `idExecucaoAgente`, o identificador para consultar `GET /analises/{id}` (ver `envelope-resultado.md`), `revisaoHumana`, `veredito` e `resumoAchados`. Com achados, cada um traz também `categoria`, `origem`, `regra`, `classe`, `registros`, `orientacao` e `fonte`. Quem não os conhece pode ignorá-los.
+**Campos opcionais:** além dos da v1.0, o resultado traz `idExecucaoAgente`, o identificador para consultar `GET /analises/{id}` (ver `envelope-resultado.md`), `revisaoHumana`, `veredito`, `resumoAchados` e `naoVerificados`, a lista do que o arquivo não prova. Com achados, cada um traz também `categoria`, `origem`, `regra`, `classe`, `registros`, `orientacao` e `fonte`. Quem não os conhece pode ignorá-los.
 
 **Veredito:** é o campo que diz como a ECF está: `conforme`, `conforme-com-ressalvas`, `recusado`, `parcial` ou `nao-avaliado` (ver `envelope-resultado.md`). O `status` só diz se a análise rodou: `recusado` pode vir com `status` `parcial`.
 

@@ -90,7 +90,8 @@ public sealed class PersistenciaTests(BancoDeTeste banco) : IClassFixture<BancoD
         Assert.Equal("parcial", await leitura.ExecuteScalarAsync<string>("SELECT veredito FROM execucoes WHERE id = @Id", new { Id = idParcial }));
         Assert.Equal("nao-avaliado", await leitura.ExecuteScalarAsync<string>("SELECT conteudo->>'veredito' FROM execucoes WHERE id = @Id", new { Id = idRejeitada }));
         Assert.Equal(0, await leitura.ExecuteScalarAsync<int>("SELECT (conteudo->'resumo'->>'impeditivas')::int FROM execucoes WHERE id = @Id", new { Id = idParcial }));
-        Assert.Equal(2, await leitura.ExecuteScalarAsync<int>("SELECT count(*) FROM migracoes"));
+        Assert.Equal(3, await leitura.ExecuteScalarAsync<int>("SELECT count(*) FROM migracoes"));
+        Assert.Equal("[]", await leitura.ExecuteScalarAsync<string>("SELECT conteudo->>'naoVerificados' FROM execucoes WHERE id = @Id", new { Id = idParcial }));
     }
 
     [Fact(DisplayName = "REQ-CONFIG-002 Migrações simultâneas não conflitam")]

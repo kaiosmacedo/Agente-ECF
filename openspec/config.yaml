@@ -18,7 +18,7 @@ context: |
   Fluxo: /opsx:new e /opsx:continue, um artefato por vez (proposal → specs → esclarecimentos →
   design → tasks). Versionamento: GitHub privado kaiosmacedo/Agente-ECF, uma branch
   feat/<id-da-mudança> por mudança, PR para main (skill github-versionamento).
-  Fonte oficial inicial (DP-04): Manual da ECF, leiaute 12 (20/05/2026; AC 2025 e situações
+  Fonte oficial inicial (DP-04): Manual da ECF, leiaute 12 (23/07/2026; AC 2025 e situações
   especiais de 2026), no portal SPED.
 
   Roteiro: docs/roteiro.md (ordem das mudanças, dependências, DPs, skills e prefixos de requisito).

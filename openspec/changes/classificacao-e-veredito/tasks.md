@@ -30,10 +30,18 @@ Skill: testes-agentes-ia
 - [x] 4.1 Atualizar `docs/contratos/envelope-resultado.md` e `docs/contratos/sofia-a2a.md` com vereditos, classes e detalhes; verificar com o teste que confere o exemplo do documento.
 - [ ] 4.2 Atualizar o cofre Obsidian e `docs/roteiro.md`; verificar a tabela de mudanças.
 
-## 5. Fechamento
+## 5. Decisões da pesquisa
 
-- [ ] 5.1 Depois do merge, verificar em produção, com dados sintéticos, que `SendMessage` e `GET /analises/{id}` trazem o veredito `parcial`.
-- [ ] 5.2 Executar `/opsx:verify` e conferir a Definition of Done (seção 7 da constitution).
+Skill: testes-agentes-ia
+
+- [x] 5.0.1 Criar o campo `naoVerificados` e levá-lo ao contrato SOFIA (D6); verificar com testes que ele não muda status, veredito nem revisão humana e que fica vazio sem avaliação (REQ-RESULT-013).
+- [x] 5.0.2 Ajustar o domínio (D6); verificar com testes o tipo não declarado, o nível opcional, `critica` sem regra e `grave` com revisão humana (REQ-RESULT-005, REQ-RESULT-008, REQ-RESULT-009).
+- [x] 5.0.3 Registrar as decisões em `docs/classificacao-das-regras.md` e responder as propostas de 07, 08 e 09; verificar com `openspec validate --strict`.
+
+## 6. Fechamento
+
+- [ ] 6.1 Depois do merge, verificar em produção, com dados sintéticos, que `SendMessage` e `GET /analises/{id}` trazem o veredito `parcial`.
+- [ ] 6.2 Executar `/opsx:verify` e conferir a Definition of Done (seção 7 da constitution).
 
 ## Workflow follow-up
 

@@ -23,6 +23,7 @@ Agente de IA que analisa arquivos da Escrituração Contábil Fiscal (ECF), vali
 | `docs/base-sofiainfis.md` | O que reaproveitar do projeto `SofiaInfis`, por mudança, e o que não copiar. |
 | `docs/fontes-oficiais.md`, `docs/fontes/` | Fontes oficiais da ECF: onde estão, versão e hash de cada arquivo, e o manifesto da carga do RAG. |
 | `docs/avaliacao/` | Perguntas e resultados da avaliação da recuperação. |
+| `docs/classificacao-das-regras.md`, `docs/pesquisa/` | Critérios aprovados de gravidade e a pesquisa que os fundamenta. |
 | `docs/contratos/` | Integração com a Sofia: contrato, cartão, erros, configuração e como executar. |
 | `compose.yaml` | Api.Agente com o banco local das execuções, na rede `sofia_network`, para a integração com a Sofia. |
 | `.claude/` | Comandos e skills do OpenSpec e skills do projeto: `github-versionamento`, `testes-agentes-ia`, `rag-pgvector`, `mcp-client-server`, `semantic-kernel-tools`, `controle-custos-llm`, `memoria-mongodb` (após o ADR de memória), `vercel-dotnet-pgvector-atlas` (após o ADR de hospedagem), `sofia-a2a-contrato`, `sofia-a2a-implementacao` e `sofia-cors-rest-a2a`. |
