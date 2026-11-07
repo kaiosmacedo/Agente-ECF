@@ -18,7 +18,8 @@ internal static class ProjecaoParaSofia
         envelope.IdExecucao.ToString(),
         envelope.RevisaoHumana,
         envelope.Veredito,
-        envelope.Resumo);
+        envelope.Resumo,
+        envelope.NaoVerificados);
 
     /// <summary>O contrato só admite três status: rejeição e falha técnica viram erro (E01).</summary>
     public static string StatusDoContrato(string statusInterno) => statusInterno switch

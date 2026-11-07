@@ -36,7 +36,8 @@ internal sealed record ResultadoAnaliseSofia(
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? IdExecucaoAgente = null,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] bool? RevisaoHumana = null,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Veredito = null,
-    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] ResumoDosAchados? ResumoAchados = null);
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] ResumoDosAchados? ResumoAchados = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] IReadOnlyList<ItemNaoVerificado>? NaoVerificados = null);
 
 internal sealed record AgenteSofia(string IdAgente, string Nome);
 

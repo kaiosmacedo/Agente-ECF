@@ -36,15 +36,19 @@ internal enum ClasseDoAchado
     Observacao,
 }
 
-/// <summary>Os dois tipos de regra do manual (Manual da ECF, leiaute 12, capítulo 3, página 38).</summary>
+/// <summary>
+/// Tipo da regra: Erro e Aviso são os do manual (leiaute 12, capítulo 3, página 38). Não declarado é para as
+/// instâncias em que o manual não traz o tipo, que nunca são impeditivas (docs/classificacao-das-regras.md).
+/// </summary>
 internal enum TipoDaRegra
 {
     Erro,
     Aviso,
+    NaoDeclarado,
 }
 
-/// <summary>A regra do manual que produziu o achado, como consta do manual (REQ-RESULT-008).</summary>
-internal sealed record RegraDoManual(string Codigo, TipoDaRegra Tipo, string Nivel);
+/// <summary>A regra do manual que produziu o achado. O nível só vem quando o manual o declara (REQ-RESULT-008).</summary>
+internal sealed record RegraDoManual(string Codigo, TipoDaRegra Tipo, string? Nivel = null);
 
 /// <summary>De onde vem a regra: documento, versão e localização (P06, P01).</summary>
 internal sealed record FonteDoAchado(string Documento, string Versao, string Localizacao);
@@ -154,6 +158,12 @@ internal sealed record Achado
             throw new ExcecaoDeDominio($"A categoria {categoria} não pode ser impeditiva.");
         }
 
+        // Sem regra do manual, só a violação de leiaute impede, porque não deixa determinar a estrutura.
+        if (severidade == SeveridadeDoAchado.Critica && regra is null && categoria != CategoriaDoAchado.ErroEstrutural)
+        {
+            throw new ExcecaoDeDominio("Sem regra do tipo Erro, só a violação de leiaute pode ser impeditiva.");
+        }
+
         ValidarRegra(regra, severidade, fonte, orientacao);
 
         return new Achado
@@ -180,9 +190,9 @@ internal sealed record Achado
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(regra.Codigo) || !NiveisDoManual.Contains(regra.Nivel))
+        if (string.IsNullOrWhiteSpace(regra.Codigo) || (regra.Nivel is not null && !NiveisDoManual.Contains(regra.Nivel)))
         {
-            throw new ExcecaoDeDominio("A regra precisa do código e de um nível do manual.");
+            throw new ExcecaoDeDominio("A regra precisa do código, e o nível, quando houver, precisa ser um do manual.");
         }
 
         if (regra.Tipo == TipoDaRegra.Erro && severidade != SeveridadeDoAchado.Critica)
@@ -190,9 +200,9 @@ internal sealed record Achado
             throw new ExcecaoDeDominio("Regra do tipo Erro impede a conclusão, então a severidade é crítica.");
         }
 
-        if (regra.Tipo == TipoDaRegra.Aviso && severidade == SeveridadeDoAchado.Critica)
+        if (regra.Tipo != TipoDaRegra.Erro && severidade == SeveridadeDoAchado.Critica)
         {
-            throw new ExcecaoDeDominio("Regra do tipo Aviso é informativa, então não pode ser crítica.");
+            throw new ExcecaoDeDominio("Só regra do tipo Erro pode ser crítica.");
         }
 
         if (fonte is null || string.IsNullOrWhiteSpace(orientacao))
