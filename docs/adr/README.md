@@ -13,6 +13,7 @@ Registro das decisões arquiteturais do Agente-ECF, conforme a seção 6.5 da [c
 | [0001](0001-organizacao-da-solucao-e-testes.md) | Organização da solução e estratégia de testes | Aceito | 2026-10-29 |
 | [0002](0002-hospedagem-vercel-e-ci-cd.md) | Hospedagem no Vercel e pipeline de CI/CD | Aceito | 2026-10-29 |
 | [0004](0004-modelo-de-embeddings.md) | Modelo de embeddings | Aceito | 2026-11-05 |
+| [0005](0005-mcp-sem-estado-no-vercel.md) | MCP sem estado no Vercel | Aceito | 2026-11-07 |
 
 ## Decisões pendentes que exigem ADR
 

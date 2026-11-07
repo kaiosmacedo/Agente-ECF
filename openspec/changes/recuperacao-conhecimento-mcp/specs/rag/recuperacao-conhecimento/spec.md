@@ -38,3 +38,32 @@ O embedding gerado para cada consulta SHALL ser registrado como consumo no banco
 #### Scenario: Consulta realizada
 - **WHEN** uma busca gera o embedding da consulta
 - **THEN** existe um registro de consumo do tipo embedding com a correlação da chamada
+
+### Requirement: REQ-RECUP-005 Busca pelo código de regra ou de registro
+Quando a chamada informar um código, como o de uma regra (`REGRA_...`) ou de um registro, a busca SHALL trazer primeiro os trechos que contêm esse código no texto, ordenados por relevância, e completar com a busca semântica até a quantidade pedida, sem repetir trechos. O código MUST ser validado (letras maiúsculas, dígitos e sublinhado, até 60 caracteres) e passado como parâmetro da consulta ao banco, nunca concatenado (SQ-05).
+
+#### Scenario: Código presente em um trecho
+- **GIVEN** uma base sintética em que só um trecho contém `REGRA_TESTE_X`, e outros trechos são mais parecidos com a consulta
+- **WHEN** a ferramenta é chamada com a consulta e o código `REGRA_TESTE_X`
+- **THEN** o trecho que contém o código vem em primeiro lugar
+- **AND** os demais trechos vêm da busca semântica, sem repetição
+
+#### Scenario: Código inválido
+- **WHEN** a ferramenta é chamada com o código `REGRA'; DROP`
+- **THEN** a chamada retorna erro tipado de argumento inválido
+- **AND** nenhum embedding é gerado
+
+### Requirement: REQ-RECUP-006 Limite de uso e desligamento
+Como a ferramenta é pública na primeira versão e gera custo no provedor (SQ-12), ela SHALL recusar a chamada com erro tipado, sem gerar embedding, quando estiver desativada por configuração ou quando as consultas do dia (UTC) registradas no consumo atingirem o limite configurado.
+
+#### Scenario: Busca desativada
+- **GIVEN** a busca desativada por configuração
+- **WHEN** a ferramenta é chamada com argumentos válidos
+- **THEN** a chamada retorna o erro tipado `busca_desativada`
+- **AND** nenhum embedding é gerado
+
+#### Scenario: Limite diário atingido
+- **GIVEN** um limite configurado de 3 consultas por dia e 3 consultas já registradas hoje
+- **WHEN** a ferramenta é chamada pela quarta vez
+- **THEN** a chamada retorna o erro tipado `limite_de_uso_atingido`
+- **AND** nenhum embedding é gerado
