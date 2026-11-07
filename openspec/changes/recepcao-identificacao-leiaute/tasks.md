@@ -1,6 +1,6 @@
 # Tasks: Recepção do arquivo e identificação do leiaute
 
-> Só começam depois da aprovação do plano por Kaio Macedo (P20). Skills: `sofia-a2a-contrato` e `sofia-a2a-implementacao` (grupos 4 e 6), `testes-agentes-ia` (todos), `github-versionamento` (grupo 7).
+> Plano aprovado por Kaio Macedo em 2026-11-07 (P20). Skills: `sofia-a2a-contrato` e `sofia-a2a-implementacao` (grupos 4 e 6), `testes-agentes-ia` (todos), `github-versionamento` (grupo 7).
 
 ## 1. Dados de teste
 

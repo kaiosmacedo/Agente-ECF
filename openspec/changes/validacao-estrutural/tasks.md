@@ -1,6 +1,6 @@
 # Tasks: Validação estrutural da ECF
 
-> Só começam depois da aprovação do plano por Kaio Macedo (P20) e depois da mudança 07 em produção. Skills: `testes-agentes-ia` (todos), `sofia-a2a-contrato` (5.2), `github-versionamento` (grupo 7).
+> Plano aprovado por Kaio Macedo em 2026-11-07 (P20). Começam depois da mudança 07 em produção. Skills: `testes-agentes-ia` (todos), `sofia-a2a-contrato` (5.2), `github-versionamento` (grupo 7).
 
 ## 1. Catálogo
 
@@ -41,7 +41,7 @@
 ## 6. Gabarito
 
 - [ ] 6.1 Preparar as ECF sintéticas com erro plantado e a planilha do erro esperado de cada uma (D10).
-- [ ] 6.2 **(precisa de uma pessoa com Windows e o PGE)** Importar os arquivos no programa da ECF, sem assinar nem transmitir, e anotar o que ele aponta.
+- [ ] 6.2 Baixar o programa da ECF do portal oficial e importar nele os arquivos, sem assinar nem transmitir, anotando o que ele aponta (feito pelo assistente, a pedido de Kaio Macedo em 2026-11-07).
 - [ ] 6.3 Comparar com o agente e registrar as divergências; resolver antes do arquivamento, no gerador ou como esclarecimento (D10).
 
 ## 7. Entrega e fechamento

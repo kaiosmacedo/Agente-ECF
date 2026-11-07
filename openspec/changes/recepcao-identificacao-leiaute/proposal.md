@@ -1,6 +1,6 @@
 # Proposal: Recepção do arquivo e identificação do leiaute
 
-> **Estado:** especificação aprovada por Kaio Macedo em 2026-10-29 (roteiro, mudança 07; PR #4). Em 2026-11-07, o assistente propôs as respostas dos esclarecimentos, os requisitos novos (REQ-RECEPCAO-005 a 008, REQ-LEIAUTE-004, REQ-A2A-007 e 008), o plano técnico e as tarefas, que aguardam a aprovação de Kaio Macedo.
+> **Estado:** especificação aprovada por Kaio Macedo em 2026-10-29 (roteiro, mudança 07; PR #4). Em 2026-11-07, o assistente propôs as respostas dos esclarecimentos, os requisitos novos (REQ-RECEPCAO-005 a 008, REQ-LEIAUTE-004, REQ-A2A-007 e 008), o plano técnico e as tarefas. Kaio Macedo aprovou tudo em 2026-11-07.
 
 ## Why
 

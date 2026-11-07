@@ -1,6 +1,6 @@
 # Design: Recuperação de conhecimento por MCP
 
-> **Estado:** proposto em 2026-11-07, com o ADR 0005, aguardando a aprovação de Kaio Macedo (P20). Nenhum código entra antes disso.
+> **Estado:** aprovado por Kaio Macedo em 2026-11-07, com o ADR 0005. A chave da OpenAI em produção ficou em aberto (E04): a busca vai para produção desativada.
 
 ## Context
 
@@ -148,12 +148,12 @@ A validação de inicialização exige a chave só quando a busca está habilita
 ## Migration Plan
 
 1. Deploy da Api.RAG com `Busca:Habilitada` `false`, depois da Api.Agente, com a migração `0006`.
-2. Kaio Macedo cadastra a chave e muda `Busca:Habilitada` para `true`; o assistente redeploya e verifica (tarefas 6.1 e 6.2).
+2. Quando Kaio Macedo decidir a chave (E04, em aberto), ele a cadastra, `Busca:Habilitada` passa a `true`, e o assistente redeploya e verifica (tarefas 6.1 e 6.2).
 3. Volta: `Busca:Habilitada` `false` desliga a busca sem deploy de código; a etapa 5 vira limitação.
 
 ## Open Questions
 
-- Que chave usar em produção (E04). Não bloqueia a implementação.
+- Que chave usar em produção (E04): em aberto, por decisão de Kaio Macedo em 2026-11-07. Não bloqueia a implementação.
 
 ## Skills aplicáveis
 

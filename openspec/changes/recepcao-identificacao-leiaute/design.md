@@ -1,6 +1,6 @@
 # Design: Recepção do arquivo e identificação do leiaute
 
-> **Estado:** proposto em 2026-11-07, aguardando a aprovação de Kaio Macedo (P20). Nenhum código entra antes disso.
+> **Estado:** aprovado por Kaio Macedo em 2026-11-07.
 
 ## Context
 

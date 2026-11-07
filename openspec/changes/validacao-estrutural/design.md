@@ -1,6 +1,6 @@
 # Design: Validação estrutural da ECF
 
-> **Estado:** proposto em 2026-11-07, aguardando a aprovação de Kaio Macedo (P20). Nenhum código entra antes disso.
+> **Estado:** aprovado por Kaio Macedo em 2026-11-07.
 
 ## Context
 
@@ -126,7 +126,7 @@ A ECF é texto delimitado, sem schema XML oficial. Nenhuma validação XSD é ap
 
 ### D10. Gabarito no programa oficial (E03; decisão 6)
 
-Antes de arquivar esta mudança, uma pessoa importa no programa da ECF (PGE) os arquivos sintéticos com erros plantados, sem assinar nem transmitir, e anota o que o programa aponta. O assistente prepara os arquivos e uma planilha com o erro esperado de cada um. Divergência entre o agente e o programa é registrada e resolvida antes do arquivamento: ou o catálogo tem defeito, ou a regra é diferente do que o manual diz, e então vira esclarecimento. Precisa de um computador com Windows e o PGE, o que o assistente não tem.
+Antes de arquivar esta mudança, o assistente baixa o programa da ECF (PGE) do portal oficial, importa os arquivos sintéticos com erros plantados, sem assinar nem transmitir, e anota o que o programa aponta. Kaio Macedo pediu em 2026-11-07 que o próprio assistente faça isso. O assistente prepara os arquivos e uma planilha com o erro esperado de cada um. Divergência entre o agente e o programa é registrada e resolvida antes do arquivamento: ou o catálogo tem defeito, ou a regra é diferente do que o manual diz, e então vira esclarecimento. O PGE é um programa de computador com interface gráfica; se ele não puder ser operado daqui, o assistente registra o motivo e o que faltou.
 
 ### D11. Cartão 1.2.0 (REQ-A2A-007)
 
@@ -161,7 +161,7 @@ Sem provedor pago. Uma passada linear sobre até 4 MiB de texto. O catálogo do 
 
 ## Open Questions
 
-- Quem roda o gabarito no PGE (D10). Não bloqueia a implementação; bloqueia o arquivamento.
+- Nenhuma. O gabarito (D10) é feito pelo assistente, a pedido de Kaio Macedo, e bloqueia só o arquivamento.
 
 ## Skills aplicáveis
 

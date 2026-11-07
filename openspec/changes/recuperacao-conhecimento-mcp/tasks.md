@@ -1,6 +1,6 @@
 # Tasks: Recuperação de conhecimento por MCP
 
-> Só começam depois da aprovação do plano e do ADR 0005 por Kaio Macedo (P20). Skills: `mcp-client-server` (grupos 2 a 4), `rag-pgvector` (grupos 1 e 5), `vercel-dotnet-pgvector-atlas` (grupo 6), `controle-custos-llm` (2.4), `testes-agentes-ia` (todos), `github-versionamento` (grupo 7).
+> Plano e ADR 0005 aprovados por Kaio Macedo em 2026-11-07 (P20). Skills: `mcp-client-server` (grupos 2 a 4), `rag-pgvector` (grupos 1 e 5), `vercel-dotnet-pgvector-atlas` (grupo 6), `controle-custos-llm` (2.4), `testes-agentes-ia` (todos), `github-versionamento` (grupo 7).
 
 ## 1. Busca na Api.RAG
 
@@ -34,7 +34,7 @@
 
 ## 6. Produção
 
-- [ ] 6.1 Kaio Macedo cadastra no Vercel a chave da OpenAI da Api.RAG (E04; SQ-03). Até lá, a busca fica desativada por configuração.
+- [ ] 6.1 **(em aberto, por decisão de Kaio Macedo em 2026-11-07)** Kaio Macedo cadastra no Vercel a chave da OpenAI da Api.RAG (E04; SQ-03). Até lá, a busca fica desativada por configuração.
 - [ ] 6.2 Depois do merge, verificar em produção, só com dados sintéticos: `tools/list` e `tools/call` em `/mcp` vindos de instâncias diferentes, a busca desativada sem a chave e, com a chave, uma consulta com trechos do leiaute 12 (D1; ADR 0005). Se o transporte falhar no Vercel, seguir a alternativa do ADR.
 - [ ] 6.3 Verificar em produção uma análise que passa pela etapa 5, quando a mudança 07 estiver em produção.
 

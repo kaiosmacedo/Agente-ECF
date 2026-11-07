@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 | --- | --- |
-| Estado | Proposto |
+| Estado | Aceito |
 | Data | 2026-11-07 |
 | Responsável pela decisão | Kaio Macedo |
 | Relacionado a | DP-18, ADR 0002, RA-03, P15, mudança `recuperacao-conhecimento-mcp` (E01) |
