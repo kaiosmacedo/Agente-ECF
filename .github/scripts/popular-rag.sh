@@ -6,6 +6,7 @@
 #   bash .github/scripts/popular-rag.sh avaliar       # mede a recuperação com as perguntas de docs/avaliacao
 #   bash .github/scripts/popular-rag.sh todos         # os seis manuais; o que já estiver na base não é refeito
 #
+# Para comparar parâmetros (D6): TAMANHO_DO_TRECHO, SOBREPOSICAO_DO_TRECHO e REPROCESSAR=1, que refaz o que já está na base.
 # A chave da OpenAI vem do arquivo do projeto SofiaInfis, como Kaio Macedo autorizou. Para usar outra, informe ARQUIVO_DA_CHAVE.
 # Ela vai só para o processo em contêiner, por variável de ambiente: nunca para o repositório, os logs, o Vercel ou o GitHub.
 set -euo pipefail
@@ -90,12 +91,17 @@ else
 fi
 [ "$MODO" = "avaliar" ] || cp "$MANIFESTO" "$temporario/fontes/manifesto-rag.json"
 
+[ -z "${REPROCESSAR:-}" ] || argumentos+=(--reprocessar)
+ajustes=()
+[ -z "${TAMANHO_DO_TRECHO:-}" ] || ajustes+=(-e "Ingestao__TamanhoDoTrecho=$TAMANHO_DO_TRECHO")
+[ -z "${SOBREPOSICAO_DO_TRECHO:-}" ] || ajustes+=(-e "Ingestao__SobreposicaoDoTrecho=$SOBREPOSICAO_DO_TRECHO")
+
 echo "3/4 Construindo a imagem da Api.RAG..."
 docker build -q -t agente-ecf-rag-carga "$RAIZ/src/Api.RAG" > /dev/null || parar "a imagem não foi construída."
 
 echo "4/4 Rodando. A carga completa leva alguns minutos."
 MSYS_NO_PATHCONV=1 docker run --rm \
-  -e OpenAI__ApiKey -e ConnectionStrings__Conhecimento -e Observabilidade__NivelMinimo=Warning \
+  -e OpenAI__ApiKey -e ConnectionStrings__Conhecimento -e Observabilidade__NivelMinimo=Warning "${ajustes[@]}" \
   -v "$(caminho_para_docker "$temporario/fontes"):/fontes:ro" \
   agente-ecf-rag-carga "${argumentos[@]}" || parar "o comando terminou com falha. A chave e a conexão não foram exibidas."
 

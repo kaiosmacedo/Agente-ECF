@@ -27,7 +27,8 @@ internal sealed record PerguntaDeAvaliacao(string Id, string Pergunta, string Ti
 internal sealed record ConjuntoDeAvaliacao(IReadOnlyList<PerguntaDeAvaliacao> Perguntas);
 
 /// <summary>Resultado da avaliação de recuperação.</summary>
-internal sealed record ResultadoDaAvaliacao(int Perguntas, int Acertos, double AcertoNosCinco, double PosicaoReciprocaMedia, IReadOnlyList<string> Erradas);
+internal sealed record ResultadoDaAvaliacao(
+    int Perguntas, int Acertos, double AcertoNosCinco, double PosicaoReciprocaMedia, IReadOnlyList<string> Erradas, IReadOnlyDictionary<string, IReadOnlyList<int>> PaginasDasErradas);
 
 /// <summary>
 /// Operações eventuais, fora do Vercel, como a migração: o PDF passa do limite do corpo, e a função não dura o
@@ -105,6 +106,7 @@ internal sealed class ComandosDaBase(
         var acertos = 0;
         var somaRecíproca = 0d;
         var erradas = new List<string>();
+        var paginasDasErradas = new Dictionary<string, IReadOnlyList<int>>(StringComparer.Ordinal);
         foreach (var pergunta in conjunto.Perguntas)
         {
             var resposta = await embeddings.GerarAsync([pergunta.Pergunta], operacao, cancelamento);
@@ -118,11 +120,12 @@ internal sealed class ComandosDaBase(
             else
             {
                 erradas.Add(pergunta.Id);
+                paginasDasErradas[pergunta.Id] = [.. trechos.Select(trecho => trecho.Pagina)];
             }
         }
 
         var total = conjunto.Perguntas.Count;
-        return new ResultadoDaAvaliacao(total, acertos, total == 0 ? 0 : (double)acertos / total, total == 0 ? 0 : somaRecíproca / total, erradas);
+        return new ResultadoDaAvaliacao(total, acertos, total == 0 ? 0 : (double)acertos / total, total == 0 ? 0 : somaRecíproca / total, erradas, paginasDasErradas);
     }
 
     private async Task MostrarConsumoAsync(TextWriter saida, CancellationToken cancelamento)

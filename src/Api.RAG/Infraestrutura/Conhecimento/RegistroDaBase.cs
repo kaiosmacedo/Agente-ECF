@@ -1,6 +1,7 @@
 using System.ClientModel;
 using System.ClientModel.Primitives;
 using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
 using Api.RAG.Aplicacao.Conhecimento;
 using Api.RAG.Aplicacao.Consumo;
 using Api.RAG.Dominio.Conhecimento;
@@ -29,10 +30,10 @@ internal sealed class OpcoesDaIngestao : IValidatableObject
     public int TamanhoDoLote { get; init; } = 100;
 
     [Range(100, 8000)]
-    public int TamanhoDoTrecho { get; init; } = 1200;
+    public int TamanhoDoTrecho { get; init; } = 1600;
 
     [Range(0, 4000)]
-    public int SobreposicaoDoTrecho { get; init; } = 200;
+    public int SobreposicaoDoTrecho { get; init; } = 300;
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
@@ -57,8 +58,8 @@ internal sealed class OpcoesDaOpenAi
     public int DimensaoDosEmbeddings { get; init; } = 1536;
 }
 
-/// <summary>Lê o PDF página por página e tira o cabeçalho e o rodapé que se repetem em todas elas (D3).</summary>
-internal sealed class ExtratorDePdf : IExtratorDeTexto
+/// <summary>Lê o PDF página por página e tira o cabeçalho e o rodapé repetidos e as linhas de sumário (D3).</summary>
+internal sealed partial class ExtratorDePdf : IExtratorDeTexto
 {
     private static readonly string[] LinhasRepetidas = ["Anexo ao Ato Declarat", "Atualização:", "RFB/Subsecretaria de Fiscalização"];
 
@@ -79,7 +80,12 @@ internal sealed class ExtratorDePdf : IExtratorDeTexto
     }
 
     private static string Limpar(string texto) =>
-        string.Join('\n', texto.Split('\n').Where(linha => !LinhasRepetidas.Any(repetida => linha.TrimStart().StartsWith(repetida, StringComparison.Ordinal))));
+        string.Join('\n', texto.Split('\n').Where(linha =>
+            !LinhasRepetidas.Any(repetida => linha.TrimStart().StartsWith(repetida, StringComparison.Ordinal)) && !LinhaDeSumario().IsMatch(linha)));
+
+    // O pontilhado até o número da página só existe no sumário, que atrapalha a busca (avaliação, D6).
+    [GeneratedRegex(@"\.{8,}\s*\d*\s*$")]
+    private static partial Regex LinhaDeSumario();
 }
 
 /// <summary>Uma tentativa na OpenAI, sem as retentativas do SDK, que passam pelo nosso registro de consumo (mudança 04, D4).</summary>
