@@ -16,7 +16,7 @@ Cada mudança segue o fluxo da constitution (6.1): especificação → esclareci
 
 | Etapa | Situação |
 | --- | --- |
-| Constitution | v2.0.2 vigente (ratificada na v1.1.0; emendas aprovadas por Kaio Macedo). |
+| Constitution | v2.0.3 vigente (ratificada na v1.1.0; emendas aprovadas por Kaio Macedo). |
 | CI/CD | CI com checks obrigatórios `OpenSpec` e `.NET`; CD publica no Vercel a cada merge na `main`. |
 | Vercel | Em produção: https://agente-ecf-agente.vercel.app e https://agente-ecf-rag.vercel.app (time `agent-ecf`). |
 | Mudança 01 | Concluída: mesclada (PR #2), em produção e arquivada em 2026-10-29; specs vigentes em `openspec/specs/plataforma/`. |
@@ -35,7 +35,7 @@ Cada mudança segue o fluxo da constitution (6.1): especificação → esclareci
 | 04 | `registro-consumo-ia` | `plataforma/consumo-custos` | 01 | 13, 26 | `controle-custos-llm`, `testes-agentes-ia` | Arquivada; em produção desde 2026-11-06 (PR #18) |
 | 05 | `base-conhecimento-ingestao` | `rag/ingestao-documentos`, `rag/administracao-base` | 04 | 02, 03, 04, 24 | `rag-pgvector`, `controle-custos-llm`, `testes-agentes-ia` | Em produção, com os seis manuais carregados e a recuperação avaliada (`docs/avaliacao/recuperacao.md`); falta o Release com os originais |
 | 06 | `recuperacao-conhecimento-mcp` | `rag/recuperacao-conhecimento`, `agente/consulta-conhecimento` | 03, 05 | 03, 14 | `mcp-client-server`, `rag-pgvector`, `vercel-dotnet-pgvector-atlas` | Implementada; a busca fica desligada em produção até a decisão da chave |
-| 07 | `recepcao-identificacao-leiaute` | `agente/recepcao-arquivos`, `agente/identificacao-leiaute` | 03 | 04, 05, 11, 22, 25 | `testes-agentes-ia` | Implementada: recebe a ECF pelos dois canais e identifica o leiaute |
+| 07 | `recepcao-identificacao-leiaute` | `agente/recepcao-arquivos`, `agente/identificacao-leiaute` | 03 | 04, 05, 11, 22, 25 | `testes-agentes-ia` | Concluída: em produção e arquivada em 2026-11-07 |
 | 08 | `validacao-estrutural` | `agente/validacao-estrutural` | 07 | 04 | `testes-agentes-ia` | Plano aprovado |
 | 09 | `regras-negocio-irpj-csll` | `agente/regras-negocio` | 08 | 04, 06 | `testes-agentes-ia` | Especificação aprovada |
 | 10 | `analise-llm` | `agente/analise-llm` | 04, 06, 08 | 02, 12, 14 | `semantic-kernel-tools`, `controle-custos-llm`, `testes-agentes-ia` | Especificação aprovada |

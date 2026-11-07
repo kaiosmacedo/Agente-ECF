@@ -39,8 +39,10 @@ internal sealed record AmbienteDaAnalise(
 /// Serviço de aplicação comum aos canais: executa as etapas 1 a 3 do fluxo (P03) sobre o pedido normalizado e monta o
 /// envelope. O conteúdo recebido é dado não confiável (P10): ele só é lido, nunca interpretado como instrução.
 /// </summary>
-internal sealed class ServicoDeAnalise(AmbienteDaAnalise ambiente, TimeProvider relogio)
+internal sealed class ServicoDeAnalise(AmbienteDaAnalise ambiente, TimeProvider relogio, Func<string, IdentificacaoDoLeiaute>? identificador = null)
 {
+    private readonly Func<string, IdentificacaoDoLeiaute> identificar = identificador ?? IdentificadorDeLeiaute.Identificar;
+
     public const string LimitacaoDocumentoCortado = "documento cortado antes de chegar ao agente";
 
     public EnvelopeDoResultado Analisar(PedidoDeAnalise pedido, string? correlacao)
@@ -139,9 +141,28 @@ internal sealed class ServicoDeAnalise(AmbienteDaAnalise ambiente, TimeProvider 
     }
 
     /// <summary>Etapa 3 (REQ-LEIAUTE-001 a 004) e o documento cortado pela Sofia (REQ-RECEPCAO-007; D6).</summary>
-    private static void Identificar(Execucao execucao, DocumentoDoPedido ecf)
+    private void Identificar(Execucao execucao, DocumentoDoPedido ecf)
     {
-        var identificacao = IdentificadorDeLeiaute.Identificar(ReconhecedorDeEcf.PrimeiraLinha(ecf.Texto));
+        IdentificacaoDoLeiaute identificacao;
+        try
+        {
+            identificacao = identificar(ReconhecedorDeEcf.PrimeiraLinha(ecf.Texto));
+        }
+        catch (Exception erro) when (erro is not OutOfMemoryException)
+        {
+            // Defeito do sistema, não do documento: falha técnica, sem validação dependente de versão (REQ-LEIAUTE-003; D7).
+            execucao.FalharEtapa(Etapa.IdentificacaoDoLeiaute, CausaDaFalha.Tecnica);
+            execucao.AdicionarAchado(Achado.Criar(
+                "ach-falha-identificacao",
+                CategoriaDoAchado.FalhaTecnica,
+                OrigemDoAchado.Sistema,
+                "REQ-LEIAUTE-003",
+                "A identificação do leiaute falhou por erro interno; nenhuma validação dependente de versão foi executada.",
+                SeveridadeDoAchado.Media));
+            execucao.AdicionarLimitacao("leiaute não identificado por falha técnica");
+            return;
+        }
+
         execucao.RegistrarLeiaute(identificacao);
         switch (identificacao.Situacao)
         {

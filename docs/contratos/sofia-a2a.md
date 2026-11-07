@@ -202,7 +202,9 @@ Para quem mantém a Sofia e para o agente validador que recebe o resultado depoi
 | Serviço | `Recepcao:TamanhoMaximoDosDocumentosEmBytes` (4 MiB), o mesmo no `POST /analises` | Resultado com status `erro` e código `documentos_acima_do_limite`. Em produção, o limite do Vercel vem antes para corpos acima de cerca de 4,5 MB. |
 | Kestrel (Docker) | 30 MB no corpo, padrão do ASP.NET Core | Erro HTTP 413. |
 
-O corpo inclui o envelope e o escape do JSON, então o texto útil é um pouco menor. A decisão para arquivos reais fica na mudança 07 (DP-05).
+O corpo inclui o envelope e o escape do JSON, então o texto útil é um pouco menor. A mudança 07 fixou 4 MiB (DP-05); arquivos reais maiores dependem de medir ECF reais antes de dados reais (`docs/roteiro.md`).
+
+**Medição de 2026-11-07, em produção:** uma ECF sintética de 3.989.743 bytes, num corpo de 3.991.891 bytes, foi aceita, e o `SendMessage` levou de 6,5 a 8,2 segundos em três rodadas, a maior parte no envio do corpo. Com a recepção e a identificação, a resposta na mesma requisição cabe (DP-22); a mudança 10 reavalia com o LLM.
 
 ## Configuração
 

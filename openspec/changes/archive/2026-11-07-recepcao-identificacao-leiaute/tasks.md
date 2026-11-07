@@ -39,6 +39,6 @@
 
 ## 7. Entrega e verificação
 
-- [ ] 7.1 Depois do merge, verificar em produção, só com dados sintéticos: cartão 1.1.0; `SendMessage` com ECF do leiaute 12, com NF-e, com duas ECF e com o marcador de corte; e `POST /analises`.
-- [ ] 7.2 Medir em produção o tempo de um `SendMessage` com ECF sintética perto de 4 MiB e registrar em `docs/contratos/sofia-a2a.md`, para a mudança 10 (E03).
-- [ ] 7.3 Atualizar o cofre Obsidian; mover DP-05 e DP-22 para as decisões resolvidas; executar `/opsx:verify` e conferir a Definition of Done (seção 7 da constitution).
+- [x] 7.1 Depois do merge, verificar em produção, só com dados sintéticos: cartão 1.1.0; `SendMessage` com ECF do leiaute 12, com NF-e, com duas ECF e com o marcador de corte; e `POST /analises`.
+- [x] 7.2 Medir em produção o tempo de um `SendMessage` com ECF sintética perto de 4 MiB e registrar em `docs/contratos/sofia-a2a.md`, para a mudança 10 (E03).
+- [x] 7.3 Atualizar o cofre Obsidian; mover DP-05 e DP-22 para as decisões resolvidas; executar `/opsx:verify` e conferir a Definition of Done (seção 7 da constitution).

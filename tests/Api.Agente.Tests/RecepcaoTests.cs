@@ -107,6 +107,21 @@ public sealed class RecepcaoTests
         Assert.True(envelope.RevisaoHumana);
     }
 
+    [Fact(DisplayName = "REQ-LEIAUTE-003 Exceção no identificador: etapa 3 com falha técnica e status falha-tecnica, sem derrubar o pedido")]
+    public void FalhaInternaDoIdentificador()
+    {
+        var servico = new ServicoDeAnalise(
+            new AmbienteDaAnalise(4_194_304, "org-teste", "teste"), TimeProvider.System, _ => throw new InvalidOperationException("defeito simulado"));
+
+        var envelope = Analisar(servico, Documento("doc-001", EcfSintetica.Texto()));
+
+        var etapa = envelope.Etapas.Single(e => e.Numero == 3);
+        Assert.Equal(("com-falha", "tecnica"), (etapa.Estado, etapa.Causa));
+        Assert.Equal(("falha-tecnica", "nao-avaliado"), (envelope.Status, envelope.Veredito));
+        Assert.Contains(envelope.Achados, achado => achado.Categoria == "falha-tecnica");
+        Assert.DoesNotContain("defeito simulado", JsonSerializer.Serialize(envelope, ContratoSofiaV1.Json), StringComparison.Ordinal);
+    }
+
     [Fact(DisplayName = "REQ-LEIAUTE-004 COD_VER de outro ano: identificação ambígua, com o motivo na limitação")]
     public void VersaoDeOutroAno()
     {
