@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Api.Agente.Aplicacao.Analise;
 using Api.Agente.Aplicacao.ContratoSofia;
 using Api.Agente.Tests.Infra;
 
@@ -18,7 +19,7 @@ public sealed class ContratoSofiaTests
     [Fact(DisplayName = "REQ-SOFIA-002 Resultado traz os campos e os identificadores do contrato")]
     public async Task ResultadoComOsCamposDoContrato()
     {
-        var resultado = await Resultado(ContratoDeTeste.Fixture("solicitacao-exemplo.json"));
+        var resultado = await Resultado(ContratoDeTeste.Solicitacao());
 
         using var json = JsonDocument.Parse(JsonSerializer.Serialize(resultado, ContratoSofiaV1.Json));
         var raiz = json.RootElement;
@@ -123,7 +124,7 @@ public sealed class ContratoSofiaTests
     [Fact(DisplayName = "REQ-A2A-002 Solicitação válida tem status parcial, sem achados, e declara o que não foi validado")]
     public async Task SolicitacaoValidaEhParcial()
     {
-        var resultado = await Resultado(ContratoDeTeste.Fixture("solicitacao-exemplo.json"));
+        var resultado = await Resultado(ContratoDeTeste.Solicitacao());
 
         Assert.Equal("parcial", resultado.Status);
         Assert.Empty(resultado.Achados);
@@ -135,9 +136,11 @@ public sealed class ContratoSofiaTests
     [Fact(DisplayName = "REQ-SOFIA-003 Observações rastreiam cada documento com tamanho e hash corretos")]
     public async Task RastreiaOsDocumentos()
     {
-        var resultado = await Resultado(ContratoDeTeste.Fixture("solicitacao-exemplo.json"));
+        var solicitacao = ContratoDeTeste.Solicitacao();
+        var resultado = await Resultado(solicitacao);
 
-        foreach (var (id, texto) in new[] { ("doc-001", "<NFe>texto extraído e normalizado da NF-e...</NFe>"), ("doc-002", "Pedido de compra número 123...") })
+        var documentos = System.Text.Json.Nodes.JsonNode.Parse(solicitacao)!["documentos"]!.AsArray();
+        foreach (var (id, texto) in documentos.Select(documento => ((string)documento!["idDocumento"]!, (string)documento["texto"]!)))
         {
             var hash = Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(texto)));
             Assert.Contains($"Documento {id} recebido: {texto.Length} caracteres, SHA-256 {hash}.", resultado.Observacoes);
@@ -150,11 +153,12 @@ public sealed class ContratoSofiaTests
     public async Task LimiteDeTamanho(int tamanho, string statusEsperado)
     {
         var processador = Novo(tamanhoMaximo: 1000);
+        var ecf = EcfSintetica.Texto();
         var solicitacao = ContratoDeTeste.Solicitacao(s => s["documentos"] = new JsonArray(new JsonObject
         {
             ["idDocumento"] = "doc-001",
             ["nome"] = "a.txt",
-            ["texto"] = new string('x', tamanho),
+            ["texto"] = ecf + new string('x', tamanho - ecf.Length),
         }));
 
         var resultado = await Resultado(solicitacao, processador);
@@ -191,7 +195,8 @@ public sealed class ContratoSofiaTests
             }
             else
             {
-                s["documentos"]![0]!["texto"] = instrucao;
+                // No campo NOME do Registro 0000 (mudança 07, D11): a ECF continua ECF, e a instrução é só dado.
+                s["documentos"]![0]!["texto"] = EcfSintetica.ComCampoDoRegistro0000(5, instrucao);
             }
         });
 

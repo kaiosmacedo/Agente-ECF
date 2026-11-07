@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using Api.Agente.Aplicacao.Analise;
 using Api.Agente.Aplicacao.Execucoes;
 using Api.Agente.Dominio.Execucoes;
 
@@ -10,16 +11,14 @@ namespace Api.Agente.Aplicacao.ContratoSofia;
 /// <summary>Desfecho do processamento: um resultado do contrato ou o motivo de não haver como correlacionar um.</summary>
 internal sealed record DesfechoDaSolicitacao(ResultadoAnaliseSofia? Resultado, string? MotivoDaRejeicao);
 
-/// <summary>O que o processador precisa saber do ambiente, sem depender da infraestrutura.</summary>
-internal sealed record AmbienteDaAnalise(long TamanhoMaximoDosDocumentosEmBytes, string OrganizacaoPadrao, string VersaoDoServico);
-
 /// <summary>
-/// Serviço de aplicação comum aos canais do agente (REQ-A2A-002): cria e registra a execução e projeta o
-/// resultado. O conteúdo recebido é dado não confiável (P10). As etapas da análise chegam nas próximas
-/// mudanças; até lá, ficam como não executadas, e o status é parcial (P05, P08).
+/// Entrada do canal A2A (REQ-A2A-002): lê o contrato SOFIA, valida os identificadores e o contrato, entrega o pedido
+/// normalizado ao serviço de análise, registra a execução e projeta o resultado. O conteúdo é dado não confiável (P10).
 /// </summary>
 internal sealed class ProcessadorDeSolicitacoes(IRepositorioDeExecucoes repositorio, AmbienteDaAnalise ambiente, TimeProvider relogio)
 {
+    private readonly ServicoDeAnalise servico = new(ambiente, relogio);
+
     public async Task<DesfechoDaSolicitacao> ProcessarAsync(string json, string? correlacao, CancellationToken cancelamento)
     {
         SolicitacaoAnaliseSofia? solicitacao;
@@ -52,39 +51,17 @@ internal sealed class ProcessadorDeSolicitacoes(IRepositorioDeExecucoes reposito
 
     private EnvelopeDoResultado Analisar(SolicitacaoAnaliseSofia solicitacao, string? correlacao)
     {
-        var execucao = Execucao.Criar(
-            Guid.Parse(solicitacao.IdExecucao!),
-            Guid.Parse(solicitacao.IdSolicitacao!),
-            IdentidadeDaRequisicao.Declarada(solicitacao.Usuario?.Nome, ambiente.OrganizacaoPadrao),
-            relogio.GetUtcNow());
-        execucao.ConcluirEtapa(Etapa.Recepcao);
-
-        var erro = ValidarEntrada(solicitacao);
-        string sintese;
-        if (erro is not null)
-        {
-            execucao.FalharEtapa(Etapa.ValidacaoDaEntrada);
-            sintese = $"A solicitação não pôde ser analisada. {erro.Mensagem}";
-        }
-        else
-        {
-            var documentos = solicitacao.Documentos!;
-            foreach (var documento in documentos)
-            {
-                execucao.RegistrarDocumento(new DocumentoRecebido(documento.IdDocumento!, Hash(documento.Texto!), documento.Texto!.Length));
-            }
-
-            execucao.ConcluirEtapa(Etapa.ValidacaoDaEntrada);
-            sintese = string.Create(
-                CultureInfo.InvariantCulture,
-                $"{documentos.Count} documento(s) recebido(s). Esta versão ainda não executa as validações da ECF: nenhum achado foi produzido e nenhuma conformidade é declarada.");
-        }
-
-        execucao.Concluir(relogio.GetUtcNow());
-        return MontadorDoEnvelope.Montar(execucao, correlacao, ambiente.VersaoDoServico, sintese, erro);
+        var erro = ValidarContrato(solicitacao);
+        IReadOnlyList<DocumentoDoPedido> documentos = erro is null
+            ? [.. solicitacao.Documentos!.Select(documento => new DocumentoDoPedido(documento.IdDocumento!, documento.Texto!, Hash(documento.Texto!)))]
+            : [];
+        return servico.Analisar(
+            new PedidoDeAnalise(
+                Guid.Parse(solicitacao.IdExecucao!), Guid.Parse(solicitacao.IdSolicitacao!), CanalDaAnalise.A2A, solicitacao.Usuario?.Nome, documentos, erro),
+            correlacao);
     }
 
-    private ErroDoEnvelope? ValidarEntrada(SolicitacaoAnaliseSofia solicitacao)
+    private static ErroDoEnvelope? ValidarContrato(SolicitacaoAnaliseSofia solicitacao)
     {
         if (solicitacao.VersaoContrato != ContratoSofiaV1.Versao)
         {
@@ -92,14 +69,8 @@ internal sealed class ProcessadorDeSolicitacoes(IRepositorioDeExecucoes reposito
         }
 
         var camposInvalidos = ValidadorDaSolicitacao.CamposInvalidos(solicitacao);
-        if (camposInvalidos.Count > 0)
-        {
-            return new ErroDoEnvelope("solicitacao_invalida", $"Campos ausentes ou inválidos: {string.Join(", ", camposInvalidos)}.");
-        }
-
-        var tamanho = solicitacao.Documentos!.Sum(documento => (long)Encoding.UTF8.GetByteCount(documento.Texto!));
-        return tamanho > ambiente.TamanhoMaximoDosDocumentosEmBytes
-            ? new ErroDoEnvelope("documentos_acima_do_limite", $"O texto dos documentos ultrapassa o limite de {ambiente.TamanhoMaximoDosDocumentosEmBytes} bytes; nada foi analisado.")
+        return camposInvalidos.Count > 0
+            ? new ErroDoEnvelope("solicitacao_invalida", $"Campos ausentes ou inválidos: {string.Join(", ", camposInvalidos)}.")
             : null;
     }
 

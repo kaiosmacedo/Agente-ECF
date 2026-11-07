@@ -1,3 +1,5 @@
+using Api.Agente.Dominio.Leiaute;
+
 namespace Api.Agente.Dominio.Execucoes;
 
 /// <summary>Status da execução, calculado só pelo sistema (P05, GD-03). <c>Concluida</c> não significa "conforme".</summary>
@@ -34,6 +36,7 @@ internal sealed class Execucao
     private readonly Dictionary<Etapa, EtapaDaExecucao> etapas;
     private readonly List<Achado> achados = [];
     private readonly List<string> limitacoes = [];
+    private readonly List<string> observacoes = [];
     private readonly List<DocumentoRecebido> documentos = [];
     private readonly Dictionary<string, IReadOnlyList<TrechoConsultado>> trechos = new(StringComparer.Ordinal);
 
@@ -65,7 +68,13 @@ internal sealed class Execucao
 
     public IReadOnlyList<string> Limitacoes => limitacoes;
 
+    /// <summary>Informações que não mudam status nem veredito, como documento que não é ECF (REQ-RECEPCAO-006).</summary>
+    public IReadOnlyList<string> Observacoes => observacoes;
+
     public IReadOnlyList<DocumentoRecebido> Documentos => documentos;
+
+    /// <summary>O que a etapa 3 identificou, ou o motivo de não identificar (REQ-LEIAUTE-001).</summary>
+    public IdentificacaoDoLeiaute? Leiaute { get; private set; }
 
     /// <summary>Trechos recebidos por regra consultada, na chave de <see cref="Achado.ChaveDaRegra"/>.</summary>
     public IReadOnlyDictionary<string, IReadOnlyList<TrechoConsultado>> TrechosConsultados => trechos;
@@ -119,7 +128,7 @@ internal sealed class Execucao
             || achado.Classe == ClasseDoAchado.Grave);
 
     private bool HaFalhaTecnica =>
-        etapas.Values.Any(etapa => etapa.Estado == EstadoDaEtapa.ComFalha)
+        etapas.Values.Any(etapa => etapa.Estado == EstadoDaEtapa.ComFalha && etapa.Causa != CausaDaFalha.Documento)
         || achados.Any(achado => achado.Categoria == CategoriaDoAchado.FalhaTecnica);
 
     private bool HaObrigatoriaNaoConcluida =>
@@ -130,10 +139,13 @@ internal sealed class Execucao
 
     public void ConcluirEtapa(Etapa etapa) => etapas[etapa] = new EtapaDaExecucao(etapa, EstadoDaEtapa.Concluida);
 
-    /// <summary>Registra a falha e deixa as etapas dependentes como não executadas (REQ-EXEC-002).</summary>
-    public void FalharEtapa(Etapa etapa)
+    /// <summary>
+    /// Registra a falha e deixa as etapas dependentes como não executadas (REQ-EXEC-002). Só a falha de causa técnica
+    /// torna o status <c>falha-tecnica</c>; a do documento deixa a análise parcial (REQ-LEIAUTE-003).
+    /// </summary>
+    public void FalharEtapa(Etapa etapa, CausaDaFalha causa = CausaDaFalha.Tecnica)
     {
-        etapas[etapa] = new EtapaDaExecucao(etapa, EstadoDaEtapa.ComFalha);
+        etapas[etapa] = new EtapaDaExecucao(etapa, EstadoDaEtapa.ComFalha, Causa: causa);
         foreach (var dependente in FluxoDeEtapas.DependentesDe(etapa))
         {
             etapas[dependente] = new EtapaDaExecucao(dependente, EstadoDaEtapa.NaoExecutada);
@@ -155,7 +167,11 @@ internal sealed class Execucao
 
     public void AdicionarLimitacao(string limitacao) => limitacoes.Add(limitacao);
 
+    public void AdicionarObservacao(string observacao) => observacoes.Add(observacao);
+
     public void RegistrarDocumento(DocumentoRecebido documento) => documentos.Add(documento);
+
+    public void RegistrarLeiaute(IdentificacaoDoLeiaute identificacao) => Leiaute = identificacao;
 
     public void RegistrarTrechos(string chaveDaRegra, IReadOnlyList<TrechoConsultado> recebidos) => trechos[chaveDaRegra] = recebidos;
 

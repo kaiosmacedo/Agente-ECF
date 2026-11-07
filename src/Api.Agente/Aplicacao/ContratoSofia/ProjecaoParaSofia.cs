@@ -13,7 +13,11 @@ internal static class ProjecaoParaSofia
         StatusDoContrato(envelope.Status),
         envelope.Sintese,
         [.. envelope.Achados.Select(Achado)],
-        [.. envelope.Documentos.Select(documento => $"Documento {documento.IdDocumento} recebido: {documento.Caracteres} caracteres, SHA-256 {documento.Hash}."), .. envelope.Limitacoes],
+        [
+            .. envelope.Documentos.Select(documento => $"Documento {documento.IdDocumento} recebido: {documento.Caracteres} caracteres, SHA-256 {documento.Hash}."),
+            .. envelope.Observacoes ?? [],
+            .. envelope.Limitacoes,
+        ],
         envelope.Erro is { } erro ? new ErroSofia(erro.Codigo, erro.Mensagem) : null,
         envelope.IdExecucao.ToString(),
         envelope.RevisaoHumana,

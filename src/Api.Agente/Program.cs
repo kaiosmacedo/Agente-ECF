@@ -6,6 +6,7 @@ using Api.Agente.Infraestrutura.Hospedagem;
 using Api.Agente.Infraestrutura.Integracao;
 using Api.Agente.Infraestrutura.Observabilidade;
 using Api.Agente.Infraestrutura.Persistencia;
+using Api.Agente.Infraestrutura.Recepcao;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,7 @@ builder.Services.AdicionarOpcoesValidadas<OpcoesObservabilidade>(builder.Configu
 builder.AdicionarObservabilidade(IdentidadeServico.De("Api.Agente", typeof(Program).Assembly));
 builder.Services.AddHealthChecks();
 builder.Services.AdicionarCorsSofia(builder.Configuration);
+builder.Services.AdicionarRecepcao(builder.Configuration);
 builder.Services.AdicionarServidorA2A(builder.Configuration);
 builder.Services.AdicionarPersistencia(builder.Configuration);
 builder.Services.AdicionarConsultaAoManual(builder.Configuration);

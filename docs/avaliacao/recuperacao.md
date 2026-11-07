@@ -26,9 +26,26 @@ A primeira rodada deu 86,7%, e dois ajustes vieram dela:
 
 ## Limites
 
-- **Pergunta que continua errada:** a P15, sobre a regra de natureza permitida para contas patrimoniais, não acha as páginas 147 e 148. As palavras dela lembram outras regras de natureza. Buscar pelo código da regra, junto com a busca semântica, é uma melhoria a avaliar na mudança 06.
+- **Pergunta que continuava errada:** a P15, sobre a regra de natureza permitida para contas patrimoniais, não achava as páginas 147 e 148, porque as palavras dela lembram outras regras de natureza. A busca por código da mudança 06 resolveu (seção seguinte).
 - **Conjunto pequeno e feito por quem construiu a busca:** as perguntas foram rascunhadas pelo assistente, e o resultado mede só o Leiaute 12. Kaio Macedo pediu para prosseguir sem esperar, então perguntas e parâmetros ficam abertos à revisão dele. Refazer a carga completa custa cerca de US$ 0,05.
 - **Mede a página, não a resposta:** achar a página certa não garante que o trecho responda bem. `topK` e limiares ficam para a mudança 06.
+
+## Busca por código, quantidade e limiar (mudança 06)
+
+Avaliação de 2026-11-07, depois do merge da mudança 06, no banco de produção, com os valores de segmentação adotados acima (mudança 06, D4; GD-08). O conjunto ganhou o campo `codigo` em 22 perguntas: o código da regra (4) ou do registro (18), que é o que um achado leva na etapa 5. Ganhou também 5 perguntas que o manual não responde (P31 a P35), para medir o limiar. Uma busca de 8 trechos por pergunta dá o acerto com 3, 5 e 8.
+
+| Busca | 3 trechos | 5 trechos | 8 trechos | Posição recíproca média (5) | Erradas (5) |
+| --- | --- | --- | --- | --- | --- |
+| Só semântica | 93,3% | 96,7% | 96,7% | 0,868 | P15 |
+| **Com código** | **96,7%** | **100% (30 de 30)** | **100%** | **0,925** | nenhuma |
+
+**Limiar:** a menor relevância entre as páginas certas foi 0,4800, e a maior entre as perguntas sem resposta, 0,5458. Nenhum valor separa as duas sem perder acerto, então fica sem limiar: a etapa 5 não declara ausência de evidência pela relevância (D4).
+
+**Valores adotados:** 5 trechos por consulta (`Busca:QuantidadePadrao`), busca por código ligada (a Api.Agente envia o código da regra ou do registro do achado) e nenhum limiar. Com 3 trechos, o acerto cai; com 8, não sobe.
+
+**Custo:** 70 embeddings, 1.192 tokens, cerca de US$ 0,00002 (`GET /consumo`, finalidade `avaliacao`).
+
+**Limites:** as 5 perguntas sem resposta e os códigos foram rascunhados pelo assistente. Com o código, a busca acha o trecho que cita a regra, o que é o caso de uso da etapa 5, mas favorece as perguntas que já trazem o código; perguntas sem código seguem a busca semântica.
 
 ## Carga completa
 

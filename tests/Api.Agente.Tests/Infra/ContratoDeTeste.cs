@@ -13,10 +13,17 @@ internal static class ContratoDeTeste
 
     public static string Fixture(string nome) => File.ReadAllText(Repositorio.Caminho("tests", "Api.Agente.Tests", "Fixtures", "Sofia", nome), Encoding.UTF8);
 
-    /// <summary>A solicitação de exemplo do contrato, com um ajuste opcional.</summary>
+    /// <summary>
+    /// A solicitação de exemplo do contrato, com um ajuste opcional. O primeiro documento vira uma ECF sintética do
+    /// leiaute 12 (mudança 07); o segundo continua um documento que não é ECF.
+    /// </summary>
     public static string Solicitacao(Action<JsonObject>? ajuste = null)
     {
         var solicitacao = JsonNode.Parse(Fixture("solicitacao-exemplo.json"))!.AsObject();
+        var ecf = solicitacao["documentos"]![0]!;
+        ecf["nome"] = "ecf-2025.txt";
+        ecf["tipo"] = "text/plain";
+        ecf["texto"] = EcfSintetica.Texto();
         ajuste?.Invoke(solicitacao);
         return solicitacao.ToJsonString();
     }

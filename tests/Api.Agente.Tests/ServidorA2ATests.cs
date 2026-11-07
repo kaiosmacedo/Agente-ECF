@@ -99,7 +99,7 @@ public sealed class ServidorA2ATests
                 {
                     Role = Role.User,
                     MessageId = Guid.NewGuid().ToString(),
-                    Parts = [Part.FromText(ContratoDeTeste.Fixture("solicitacao-exemplo.json"))],
+                    Parts = [Part.FromText(ContratoDeTeste.Solicitacao())],
                 },
             },
             cancelamento);

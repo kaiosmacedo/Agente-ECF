@@ -1,7 +1,7 @@
 {
   "name": "Agente ECF",
-  "description": "Analisa arquivos da Escrituração Contábil Fiscal (ECF) enviados pela Sofia INFIS.",
-  "version": "1.0.0",
+  "description": "Valida arquivos da Escrituração Contábil Fiscal (ECF) do SPED enviados pela Sofia INFIS e devolve o veredito, o que corrigir e o que não foi verificado.",
+  "version": "1.1.0",
   "supportedInterfaces": [
     {
       "url": "https://agente-ecf-agente.vercel.app/a2a",
@@ -16,12 +16,25 @@
   "skills": [
     {
       "id": "analisar_documentos",
-      "name": "Análise de arquivos da ECF",
-      "description": "Analisa o texto de arquivos da ECF enviados pela Sofia INFIS.",
+      "name": "Validação de arquivos da ECF",
+      "description": "Recebe o texto de um arquivo da ECF (Escrituração Contábil Fiscal, do SPED) dos leiautes 7 a 12, anos-calendário 2020 a 2025. Uma ECF é um texto cuja primeira linha começa com |0000|LECF|. Envie uma ECF por pedido, com o arquivo inteiro. O agente identifica o leiaute pelo campo COD_VER e devolve o veredito, os achados com registro, linha e o que corrigir, e o que não foi verificado. Não analisa outros documentos, como NF-e, ECD ou EFD.",
       "tags": [
         "infis",
         "sofia",
-        "ecf"
+        "ecf",
+        "sped",
+        "escrituracao-contabil-fiscal"
+      ],
+      "examples": [
+        "Valide esta ECF e diga o que precisa ser corrigido.",
+        "Esta ECF do ano-calendário 2025 está correta?",
+        "Quais erros desta ECF impedem a entrega?"
+      ],
+      "inputModes": [
+        "text/plain"
+      ],
+      "outputModes": [
+        "application/json"
       ]
     }
   ],
