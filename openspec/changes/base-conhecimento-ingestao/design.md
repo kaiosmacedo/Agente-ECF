@@ -63,7 +63,7 @@ Sem a chave em produção, a Api.RAG não consegue gerar embeddings por lá. A m
 
 ### D8. Originais (E04)
 
-Os PDFs ficam em um Release privado do repositório, com os hashes de `docs/fontes-oficiais.md`, porque o portal troca o arquivo sem mudar o endereço. Na primeira carga, `popular-rag.sh` baixa dos endereços oficiais, confere os hashes e cria o Release. As Tabelas Dinâmicas entram no Release quando a mudança 08 as usar.
+Os PDFs ficam em um Release privado do repositório, com os hashes de `docs/fontes-oficiais.md`, porque o portal troca o arquivo sem mudar o endereço. `publicar-fontes.sh` baixa dos endereços oficiais, confere os hashes e cria o Release. Enquanto ele não existir, `popular-rag.sh` baixa dos mesmos endereços, com a mesma conferência. As Tabelas Dinâmicas entram no Release quando a mudança 08 as usar.
 
 ### D9. Administração (REQ-BASE-001 a 003)
 

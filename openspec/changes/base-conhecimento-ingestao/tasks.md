@@ -37,7 +37,7 @@ Skill: rag-pgvector
 
 Skill: vercel-dotnet-pgvector-atlas
 
-- [ ] 5.1 **(Kaio Macedo)** Publicar os PDFs no Release privado (D8), pelo script `popular-rag.sh` na primeira carga, conferindo os hashes dos arquivos oficiais; verificar o Release e os hashes baixados de volta.
+- [ ] 5.1 Publicar os PDFs no Release privado (D8), com `publicar-fontes.sh`, conferindo os hashes dos arquivos oficiais; verificar o Release e os hashes baixados de volta.
 - [x] 5.2 Criar `popular-rag.sh` (D5, D7); verificar com ferramentas e valores falsos que nenhum valor aparece na saída e que a chave não vai para a linha de comando.
 - [ ] 5.3 Depois do merge, **(Kaio Macedo)** rodar o script com o Leiaute 12; verificar o documento, os chunks e o custo em `consumo_ia`.
 - [ ] 5.4 Rodar a avaliação e registrar o resultado em `docs/avaliacao/recuperacao.md` (GD-08); **Kaio Macedo aprova os parâmetros**.

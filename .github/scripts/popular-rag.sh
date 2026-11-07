@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Popula a base de conhecimento com os manuais oficiais, sem exibir a chave nem a conexão (mudança 05, D5 e D7; SQ-03).
-# Quem roda é o responsável pelas contas, depois de o banco existir e de o CD ter aplicado as migrações.
+# Roda depois de o banco existir e de o CD ter aplicado as migrações.
 #
 #   bash .github/scripts/popular-rag.sh leiaute-12    # um leiaute, para avaliar os parâmetros antes da carga completa
 #   bash .github/scripts/popular-rag.sh avaliar       # mede a recuperação com as perguntas de docs/avaliacao
@@ -76,8 +76,8 @@ elif "$GH" release view "$RELEASE" --repo "$REPOSITORIO" > /dev/null 2>&1; then
   "$GH" release download "$RELEASE" --repo "$REPOSITORIO" --pattern '*.pdf' --dir "$temporario/fontes" > /dev/null 2>&1 \
     || parar "não foi possível baixar os manuais do Release."
 else
-  # Primeira carga: baixa da Receita Federal, confere cada hash e guarda os originais em um Release privado (E04).
-  echo "2/4 Baixando os manuais dos endereços oficiais, conferindo os hashes e criando o Release privado $RELEASE..."
+  # Sem o Release, baixa da Receita Federal e confere cada hash. Para guardar os originais: publicar-fontes.sh (E04).
+  echo "2/4 Baixando os manuais dos endereços oficiais e conferindo os hashes..."
   node -e '
     const m = JSON.parse(require("fs").readFileSync(process.argv[1], "utf8"));
     for (const d of m.documentos) console.log([d.arquivo, d.sha256, d.origem].join("\t"));
@@ -87,9 +87,6 @@ else
     [ "$(sha256sum "$temporario/fontes/$arquivo" | cut -d' ' -f1)" = "$esperado" ] \
       || parar "$arquivo mudou no portal: o hash é diferente do registrado. Atualize docs/fontes-oficiais.md e o manifesto."
   done < "$temporario/lista.tsv"
-  "$GH" release create "$RELEASE" --repo "$REPOSITORIO" --title "Fontes oficiais da ECF, novembro de 2026" \
-    --notes "Cópia dos originais da página oficial da Receita Federal (E04 da mudança 05). O portal troca os arquivos sem mudar o endereço. Versões e hashes em docs/fontes-oficiais.md." \
-    "$temporario/fontes/"*.pdf > /dev/null 2>&1 || parar "não foi possível criar o Release."
 fi
 [ "$MODO" = "avaliar" ] || cp "$MANIFESTO" "$temporario/fontes/manifesto-rag.json"
 
