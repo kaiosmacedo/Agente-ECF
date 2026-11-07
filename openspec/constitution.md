@@ -2,8 +2,8 @@
 
 | Campo | Valor |
 | --- | --- |
-| Versão | 2.0.2 |
-| Estado | Vigente (ratificada na v1.1.0; emendas v1.2.0, v1.3.0, v2.0.0, v2.0.1 e v2.0.2 aprovadas) |
+| Versão | 2.0.3 |
+| Estado | Vigente (ratificada na v1.1.0; emendas v1.2.0, v1.3.0, v2.0.0, v2.0.1, v2.0.2 e v2.0.3 aprovadas) |
 | Criada em | 2026-10-29 |
 | Última alteração | 2026-11-07 |
 | Ratificada em | 2026-10-29, por Kaio Macedo (versão 1.1.0) |
@@ -825,6 +825,7 @@ Sínteses desta constitution, como a nota do cofre Obsidian, MUST indicar a vers
 | 2.0.0 | 2026-11-05 | MAJOR: primeira versão sem autenticação (SQ-12), com SQ-01 e SQ-02 suspensas e RA-03, RA-04, DoD-14 e DP-09 ajustadas; integração com a Sofia pelas skills da turma: RA-07 redefinida (protocolo A2A v1.0 e contrato SOFIA v1.0), CORS (SQ-13) e ajustes em GD-01, GD-06, SQ-04 e SQ-09. Especificações das mudanças 03 a 13 e `docs/roteiro.md` adequadas no mesmo PR; a mudança 02 fica congelada. | Aprovada por Kaio Macedo em 2026-11-05 (PR #8), com as duas travas da SQ-12, o protocolo A2A v1.0 e a integração sem token. |
 | 2.0.1 | 2026-11-05 | PATCH: DP-07, DP-08 e DP-25 movidas para as decisões resolvidas, conforme a mudança `execucao-e-resultado` arquivada. Sem efeito normativo. | Registro de decisões aprovado por Kaio Macedo em 2026-11-05. |
 | 2.0.2 | 2026-11-07 | PATCH: DP-13 e DP-26 movidas para as decisões resolvidas, e DP-07 e DP-08 complementadas com classes e veredito, conforme as mudanças `registro-consumo-ia` e `classificacao-e-veredito` arquivadas. Sem efeito normativo. | Decisões aprovadas por Kaio Macedo em 2026-11-05 e 2026-11-06. |
+| 2.0.3 | 2026-11-07 | PATCH: DP-05 e DP-22 movidas para as decisões resolvidas, conforme a mudança `recepcao-identificacao-leiaute` arquivada. Sem efeito normativo. | Decisões aprovadas por Kaio Macedo em 2026-11-07, com o plano da mudança (PR #23). |
 
 ---
 
@@ -838,7 +839,6 @@ As decisões abaixo não estão definidas. Elas MUST NOT ser tratadas como requi
 | DP-02 | Modelos OpenAI de geração e de embeddings, parâmetros de execução e dimensão dos vetores. | Plano técnico das mudanças de análise e de RAG. | ADR (embeddings) e design | Implementação da análise e da ingestão. |
 | DP-03 | Estratégia de segmentação, sobreposição, deduplicação, reprocessamento, busca (vetorial, híbrida, reordenação), topK e limiares. | Especificação e plano técnico da ingestão e recuperação, com avaliação (GD-08). | Especificação e design | Ingestão em uso real. |
 | DP-04 | Fontes oficiais da ECF a ingerir. **Fonte inicial definida em 2026-10-29:** Manual da ECF, leiaute 12, publicado em 20/05/2026, para o ano-calendário 2025 e situações especiais de 2026 (dados conforme o nome do arquivo, a confirmar na ingestão), disponível na [página da ECF no portal SPED](https://www.gov.br/sped/pt-br/assuntos/escrituracoes-digitais/ecf) e no [arquivo do manual](https://www.gov.br/sped/pt-br/assuntos/escrituracoes-digitais/ecf/manuais-e-documentos-tecnicos/manual_ecf_leiaute_12_20_05_2026_ac_2025_sit_esp_2026.pdf/@@display-file/file). **Pendentes:** demais documentos (tabelas, regras de validação, schemas), se a cobertura inicial se limita ao leiaute 12, versões anteriores para comparação entre períodos e relação com as regras do programa validador oficial da ECF. | Esclarecimentos da primeira mudança de validação. | Especificação | Qualquer regra de domínio. |
-| DP-05 | Formatos de entrada aceitos, limites de tamanho e condições de processamento. | Especificação da recepção de arquivos. | Especificação | Etapa 2 do fluxo. |
 | DP-06 | Escopo das validações de IRPJ e CSLL, dos cruzamentos entre registros e da comparação com períodos anteriores e com outras escriturações, incluindo a origem desses dados. | Esclarecimentos das mudanças de regras de negócio. | Especificação | Regras de negócio correspondentes. |
 | DP-09 | Mecanismo de autenticação e autorização (provedor de identidade, autenticação entre serviços, MCP e A2A) e modelo de organizações. | Antes de encerrar a regra SQ-12, quando o responsável decidir adotar autenticação (diretriz na skill `sofia-cors-rest-a2a`). | ADR | Uso com dados reais e encerramento da SQ-12. |
 | DP-10 | Ferramentas externas necessárias, suas fontes e suas políticas de autorização. | Especificação de cada ferramenta. | Especificação | Etapa 6 do fluxo. |
@@ -847,7 +847,6 @@ As decisões abaixo não estão definidas. Elas MUST NOT ser tratadas como requi
 | DP-14 | Valores da política de retentativas e dos timeouts do LLM e das ferramentas. | Plano técnico das mudanças de análise e ferramentas. | Design | Configuração de produção. |
 | DP-15 | Formato do relatório entregue ao usuário (apenas JSON ou também documento legível) e seu público. | Especificação do resultado. | Especificação | Etapa 9 do fluxo. |
 | DP-16 | Escopo, capacidades expostas, autenticação e priorização do servidor A2A. Consumidora prevista: Sofia INFIS (1.1). | Especificação dedicada, quando priorizada. | Especificação | Implementação do A2A. |
-| DP-22 | Processamento síncrono ou assíncrono das análises e tratamento de arquivos grandes. | Especificação e plano técnico da recepção. | Especificação e design | Etapa 2 do fluxo. |
 | DP-23 | Política de rejeição ou reclassificação de itens com referência não verificável (P07). | Especificação do contrato de resultado. | Especificação | Validação semântica. |
 | DP-24 | Conjunto representativo de exemplos para avaliar a recuperação e a análise: origem, anonimização e resultados esperados. | Especificação de avaliação, antes da definição de parâmetros. | Especificação | Aprovação de parâmetros (P11) e de modelos. |
 
@@ -865,3 +864,5 @@ As decisões abaixo não estão definidas. Elas MUST NOT ser tratadas como requi
 | DP-25 | PostgreSQL no Neon, com banco próprio da Api.Agente, Dapper e migrações em SQL. Texto, nome e pergunta nunca são guardados. | 2026-11-05 | Mudança `execucao-e-resultado`, D6. |
 | DP-13 | Custos em USD, a moeda da OpenAI, com tabela de preços versionada na configuração, com vigência e fonte na página oficial do provedor. | 2026-11-05 | Mudança `registro-consumo-ia`, D3. |
 | DP-26 | Sem consolidação por enquanto: cada serviço responde pelo seu consumo, em `GET /consumo`, sem acesso cruzado a dados (P15). | 2026-11-05 | Mudança `registro-consumo-ia`, D5. |
+| DP-05 | Só o texto da ECF, reconhecido pela primeira linha `\|0000\|LECF\|`: por A2A, o texto da Sofia; por `POST /analises`, um arquivo em `multipart/form-data`, lido como ISO 8859-1. Limite de 4 MiB nos dois canais, uma ECF por pedido, sem ZIP. Arquivos reais maiores dependem de medir ECF reais antes de dados reais. | 2026-11-07 | Mudança `recepcao-identificacao-leiaute`, D2 a D4. |
+| DP-22 | Resposta na mesma requisição: recepção e identificação de uma ECF de 4 MB levam até cerca de 8 s em produção. A mudança 10, que liga o LLM, reavalia. | 2026-11-07 | Mudança `recepcao-identificacao-leiaute`, E03 e tarefa 7.2. |
