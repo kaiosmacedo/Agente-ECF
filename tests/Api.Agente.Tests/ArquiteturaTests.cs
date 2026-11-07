@@ -39,6 +39,31 @@ public sealed class ArquiteturaTests
         Assert.True(resultado.IsSuccessful, Falhas(resultado));
     }
 
+    [Fact(DisplayName = "REQ-CONSULTA-001 A consulta ao manual só usa MCP: sem driver de banco nem SQL")]
+    public void ConsultaAoManualSoPorMcp()
+    {
+        var resultado = Types.InAssembly(Assembly)
+            .That().ResideInNamespaceEndingWith(".Conhecimento")
+            .ShouldNot().HaveDependencyOnAny("Npgsql", "Dapper", "Pgvector", "System.Data")
+            .GetResult();
+
+        Assert.True(resultado.IsSuccessful, Falhas(resultado));
+    }
+
+    [Fact(DisplayName = "REQ-CONSULTA-001 A configuração não tem conexão com o banco da base de conhecimento")]
+    public void SemConexaoComABaseDeConhecimento()
+    {
+        var pasta = Repositorio.Caminho("src", Servico);
+        foreach (var arquivo in Directory.EnumerateFiles(pasta, "appsettings*.json"))
+        {
+            using var json = System.Text.Json.JsonDocument.Parse(File.ReadAllText(arquivo));
+            if (json.RootElement.TryGetProperty("ConnectionStrings", out var conexoes))
+            {
+                Assert.All(conexoes.EnumerateObject(), conexao => Assert.Equal("Execucoes", conexao.Name));
+            }
+        }
+    }
+
     [Fact(DisplayName = "REQ-A2A-002 Aplicacao não depende do protocolo A2A")]
     public void AplicacaoSemProtocoloA2A()
     {

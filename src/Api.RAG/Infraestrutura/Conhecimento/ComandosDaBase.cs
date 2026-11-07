@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using Api.RAG.Aplicacao.Conhecimento;
 using Api.RAG.Aplicacao.Consumo;
+using Api.RAG.Dominio.Consumo;
 
 namespace Api.RAG.Infraestrutura.Conhecimento;
 
@@ -22,13 +23,24 @@ internal sealed record DocumentoDoManifesto(
 internal sealed record Manifesto(IReadOnlyList<DocumentoDoManifesto> Documentos);
 
 /// <summary>Uma pergunta da avaliação, com as páginas onde está a resposta (D6; GD-08).</summary>
-internal sealed record PerguntaDeAvaliacao(string Id, string Pergunta, string Tipo, string Versao, IReadOnlyList<int> Paginas);
+/// <summary>Uma pergunta da avaliação, com as páginas da resposta; sem páginas, o manual não a responde (mudança 06, D4).</summary>
+internal sealed record PerguntaDeAvaliacao(string Id, string Pergunta, string Tipo, string Versao, IReadOnlyList<int> Paginas, string? Codigo = null);
 
 internal sealed record ConjuntoDeAvaliacao(IReadOnlyList<PerguntaDeAvaliacao> Perguntas);
 
 /// <summary>Resultado da avaliação de recuperação.</summary>
 internal sealed record ResultadoDaAvaliacao(
-    int Perguntas, int Acertos, double AcertoNosCinco, double PosicaoReciprocaMedia, IReadOnlyList<string> Erradas, IReadOnlyDictionary<string, IReadOnlyList<int>> PaginasDasErradas);
+    int Perguntas,
+    int Acertos,
+    double AcertoNosCinco,
+    double PosicaoReciprocaMedia,
+    IReadOnlyList<string> Erradas,
+    IReadOnlyDictionary<string, IReadOnlyList<int>> PaginasDasErradas,
+    bool ComCodigo = false,
+    IReadOnlyDictionary<int, double>? AcertoPorQuantidade = null,
+    double? MenorRelevanciaDosAcertos = null,
+    double? MaiorRelevanciaSemResposta = null,
+    int PerguntasSemResposta = 0);
 
 /// <summary>
 /// Operações eventuais, fora do Vercel, como a migração: o PDF passa do limite do corpo, e a função não dura o
@@ -41,6 +53,8 @@ internal sealed class ComandosDaBase(
     IRepositorioDeConsumo consumo)
 {
     private const int QuantidadeAvaliada = 5;
+
+    private static readonly int[] QuantidadesComparadas = [3, 5, 8];
 
     private static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web);
 
@@ -97,35 +111,66 @@ internal sealed class ComandosDaBase(
         return 0;
     }
 
-    /// <summary>Mede se a página certa aparece entre os cinco primeiros trechos (D6).</summary>
-    public async Task<ResultadoDaAvaliacao> AvaliarAsync(string caminhoDasPerguntas, CancellationToken cancelamento)
+    /// <summary>
+    /// Mede se a página certa aparece entre os primeiros trechos (mudança 05, D6) e, para a mudança 06 (D4), o acerto com
+    /// 3, 5 e 8 trechos, com ou sem a busca por código, e as relevâncias que separam as perguntas sem resposta no manual.
+    /// </summary>
+    public async Task<ResultadoDaAvaliacao> AvaliarAsync(string caminhoDasPerguntas, CancellationToken cancelamento, bool comCodigo = false)
     {
         var conjunto = JsonSerializer.Deserialize<ConjuntoDeAvaliacao>(await File.ReadAllTextAsync(caminhoDasPerguntas, cancelamento), Json)
             ?? throw new InvalidOperationException("Conjunto de avaliação vazio.");
-        var operacao = new ContextoDaChamada(Guid.NewGuid(), Correlacao: "avaliacao");
+        var operacao = new ContextoDaChamada(Guid.NewGuid(), Correlacao: "avaliacao", FinalidadeDaChamada.Avaliacao);
         var acertos = 0;
         var somaRecíproca = 0d;
         var erradas = new List<string>();
         var paginasDasErradas = new Dictionary<string, IReadOnlyList<int>>(StringComparer.Ordinal);
+        var acertosPorQuantidade = QuantidadesComparadas.ToDictionary(quantidade => quantidade, _ => 0);
+        var relevanciasDosAcertos = new List<double>();
+        var relevanciasSemResposta = new List<double>();
+        var respondidas = conjunto.Perguntas.Where(pergunta => pergunta.Paginas.Count > 0).ToList();
         foreach (var pergunta in conjunto.Perguntas)
         {
             var resposta = await embeddings.GerarAsync([pergunta.Pergunta], operacao, cancelamento);
-            var trechos = await repositorio.BuscarSemelhantesAsync(resposta.Vetores[0], pergunta.Tipo, pergunta.Versao, QuantidadeAvaliada, cancelamento);
+            var trechos = await repositorio.BuscarSemelhantesAsync(
+                resposta.Vetores[0], pergunta.Tipo, pergunta.Versao, QuantidadesComparadas.Max(), cancelamento, comCodigo ? pergunta.Codigo : null);
+            if (pergunta.Paginas.Count == 0)
+            {
+                relevanciasSemResposta.Add(trechos.Count > 0 ? trechos[0].Similaridade : 0);
+                continue;
+            }
+
             var posicao = trechos.Select((trecho, indice) => (trecho, indice)).FirstOrDefault(x => pergunta.Paginas.Contains(x.trecho.Pagina), (null!, -1)).Item2;
-            if (posicao >= 0)
+            foreach (var quantidade in QuantidadesComparadas.Where(quantidade => posicao >= 0 && posicao < quantidade))
+            {
+                acertosPorQuantidade[quantidade]++;
+            }
+
+            if (posicao >= 0 && posicao < QuantidadeAvaliada)
             {
                 acertos++;
                 somaRecíproca += 1d / (posicao + 1);
+                relevanciasDosAcertos.Add(trechos[posicao].Similaridade);
             }
             else
             {
                 erradas.Add(pergunta.Id);
-                paginasDasErradas[pergunta.Id] = [.. trechos.Select(trecho => trecho.Pagina)];
+                paginasDasErradas[pergunta.Id] = [.. trechos.Take(QuantidadeAvaliada).Select(trecho => trecho.Pagina)];
             }
         }
 
-        var total = conjunto.Perguntas.Count;
-        return new ResultadoDaAvaliacao(total, acertos, total == 0 ? 0 : (double)acertos / total, total == 0 ? 0 : somaRecíproca / total, erradas, paginasDasErradas);
+        var total = respondidas.Count;
+        return new ResultadoDaAvaliacao(
+            total,
+            acertos,
+            total == 0 ? 0 : (double)acertos / total,
+            total == 0 ? 0 : somaRecíproca / total,
+            erradas,
+            paginasDasErradas,
+            comCodigo,
+            acertosPorQuantidade.ToDictionary(par => par.Key, par => total == 0 ? 0 : (double)par.Value / total),
+            relevanciasDosAcertos.Count > 0 ? relevanciasDosAcertos.Min() : null,
+            relevanciasSemResposta.Count > 0 ? relevanciasSemResposta.Max() : null,
+            relevanciasSemResposta.Count);
     }
 
     private async Task MostrarConsumoAsync(TextWriter saida, CancellationToken cancelamento)

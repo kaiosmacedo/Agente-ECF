@@ -10,7 +10,7 @@ Saída real do serviço para a solicitação de `tests/Api.Agente.Tests/Fixtures
 
 ```json
 {
-  "versaoContrato": "1.0",
+  "versaoContrato": "1.1",
   "idExecucao": "14fa6878-4e5e-4189-8ac0-2897fd0aa555",
   "idExecucaoSofia": "8b2f0ad6-c2e4-4a68-8bdd-20f785bc798e",
   "idSolicitacao": "e1b3a4cb-d729-4bd4-b796-b9c94be07b46",
@@ -133,7 +133,7 @@ Saída real do serviço para a solicitação de `tests/Api.Agente.Tests/Fixtures
     "verificada": false
   },
   "versoes": {
-    "contrato": "1.0",
+    "contrato": "1.1",
     "servico": "0.1.0+local",
     "validadores": "nenhum"
   },
@@ -150,7 +150,7 @@ Todos são preenchidos pelo sistema, nunca pelo modelo (P13).
 
 | Campo | Conteúdo |
 | --- | --- |
-| `versaoContrato` | Versão deste envelope, hoje `1.0`. |
+| `versaoContrato` | Versão deste envelope, hoje `1.1`. A 1.1 acrescentou `trechosDoManual` aos achados, opcional (mudança 06). |
 | `idExecucao` | Identificador da execução, gerado pelo agente. É o `{id}` da consulta. |
 | `idExecucaoSofia` | `idExecucao` recebido da Sofia. |
 | `idSolicitacao` | `idSolicitacao` recebido da Sofia. É único: uma retentativa devolve a execução já registrada. |
@@ -233,6 +233,7 @@ Calculadas pela severidade, sem criar outra escala (REQ-RESULT-007).
 | `regra` | `codigo`, `tipo` (`Erro`, `Aviso` ou `Não declarado`) e `nivel` (1.1, 1.2, 2 ou 3), quando o achado vem de regra do manual. O nível só vem quando o manual o declara. |
 | `fonte` | `documento`, `versao` e `localizacao`, obrigatória em achado de regra do manual. |
 | `orientacao` | Como corrigir, obrigatória em achado de regra do manual. O agente orienta, mas não altera o arquivo. |
+| `trechosDoManual` | Trechos do manual recebidos na etapa 5 para a regra do achado: `idTrecho`, `idDocumento`, `versao`, `pagina` e `relevancia`, sem o texto. Opcional: só vem em achado de validador ou ferramenta cuja regra foi consultada (REQ-CONSULTA-006). |
 
 O valor encontrado é dado do arquivo, então só é usado com dados sintéticos até DP-11 decidir retenção e mascaramento.
 

@@ -24,10 +24,17 @@ internal static class ComandosDeLinha
             return 1;
         }
 
-        var resultado = await comandos.AvaliarAsync(avaliar, CancellationToken.None);
+        var resultado = await comandos.AvaliarAsync(avaliar, CancellationToken.None, args.Contains("--com-codigo"));
         await saida.WriteLineAsync(string.Create(
             CultureInfo.InvariantCulture,
-            $"Perguntas: {resultado.Perguntas}. Acertos nos 5 primeiros: {resultado.Acertos} ({resultado.AcertoNosCinco:P1}). Posição recíproca média: {resultado.PosicaoReciprocaMedia:0.000}."));
+            $"Perguntas: {resultado.Perguntas}. Acertos nos 5 primeiros: {resultado.Acertos} ({resultado.AcertoNosCinco:P1}). Posição recíproca média: {resultado.PosicaoReciprocaMedia:0.000}. Busca por código: {(resultado.ComCodigo ? "sim" : "não")}."));
+        if (resultado.AcertoPorQuantidade is { } porQuantidade)
+        {
+            await saida.WriteLineAsync(string.Create(
+                CultureInfo.InvariantCulture,
+                $"Acerto por quantidade: {string.Join("; ", porQuantidade.Select(par => $"{par.Key} trechos {par.Value:P1}"))}. Menor relevância dos acertos: {resultado.MenorRelevanciaDosAcertos:0.0000}. Maior relevância sem resposta ({resultado.PerguntasSemResposta} perguntas): {resultado.MaiorRelevanciaSemResposta:0.0000}."));
+        }
+
         await saida.WriteLineAsync(JsonSerializer.Serialize(resultado, Json));
         return 0;
     }

@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using Api.RAG.Aplicacao.Consumo;
 using Api.RAG.Dominio.Conhecimento;
+using Api.RAG.Dominio.Consumo;
 
 namespace Api.RAG.Aplicacao.Conhecimento;
 
@@ -59,7 +60,7 @@ internal sealed class ServicoDeIngestao(
         {
             var paginas = extrator.Extrair(conteudo);
             var trechos = Segmentador.Segmentar(paginas, parametros.Segmentacao);
-            var comVetores = await GerarVetoresAsync(trechos, new ContextoDaChamada(id, correlacao), cancelamento);
+            var comVetores = await GerarVetoresAsync(trechos, new ContextoDaChamada(id, correlacao, FinalidadeDaChamada.Ingestao), cancelamento);
             await repositorio.ConcluirAsync(id, metadados, paginas.Count, comVetores, embeddings.Modelo, parametros.Dimensao, cancelamento);
         }
         catch (Exception erro) when (erro is FalhaDoProvedor or ArquivoIlegivel or InvalidOperationException)

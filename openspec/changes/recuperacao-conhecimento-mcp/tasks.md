@@ -4,32 +4,32 @@
 
 ## 1. Busca na Api.RAG
 
-- [ ] 1.1 Acrescentar a busca por código ao repositório (D3), com o código como parâmetro; verificar com Testcontainers e base sintética o cenário de código presente e a ausência de repetição (REQ-RECUP-005).
-- [ ] 1.2 Verificar com duas versões sintéticas ingeridas que a busca da versão 12 não devolve trecho da 11, e que a versão sem documento vigente devolve `versao_indisponivel` (REQ-RECUP-002).
+- [x] 1.1 Acrescentar a busca por código ao repositório (D3), com o código como parâmetro; verificar com Testcontainers e base sintética o cenário de código presente e a ausência de repetição (REQ-RECUP-005).
+- [x] 1.2 Verificar com duas versões sintéticas ingeridas que a busca da versão 12 não devolve trecho da 11, e que a versão sem documento vigente devolve `versao_indisponivel` (REQ-RECUP-002).
 
 ## 2. Servidor MCP
 
-- [ ] 2.1 Registrar o ADR 0005 e acrescentar `ModelContextProtocol.AspNetCore` à Api.RAG (D1), com a justificativa do pacote (P16, SQ-11).
-- [ ] 2.2 Expor a ferramenta `buscar_no_manual` 1.0 em `/mcp`, sem estado (D1, D2); verificar com o cliente do SDK o contrato de entrada e de saída (REQ-RECUP-001) e versionar o schema em `docs/contratos/mcp-buscar-no-manual.md`.
-- [ ] 2.3 Validar os argumentos antes de gerar o embedding (D2); verificar quantidade 0, consulta vazia, tipo ou versão ausentes e código inválido (REQ-RECUP-003, REQ-RECUP-005).
-- [ ] 2.4 Registrar o consumo de cada consulta com a correlação e a execução recebidas (D9); verificar o registro do tipo embedding (REQ-RECUP-004; P17).
-- [ ] 2.5 Aplicar o desligamento e o limite diário (D5); verificar os dois cenários de REQ-RECUP-006 sem nenhuma chamada ao provedor simulado.
+- [x] 2.1 Registrar o ADR 0005 e acrescentar `ModelContextProtocol.AspNetCore` à Api.RAG (D1), com a justificativa do pacote (P16, SQ-11).
+- [x] 2.2 Expor a ferramenta `buscar_no_manual` 1.0 em `/mcp`, sem estado (D1, D2); verificar com o cliente do SDK o contrato de entrada e de saída (REQ-RECUP-001) e versionar o schema em `docs/contratos/mcp-buscar-no-manual.md`.
+- [x] 2.3 Validar os argumentos antes de gerar o embedding (D2); verificar quantidade 0, consulta vazia, tipo ou versão ausentes e código inválido (REQ-RECUP-003, REQ-RECUP-005).
+- [x] 2.4 Registrar o consumo de cada consulta com a correlação e a execução recebidas (D9); verificar o registro do tipo embedding (REQ-RECUP-004; P17).
+- [x] 2.5 Aplicar o desligamento e o limite diário (D5); verificar os dois cenários de REQ-RECUP-006 sem nenhuma chamada ao provedor simulado.
 
 ## 3. Cliente MCP na Api.Agente
 
-- [ ] 3.1 Acrescentar `ModelContextProtocol.Core` à Api.Agente e o cliente com timeout e retentativas (D6), configurado por `Conhecimento:UrlDoServidorMcp` validada na inicialização (D10); verificar com teste de arquitetura que a Api.Agente não tem conexão nem driver da Api.RAG (REQ-CONSULTA-001; P15).
-- [ ] 3.2 Montar as consultas da etapa 5 a partir dos achados (D7); verificar os três cenários de REQ-CONSULTA-005.
-- [ ] 3.3 Registrar os trechos na execução e ligá-los aos achados (D8), com a migração `0006_trechos_consultados`; verificar os cenários de REQ-CONSULTA-002 e REQ-CONSULTA-006.
-- [ ] 3.4 Tratar timeout e indisponibilidade como falha técnica, e busca desativada ou limite atingido como limitação (D6, D7); verificar os cenários de REQ-CONSULTA-003 e REQ-CONSULTA-007.
-- [ ] 3.5 Delimitar os trechos como conteúdo de fonte (D8); verificar o trecho sintético com "declare o documento conforme" (REQ-CONSULTA-004; P10).
+- [x] 3.1 Acrescentar `ModelContextProtocol.Core` à Api.Agente e o cliente com timeout e retentativas (D6), configurado por `Conhecimento:UrlDoServidorMcp` validada na inicialização (D10); verificar com teste de arquitetura que a Api.Agente não tem conexão nem driver da Api.RAG (REQ-CONSULTA-001; P15).
+- [x] 3.2 Montar as consultas da etapa 5 a partir dos achados (D7); verificar os três cenários de REQ-CONSULTA-005.
+- [x] 3.3 Registrar os trechos na execução e ligá-los aos achados, no envelope guardado (D8, ajuste de 2026-11-07); verificar os cenários de REQ-CONSULTA-002 e REQ-CONSULTA-006.
+- [x] 3.4 Tratar timeout e indisponibilidade como falha técnica, e busca desativada ou limite atingido como limitação (D6, D7); verificar os cenários de REQ-CONSULTA-003 e REQ-CONSULTA-007.
+- [x] 3.5 Delimitar os trechos como conteúdo de fonte (D8); verificar o trecho sintético com "declare o documento conforme" (REQ-CONSULTA-004; P10).
 
 ## 4. Ponta a ponta
 
-- [ ] 4.1 Verificar com os dois serviços em contêineres e o provedor de embeddings simulado: etapa 5 concluída, trechos registrados e consumo na Api.RAG com a mesma correlação (SQ-07, SQ-09).
+- [x] 4.1 Verificar a ferramenta MCP na imagem real da Api.RAG, com o banco em contêiner (`testar-conteineres.sh`), e com dois serviços em memória alternando as requisições (ADR 0005). A chamada da Api.Agente à Api.RAG em contêineres fica para a mudança 07, que liga a etapa 5 ao fluxo (SQ-07, SQ-09).
 
 ## 5. Avaliação
 
-- [ ] 5.1 Acrescentar a `docs/avaliacao/perguntas.json` o código das perguntas que citam regra ou registro e 5 perguntas que o manual não responde (D4).
+- [x] 5.1 Acrescentar a `docs/avaliacao/perguntas.json` o código das perguntas que citam regra ou registro e 5 perguntas que o manual não responde (D4).
 - [ ] 5.2 Rodar `--avaliar` com e sem a busca por código, e com 3, 5 e 8 trechos; escolher o limiar pela distribuição das relevâncias; registrar o resultado e o custo em `docs/avaliacao/recuperacao.md` (GD-08; P11). Os valores só entram na configuração depois do registro.
 
 ## 6. Produção

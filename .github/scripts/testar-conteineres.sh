@@ -82,6 +82,21 @@ testar_migracao() {
     || { echo "::error::A migração não ficou registrada uma única vez."; exit 1; }
 }
 
+# Ferramenta MCP sem estado, sem initialize (ADR 0005), e desligada por padrão (REQ-RECUP-006). A resposta vem em SSE.
+mcp() {
+  curl -fsS -X POST "http://localhost:8080/mcp" -H "Content-Type: application/json" -H "Accept: application/json, text/event-stream" -d "$1" \
+    | sed -n 's/^data: //p'
+}
+
+testar_mcp() {
+  local id="$1"
+  mcp '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}' | jq -e '[.result.tools[].name] == ["buscar_no_manual"]' > /dev/null \
+    || falhar "$id" "O servidor MCP não anunciou buscar_no_manual."
+  mcp '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"buscar_no_manual","arguments":{"consulta":"Registro 0000","tipoDocumento":"manual-ecf","versao":"leiaute-12"}}}' \
+    | jq -e '.result.isError == true and (.result.content[0].text | fromjson | .erro.codigo) == "busca_desativada"' > /dev/null \
+    || falhar "$id" "A busca desligada não respondeu busca_desativada."
+}
+
 for servico in Api.Agente Api.RAG; do
   imagem="agente-ecf-$(echo "$servico" | tr '[:upper:].' '[:lower:]-'):ci"
   echo "::group::$servico"
@@ -115,6 +130,7 @@ for servico in Api.Agente Api.RAG; do
       || falhar "$id" "GET /consumo não respondeu."
     curl -fsS "http://localhost:8080/openapi/v1.json" | jq -e '.paths["/consumo"]' > /dev/null \
       || falhar "$id" "O documento OpenAPI não descreve GET /consumo."
+    testar_mcp "$id"
   fi
   docker logs "$id" 2>&1 | jq -e -s 'all(.[]; type == "object")' > /dev/null \
     || falhar "$id" "$servico gerou log que não é JSON depois de usar o banco."

@@ -36,8 +36,17 @@ internal sealed record DocumentoDaBase(
 /// <summary>Um trecho com o vetor, pronto para gravar.</summary>
 internal sealed record TrechoComVetor(Trecho Trecho, string Hash, float[] Vetor);
 
-/// <summary>Um trecho encontrado na busca, com a referência para citar (P06).</summary>
-internal sealed record TrechoEncontrado(int Pagina, string? Secao, string Texto, double Similaridade);
+/// <summary>Um trecho encontrado na busca, com a referência para citar (P06) e se ele contém o código pedido (REQ-RECUP-005).</summary>
+internal sealed record TrechoEncontrado(
+    Guid IdTrecho,
+    Guid IdDocumento,
+    string Titulo,
+    string Versao,
+    int Pagina,
+    string? Secao,
+    string Texto,
+    double Similaridade,
+    bool ContemCodigo);
 
 /// <summary>Lê o texto do arquivo, página por página.</summary>
 internal interface IExtratorDeTexto
@@ -71,6 +80,12 @@ internal interface IRepositorioDeDocumentos
     /// <summary>Apaga o documento e os trechos, para testar outros parâmetros de segmentação (D6). O consumo fica.</summary>
     Task ApagarParaReprocessarAsync(Guid id, CancellationToken cancelamento);
 
-    /// <summary>Busca só nos vigentes do tipo e da versão pedidos (P11).</summary>
-    Task<IReadOnlyList<TrechoEncontrado>> BuscarSemelhantesAsync(float[] vetor, string tipo, string versao, int quantidade, CancellationToken cancelamento);
+    /// <summary>
+    /// Busca só nos vigentes do tipo e da versão pedidos (P11). Com código, os trechos que o contêm vêm primeiro,
+    /// completados pelos mais parecidos, sem repetir (mudança 06, D3).
+    /// </summary>
+    Task<IReadOnlyList<TrechoEncontrado>> BuscarSemelhantesAsync(float[] vetor, string tipo, string versao, int quantidade, CancellationToken cancelamento, string? codigo = null);
+
+    /// <summary>Se há documento vigente do tipo e da versão, para responder "versão indisponível" sem gerar embedding.</summary>
+    Task<bool> HaVigenteAsync(string tipo, string versao, CancellationToken cancelamento);
 }

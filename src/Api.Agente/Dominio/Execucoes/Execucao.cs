@@ -22,6 +22,9 @@ internal enum VereditoDaExecucao
 /// <summary>Hash e tamanho de um documento recebido; o texto nunca é guardado (GD-06, P19).</summary>
 internal sealed record DocumentoRecebido(string IdDocumento, string Hash, int Caracteres);
 
+/// <summary>Referência de um trecho do manual recebido na etapa 5, sem o texto (REQ-CONSULTA-002, 006).</summary>
+internal sealed record TrechoConsultado(Guid IdTrecho, Guid IdDocumento, string Versao, int Pagina, double Relevancia);
+
 /// <summary>Quem pediu a análise, como veio declarado (SQ-12). O nome não é guardado, só o pseudônimo.</summary>
 internal sealed record IdentidadeDeclarada(string UsuarioPseudonimo, string Organizacao);
 
@@ -32,6 +35,7 @@ internal sealed class Execucao
     private readonly List<Achado> achados = [];
     private readonly List<string> limitacoes = [];
     private readonly List<DocumentoRecebido> documentos = [];
+    private readonly Dictionary<string, IReadOnlyList<TrechoConsultado>> trechos = new(StringComparer.Ordinal);
 
     private Execucao(Guid id, Guid idExecucaoSofia, Guid idSolicitacao, IdentidadeDeclarada identidade, DateTimeOffset criadaEm)
     {
@@ -62,6 +66,9 @@ internal sealed class Execucao
     public IReadOnlyList<string> Limitacoes => limitacoes;
 
     public IReadOnlyList<DocumentoRecebido> Documentos => documentos;
+
+    /// <summary>Trechos recebidos por regra consultada, na chave de <see cref="Achado.ChaveDaRegra"/>.</summary>
+    public IReadOnlyDictionary<string, IReadOnlyList<TrechoConsultado>> TrechosConsultados => trechos;
 
     /// <summary>Regra da tabela D2 do plano da mudança 03, nesta ordem.</summary>
     public StatusDaExecucao Status
@@ -149,6 +156,8 @@ internal sealed class Execucao
     public void AdicionarLimitacao(string limitacao) => limitacoes.Add(limitacao);
 
     public void RegistrarDocumento(DocumentoRecebido documento) => documentos.Add(documento);
+
+    public void RegistrarTrechos(string chaveDaRegra, IReadOnlyList<TrechoConsultado> recebidos) => trechos[chaveDaRegra] = recebidos;
 
     public void Concluir(DateTimeOffset concluidaEm)
     {

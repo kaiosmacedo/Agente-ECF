@@ -25,6 +25,14 @@ internal enum OrigemDoValor
     NaoAplicavel,
 }
 
+/// <summary>Para que serviu a chamada. A busca conta só as consultas no limite diário (mudança 06, D5).</summary>
+internal enum FinalidadeDaChamada
+{
+    Ingestao,
+    Consulta,
+    Avaliacao,
+}
+
 /// <summary>Uma chamada ou tentativa a um provedor de IA, sem texto, prompt ou credencial (REQ-CONSUMO-001).</summary>
 internal sealed record RegistroDeConsumo(
     Guid Id,
@@ -43,7 +51,8 @@ internal sealed record RegistroDeConsumo(
     OrigemDoValor TokensSaidaOrigem,
     decimal? CustoUsd,
     OrigemDoValor CustoOrigem,
-    string? TabelaPrecosVersao);
+    string? TabelaPrecosVersao,
+    FinalidadeDaChamada? Finalidade = null);
 
 /// <summary>Totais de um modelo. Chamadas com valor desconhecido são contadas à parte, nunca como zero.</summary>
 internal sealed record TotalDoModelo(

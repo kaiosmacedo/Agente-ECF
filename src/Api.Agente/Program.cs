@@ -1,5 +1,6 @@
 using Api.Agente.Endpoints;
 using Api.Agente.Infraestrutura.Configuracao;
+using Api.Agente.Infraestrutura.Conhecimento;
 using Api.Agente.Infraestrutura.Cors;
 using Api.Agente.Infraestrutura.Hospedagem;
 using Api.Agente.Infraestrutura.Integracao;
@@ -15,6 +16,7 @@ builder.Services.AddHealthChecks();
 builder.Services.AdicionarCorsSofia(builder.Configuration);
 builder.Services.AdicionarServidorA2A(builder.Configuration);
 builder.Services.AdicionarPersistencia(builder.Configuration);
+builder.Services.AdicionarConsultaAoManual(builder.Configuration);
 builder.Services.AddOpenApi();
 
 var app = builder.Build();

@@ -13,9 +13,9 @@ internal sealed class RepositorioDeConsumo(NpgsqlDataSource banco) : IRepositori
     {
         const string Sql = """
             INSERT INTO consumo_ia (id, id_operacao, correlacao, provedor, modelo, tipo, status, criada_em, duracao_ms, tentativa,
-                tokens_entrada, tokens_entrada_origem, tokens_saida, tokens_saida_origem, custo_usd, custo_origem, tabela_precos_versao)
+                tokens_entrada, tokens_entrada_origem, tokens_saida, tokens_saida_origem, custo_usd, custo_origem, tabela_precos_versao, finalidade)
             VALUES (@Id, @IdOperacao, @Correlacao, @Provedor, @Modelo, @Tipo, @Status, @CriadaEm, @DuracaoMs, @Tentativa,
-                @TokensEntrada, @TokensEntradaOrigem, @TokensSaida, @TokensSaidaOrigem, @CustoUsd, @CustoOrigem, @TabelaPrecosVersao)
+                @TokensEntrada, @TokensEntradaOrigem, @TokensSaida, @TokensSaidaOrigem, @CustoUsd, @CustoOrigem, @TabelaPrecosVersao, @Finalidade)
             """;
 
         var parametros = new
@@ -37,12 +37,33 @@ internal sealed class RepositorioDeConsumo(NpgsqlDataSource banco) : IRepositori
             registro.CustoUsd,
             CustoOrigem = Nome(registro.CustoOrigem),
             registro.TabelaPrecosVersao,
+            Finalidade = registro.Finalidade switch
+            {
+                FinalidadeDaChamada.Ingestao => "ingestao",
+                FinalidadeDaChamada.Consulta => "consulta",
+                FinalidadeDaChamada.Avaliacao => "avaliacao",
+                _ => null,
+            },
         };
 
         try
         {
             await using var conexao = await banco.OpenConnectionAsync(cancelamento);
             await conexao.ExecuteAsync(new CommandDefinition(Sql, parametros, cancellationToken: cancelamento));
+        }
+        catch (Exception erro) when (erro is NpgsqlException or TimeoutException)
+        {
+            throw new FalhaDoRepositorio(erro);
+        }
+    }
+
+    public async Task<long> ContarConsultasDesdeAsync(DateTimeOffset desde, CancellationToken cancelamento)
+    {
+        const string Sql = "SELECT count(*) FROM consumo_ia WHERE finalidade = 'consulta' AND tentativa = 1 AND criada_em >= @Desde";
+        try
+        {
+            await using var conexao = await banco.OpenConnectionAsync(cancelamento);
+            return await conexao.ExecuteScalarAsync<long>(new CommandDefinition(Sql, new { Desde = desde.UtcDateTime }, cancellationToken: cancelamento));
         }
         catch (Exception erro) when (erro is NpgsqlException or TimeoutException)
         {

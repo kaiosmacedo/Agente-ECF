@@ -53,7 +53,8 @@ internal sealed record AchadoSofia(
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Classe = null,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] IReadOnlyList<RegistroEnvolvido>? Registros = null,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Orientacao = null,
-    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] FonteDoAchado? Fonte = null);
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] FonteDoAchado? Fonte = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] IReadOnlyList<TrechoConsultado>? TrechosDoManual = null);
 
 internal sealed record ErroSofia(string Codigo, string Mensagem);
 
