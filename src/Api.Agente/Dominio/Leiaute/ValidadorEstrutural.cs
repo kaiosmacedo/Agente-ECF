@@ -41,7 +41,7 @@ internal sealed record ResultadoDaValidacaoEstrutural(
     IReadOnlyList<string> RegrasComFalha);
 
 /// <summary>
-/// Validação estrutural determinística da ECF pelo catálogo do leiaute (mudança 08; REQ-ESTRUT-001 a 013). Lê o texto em
+/// Validação estrutural determinística da ECF pelo catálogo do leiaute (mudança 08; REQ-ESTRUT-001 a 014). Lê o texto em
 /// uma passada e devolve os mesmos achados, na mesma ordem, para o mesmo texto e a mesma versão do catálogo (REQ-ESTRUT-004).
 /// O conteúdo dos campos é dado não confiável (P10): ele só é comparado, nunca interpretado.
 /// </summary>
@@ -270,7 +270,13 @@ internal sealed class ValidadorEstrutural(CatalogoDoLeiaute catalogo, Parametros
             Executar(RegrasEstruturais.Tamanho, () =>
             {
                 var tamanho = campo.Tipo == "C" ? valor.Length : valor.Count(char.IsAsciiDigit);
-                if (v.TamanhoMaximo is { } maximo && tamanho > maximo)
+                if (v.Valores?.PorPosicao is not null && v.TamanhoMaximo is { } exato && tamanho != exato)
+                {
+                    AcharNoCampo(RegrasEstruturais.Tamanho, registro, campo, linha, valor,
+                        string.Create(CultureInfo.InvariantCulture, $"O campo {campo.Nome} do Registro {registro.Codigo} tem {tamanho} caracteres na linha {linha}, e precisa ter exatamente {exato}, um por posição."),
+                        string.Create(CultureInfo.InvariantCulture, $"Preencha {campo.Nome} com {exato} caracteres, um para cada posição (manual, p. {campo.Pagina})."));
+                }
+                else if (v.TamanhoMaximo is { } maximo && tamanho > maximo)
                 {
                     AcharNoCampo(RegrasEstruturais.Tamanho, registro, campo, linha, valor,
                         string.Create(CultureInfo.InvariantCulture, $"O campo {campo.Nome} do Registro {registro.Codigo} tem {tamanho} caracteres na linha {linha}, acima do máximo de {maximo}."),
@@ -304,7 +310,9 @@ internal sealed class ValidadorEstrutural(CatalogoDoLeiaute catalogo, Parametros
                 {
                     AcharNoCampo(RegrasEstruturais.Valores, registro, campo, linha, valor,
                         $"O campo {campo.Nome} do Registro {registro.Codigo} tem um valor fora dos valores válidos, na linha {linha}.",
-                        $"Preencha {campo.Nome} com um dos valores válidos: {campo.ValoresValidos}.");
+                        valores.PorPosicao is null
+                            ? $"Preencha {campo.Nome} com um dos valores válidos: {campo.ValoresValidos}."
+                            : $"Preencha cada posição de {campo.Nome} com um dos valores válidos: {campo.ValoresValidos}.");
                 }
             });
         }
@@ -469,7 +477,7 @@ internal sealed class ValidadorEstrutural(CatalogoDoLeiaute catalogo, Parametros
                 new("Dígito verificador de CNPJ, CPF e recibo (REGRA_VALIDA_CNPJ, REGRA_VALIDA_CPF_CNPJ e outras)", "O algoritmo não está no manual; adotar um sem fonte violaria P01."),
                 new("REGRA_LEIAUTE_VIGENTE e REGRA_SEM_LEIAUTE", "Dependem de tabelas que não estão no manual."),
                 new("Valores de campos que dependem de tabela externa ou dinâmica", "As tabelas ficam fora do manual, como a planilha de tabelas dinâmicas (p. 620)."),
-                new("Tamanho exato dos campos", "O manual diverge: a p. 59 fala em tamanho exato, e a p. 34 mostra valores de tamanho variável. Só o máximo foi conferido."),
+                new("Tamanho exato dos campos", "O manual fala em tamanho exato no caso geral (p. 59), e o programa da ECF só o exige em alguns campos, sem lista publicada. Foram conferidos o máximo e o tamanho exato dos campos preenchidos por posição."),
                 new(
                     string.Create(CultureInfo.InvariantCulture, $"Ocorrência mínima e máxima de {divergentes.Count} registros: {string.Join(", ", divergentes)}"),
                     "O cabeçalho de cada registro (página em docs/catalogo/ecf-leiaute-12.md) e a Tabela de Registros (p. 43 a 58) divergem (REQ-ESTRUT-011)."),
@@ -568,6 +576,11 @@ internal sealed class ValidadorEstrutural(CatalogoDoLeiaute catalogo, Parametros
 
         private static bool ValorValido(ValoresDoCampo valores, string valor)
         {
+            if (valores.PorPosicao is { } porPosicao)
+            {
+                return valor.All(caractere => porPosicao.Contains(caractere.ToString(), StringComparer.Ordinal));
+            }
+
             if (valores.Lista is { } lista)
             {
                 return lista.Contains(valor, StringComparer.Ordinal);

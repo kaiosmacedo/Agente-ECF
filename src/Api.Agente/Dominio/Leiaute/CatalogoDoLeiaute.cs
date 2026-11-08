@@ -97,5 +97,9 @@ internal sealed record CampoDoCatalogo(
 /// </summary>
 internal sealed record VerificacoesDoCampo(bool Tipo, int? TamanhoMaximo, int? DecimaisMaximos, bool Data, ValoresDoCampo? Valores, bool? Obrigatorio);
 
-/// <summary>Valores válidos da coluna do manual: uma lista de valores literais ou um intervalo numérico (p. 37).</summary>
-internal sealed record ValoresDoCampo(IReadOnlyList<string>? Lista, IReadOnlyList<string>? Intervalo);
+/// <summary>
+/// Valores válidos da coluna do manual: uma lista de valores literais ou um intervalo numérico (p. 37). <see cref="PorPosicao"/>
+/// é a lista de um campo preenchido posição a posição, como "no formato XXXX" (p. 73 e 74): vale para cada caractere, e o
+/// campo tem exatamente o tamanho da coluna.
+/// </summary>
+internal sealed record ValoresDoCampo(IReadOnlyList<string>? Lista, IReadOnlyList<string>? Intervalo, IReadOnlyList<string>? PorPosicao = null);

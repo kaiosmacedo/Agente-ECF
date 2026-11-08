@@ -9,6 +9,7 @@ consequência dele, como o registro que deixa de ser lido. O teste do gabarito c
 análise, da recepção à validação estrutural. Só dados sintéticos (SQ-10).
 """
 import os
+import re
 import sys
 
 J001 = "|J001|0|"
@@ -60,6 +61,18 @@ def celula(texto):
     return texto.replace("|", "\\|")
 
 
+def preenchido_antes(caminho):
+    """A última coluna da planilha vem do programa da ECF (D10): gerar de novo não pode apagá-la."""
+    if not os.path.exists(caminho):
+        return {}
+    colunas = {}
+    for linha in open(caminho, encoding="utf-8"):
+        if linha.startswith("| `"):
+            celulas = re.split(r"(?<!\\)\|", linha.strip())
+            colunas[celulas[1].strip().strip("`")] = celulas[-2].strip()
+    return colunas
+
+
 def main():
     base = open(sys.argv[1], encoding="latin-1", newline="").read().split("\r\n")
     base = [l for l in base if l]
@@ -85,14 +98,16 @@ def main():
          recontar(trocar(base, "|9001|", f"{J001}\r\n{J051}\r\n{J990}\r\n|9001|0|"))),
     ]
     tabela = ["# Gabarito da validação estrutural", "",
-              "ECF sintéticas da mudança 08 (D10). Cada arquivo planta um único erro de estrutura na ECF válida; o programa da ECF (PGE) é rodado com cada uma, sem assinar nem transmitir, e o que ele aponta é comparado com as regras do agente. A coluna das regras traz a do erro plantado e, quando houver, as da consequência dele; o teste `Gabarito` confere essa coluna pelo serviço de análise. Gerado por `.github/scripts/catalogo/gerar-gabarito.py`.", "",
+              "ECF sintéticas da mudança 08 (D10). Cada arquivo planta um único erro de estrutura na ECF válida; o programa da ECF (PGE) é rodado com cada uma, sem assinar nem transmitir, e o que ele aponta é comparado com as regras do agente. A coluna das regras traz a do erro plantado e, quando houver, as da consequência dele; o teste `Gabarito` confere essa coluna pelo serviço de análise. Gerado por `.github/scripts/catalogo/gerar-gabarito.py`; a última coluna vem do programa, e o gerador a preserva. Rodado em 2026-11-08 no PGE 12.2.8, descritor 12003.1. A comparação e as divergências estão no `design.md` da mudança.", "",
               "| Arquivo | Erro plantado | Regras do agente | Linha | O que o PGE apontou |", "| --- | --- | --- | --- | --- |"]
+    planilha = os.path.join(saida, "erros-esperados.md")
+    apontado = preenchido_antes(planilha)
     for nome, descricao, regras, linha, linhas in casos:
         texto = "\r\n".join(l for item in linhas for l in item.split("\r\n")) + "\r\n"
         open(os.path.join(saida, nome + ".txt"), "w", encoding="latin-1", newline="").write(texto)
         coluna = ", ".join(f"`{regra}`" for regra in regras) or "nenhuma"
-        tabela.append(f"| `{nome}.txt` | {celula(descricao)} | {coluna} | {linha or '—'} | (a preencher) |")
-    open(os.path.join(saida, "erros-esperados.md"), "w", encoding="utf-8", newline="\n").write("\n".join(tabela) + "\n")
+        tabela.append(f"| `{nome}.txt` | {celula(descricao)} | {coluna} | {linha or '—'} | {apontado.get(nome + '.txt', '(a preencher)')} |")
+    open(planilha, "w", encoding="utf-8", newline="\n").write("\n".join(tabela) + "\n")
     print(f"{len(casos)} arquivos em {saida}.")
 
 

@@ -30,7 +30,7 @@ As skills da turma fixavam v0.3.x "até decisão explícita de migração". Kaio
 
 ## Exemplo
 
-Chamada real à produção em 2026-11-07, com a ECF sintética `01-valor-fora-da-lista.txt` do gabarito (`tests/Api.Agente.Tests/Dados/ecf/gabarito/`), que tem `IND_SIT_INI_PER` igual a 9 no Registro 0000. O veredito é `recusado`, com o que corrigir, e a consulta ao manual não roda porque a busca está desligada em produção.
+Chamada real à produção em 2026-11-07, com a ECF sintética `01-valor-fora-da-lista.txt` do gabarito, atualizada em 2026-11-08 com os valores que o programa da ECF aceita (`tests/Api.Agente.Tests/Dados/ecf/gabarito/`), que tem `IND_SIT_INI_PER` igual a 9 no Registro 0000. O veredito é `recusado`, com o que corrigir, e a consulta ao manual não roda porque a busca está desligada em produção.
 
 Requisição (`POST` no endereço do cartão, com `Content-Type: application/json` e `A2A-Version: 1.0`):
 
@@ -45,7 +45,7 @@ Requisição (`POST` no endereço do cartão, com `Content-Type: application/jso
       "messageId": "8c74437a-3bb3-4e2d-86f1-5074bf30e6eb",
       "parts": [
         {
-          "text": "{\"versaoContrato\":\"1.0\",\"idExecucao\":\"1bf40689-5619-4f5e-ac8a-330e4136d9e4\",\"idSolicitacao\":\"a5c6f634-2553-4c86-b62f-3cb5b209f714\",\"usuario\":{\"nome\":\"Maria Oliveira\"},\"pergunta\":\"Valide esta ECF e diga o que precisa ser corrigido.\",\"documentos\":[{\"idDocumento\":\"doc-001\",\"nome\":\"ecf-2025.txt\",\"tipo\":\"text/plain\",\"texto\":\"|0000|LECF|0012|11111111000191|EMPRESA SINTETICA DE TESTE|9|0|||01012025|31122025|N||0||\\r\\n|0001|0|\\r\\n|0010||S|1|T|01|0|0|L|01|A|A|1|\\r\\n|0020|1|1|S|S|S|S|S|S|S|S|S|S|S|S|S|S|S|S|S|S|S|S|S|S|S|S|S|S|S|S||\\r\\n|0030|1|1|A|A||A|A|A|A||A|\\r\\n|0990|6|\\r\\n|C001|1|\\r\\n|C990|2|\\r\\n|E001|1|\\r\\n|9001|0|\\r\\n|9900|0000|1|||\\r\\n|9900|0001|1|||\\r\\n|9900|0010|1|||\\r\\n|9900|0020|1|||\\r\\n|9900|0030|1|||\\r\\n|9900|0990|1|||\\r\\n|9900|C001|1|||\\r\\n|9900|C990|1|||\\r\\n|9900|E001|1|||\\r\\n|9900|9001|1|||\\r\\n|9900|9900|13|||\\r\\n|9900|9990|1|||\\r\\n|9900|9999|1|||\\r\\n|9990|16|\\r\\n|9999|25|\\r\\n\"}]}"
+          "text": "{\"versaoContrato\":\"1.0\",\"idExecucao\":\"1bf40689-5619-4f5e-ac8a-330e4136d9e4\",\"idSolicitacao\":\"a5c6f634-2553-4c86-b62f-3cb5b209f714\",\"usuario\":{\"nome\":\"Maria Oliveira\"},\"pergunta\":\"Valide esta ECF e diga o que precisa ser corrigido.\",\"documentos\":[{\"idDocumento\":\"doc-001\",\"nome\":\"ecf-2025.txt\",\"tipo\":\"text/plain\",\"texto\":\"|0000|LECF|0012|11111111000191|EMPRESA SINTETICA DE TESTE|9|0|||01012025|31122025|N||0||\\r\\n|0001|0|\\r\\n|0010||N|1|T|01|RRRR|||||||\\r\\n|0020|1|0|N|N|N|N|N|N|N|N|N|N|N|N|N|N|N|N|N|N|N|N|N|N|N|N|N|N|N|N||\\r\\n|0030|2046|6204000|RUA TESTE|1234|BLOCO Z SALA 301|BAIRRO ECF|DF|5300108|71000000|6133333333|testeecf@ecf.gov.br|\\r\\n|0990|6|\\r\\n|C001|1|\\r\\n|C990|2|\\r\\n|E001|1|\\r\\n|9001|0|\\r\\n|9900|0000|1|||\\r\\n|9900|0001|1|||\\r\\n|9900|0010|1|||\\r\\n|9900|0020|1|||\\r\\n|9900|0030|1|||\\r\\n|9900|0990|1|||\\r\\n|9900|C001|1|||\\r\\n|9900|C990|1|||\\r\\n|9900|E001|1|||\\r\\n|9900|9001|1|||\\r\\n|9900|9900|13|||\\r\\n|9900|9990|1|||\\r\\n|9900|9999|1|||\\r\\n|9990|16|\\r\\n|9999|25|\\r\\n\"}]}"
         }
       ]
     }
@@ -176,7 +176,7 @@ Resposta (o texto do Artifact foi formatado aqui para leitura; ele chega como st
                   },
                   {
                     "item": "Tamanho exato dos campos",
-                    "motivo": "O manual diverge: a p. 59 fala em tamanho exato, e a p. 34 mostra valores de tamanho variável. Só o máximo foi conferido."
+                    "motivo": "O manual fala em tamanho exato no caso geral (p. 59), e o programa da ECF só o exige em alguns campos, sem lista publicada. Foram conferidos o máximo e o tamanho exato dos campos preenchidos por posição."
                   },
                   {
                     "item": "Ocorrência mínima e máxima de 43 registros: C051, C150, C155, C157, E155, J051, K156, K356, K915, K935, L200, M300, M350, N500, N610, N615, N650, N660, P030, P200, P300, P400, P500, S100, S150, S200, S300, S500, S700, U030, U182, V010, W250, X350, X351, X352, X353, X354, X355, X356, Y681, 9100, 9900",

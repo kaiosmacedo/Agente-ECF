@@ -115,6 +115,12 @@ Quando o próprio manual divergir sobre uma verificação, ela MUST NOT gerar ac
 - **THEN** nenhum achado de ocorrência mínima é produzido para o C155
 - **AND** a verificação consta como não realizada, com as duas páginas
 
+#### Scenario: Valor da lista mais longo que a coluna Tamanho
+- **GIVEN** um Registro 0010 sintético com `FORMA_TRIB` igual a `10`, valor da lista de um campo de tamanho 1 (p. 71 e 72)
+- **WHEN** a etapa 4 executa
+- **THEN** nenhum achado de tamanho é produzido para o campo
+- **AND** a divergência consta do catálogo
+
 ### Requirement: REQ-ESTRUT-012 Indícios de arquivo gerado pelo programa
 A etapa 4 SHALL registrar, sem afirmar o tipo do arquivo, os indícios que o manual documenta de arquivo gerado pelo programa da ECF: registros que não devem existir na importação, registros gerados pelo sistema e conteúdo depois do 9999. Esses registros MUST NOT gerar achado por estarem presentes.
 Fonte: Manual da ECF, leiaute 12 (23/07/2026), p. 17, 41, 43 a 58, 607 e 614.
@@ -133,3 +139,22 @@ A lista de achados SHALL respeitar os máximos configurados por regra e no total
 - **WHEN** a etapa 4 executa
 - **THEN** 20 achados dessa regra são listados
 - **AND** a limitação informa os 30 achados não listados
+
+### Requirement: REQ-ESTRUT-014 Campos preenchidos por posição
+Um campo preenchido por posição, como "no formato XXXX", SHALL ter exatamente o tamanho da coluna, e cada caractere SHALL estar nos valores válidos. A violação SHALL gerar achado de classe `impeditiva`.
+Fonte: Manual da ECF, leiaute 12 (23/07/2026), p. 73 (`0010.FORMA_TRIB_PER`) e 74 (`0010.MES_BAL_RED`); programa da ECF 12.2.8, que recusa `0` por tamanho e `RRRX` por valor e aceita `RRRR`.
+
+#### Scenario: Campo por posição
+- **GIVEN** um Registro 0010 sintético com `FORMA_TRIB_PER` igual a `RRRR`
+- **WHEN** a etapa 4 executa
+- **THEN** nenhum achado é produzido para o campo
+
+#### Scenario: Campo por posição com tamanho errado
+- **GIVEN** um Registro 0010 sintético com `FORMA_TRIB_PER` igual a `0`
+- **WHEN** a etapa 4 executa
+- **THEN** existe um achado impeditivo de tamanho no campo `FORMA_TRIB_PER`, que precisa de 4 caracteres
+
+#### Scenario: Campo por posição com caractere fora da lista
+- **GIVEN** um Registro 0010 sintético com `FORMA_TRIB_PER` igual a `RRRX`
+- **WHEN** a etapa 4 executa
+- **THEN** existe um achado impeditivo de valor no campo `FORMA_TRIB_PER`
