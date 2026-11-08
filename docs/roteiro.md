@@ -22,8 +22,9 @@ Cada mudança segue o fluxo da constitution (6.1): especificação → esclareci
 | Mudança 01 | Concluída: mesclada (PR #2), em produção e arquivada em 2026-10-29; specs vigentes em `openspec/specs/plataforma/`. |
 | Mudança 02 | Congelada em 2026-11-05: a integração com a Sofia não usa token, por decisão de Kaio Macedo. Código preservado na branch `feat/autenticacao-autorizacao` (PR #7, em rascunho). |
 | Mudança 13 | Esqueleto em produção desde 2026-11-05 (PR #9): cartão, `SendMessage` A2A v1.0, contrato SOFIA v1.0 e CORS. Falta o teste com a Sofia real, quando o cliente A2A dela existir. A análise completa chega com as mudanças 03 a 10. |
-| Mudança 03 | Em produção e arquivada desde 2026-11-05 (PR #10): nove etapas, status, achados e `GET /analises/{id}`, com banco no Neon. Sem análise da ECF ainda: toda solicitação válida termina em `parcial`. |
-| Mudanças 04 a 12 | Especificações aprovadas por Kaio Macedo em 2026-10-29 (PR #4) e adequadas às regras SQ-12 e RA-07 em 2026-11-05. |
+| Mudança 03 | Em produção e arquivada desde 2026-11-05 (PR #10): nove etapas, status, achados e `GET /analises/{id}`, com banco no Neon. |
+| Mudanças 04 a 08 | Em produção: consumo e base do manual (04, 05), busca no manual por MCP, desligada até a decisão da chave (06), recepção da ECF (07) e validação estrutural do leiaute 12 (08). A ECF com erro de estrutura impeditivo sai `recusado`, com o que corrigir; sem ele, `parcial`. Estado de cada uma na tabela abaixo. |
+| Mudanças 09 a 12 | Especificações aprovadas por Kaio Macedo em 2026-10-29 (PR #4) e adequadas às regras SQ-12 e RA-07 em 2026-11-05. |
 
 ## Mudanças
 
@@ -36,7 +37,7 @@ Cada mudança segue o fluxo da constitution (6.1): especificação → esclareci
 | 05 | `base-conhecimento-ingestao` | `rag/ingestao-documentos`, `rag/administracao-base` | 04 | 02, 03, 04, 24 | `rag-pgvector`, `controle-custos-llm`, `testes-agentes-ia` | Em produção, com os seis manuais carregados e a recuperação avaliada (`docs/avaliacao/recuperacao.md`); falta o Release com os originais |
 | 06 | `recuperacao-conhecimento-mcp` | `rag/recuperacao-conhecimento`, `agente/consulta-conhecimento` | 03, 05 | 03, 14 | `mcp-client-server`, `rag-pgvector`, `vercel-dotnet-pgvector-atlas` | Implementada; a busca fica desligada em produção até a decisão da chave |
 | 07 | `recepcao-identificacao-leiaute` | `agente/recepcao-arquivos`, `agente/identificacao-leiaute` | 03 | 04, 05, 11, 22, 25 | `testes-agentes-ia` | Concluída: em produção e arquivada em 2026-11-07 |
-| 08 | `validacao-estrutural` | `agente/validacao-estrutural` | 07 | 04 | `testes-agentes-ia` | Implementada: estrutura do leiaute 12; o gabarito no programa da ECF fecha a mudança |
+| 08 | `validacao-estrutural` | `agente/validacao-estrutural` | 07 | 04 | `testes-agentes-ia` | Em produção desde 2026-11-07 (PR #27 e PR #28): estrutura do leiaute 12, verificada com os 12 arquivos do gabarito; falta rodá-los no programa da ECF, o que fecha a mudança |
 | 09 | `regras-negocio-irpj-csll` | `agente/regras-negocio` | 08 | 04, 06 | `testes-agentes-ia` | Especificação aprovada |
 | 10 | `analise-llm` | `agente/analise-llm` | 04, 06, 08 | 02, 12, 14 | `semantic-kernel-tools`, `controle-custos-llm`, `testes-agentes-ia` | Especificação aprovada |
 | 11 | `ferramentas-agente` | `agente/ferramentas` | 10 | 10 | `semantic-kernel-tools`, `testes-agentes-ia` | Especificação aprovada |
@@ -178,6 +179,6 @@ Sem skill dedicada por enquanto: contrato de resultado (03) e leitura e validaç
 - **Antes de dados reais, medir ECF reais:** o limite de 4 MiB da mudança 07 vem do Vercel, não do tamanho de um arquivo real. Se os arquivos reais passarem dele, a Api.Agente precisa de outro host, por novo ADR.
 - **Banco de dados:** PostgreSQL gerenciado no Neon, escolhido por Kaio Macedo em 2026-11-05 (mudança 03).
 - **Armazenamento de arquivos:** o disco do Vercel não é durável; as mudanças 05 e 07 definem onde guardar documentos e arquivos recebidos, se forem guardados.
-- **MCP e A2A no Vercel:** prova de conceito antes de 06 (ADR 0002), feita em 2026-11-07: o MCP sem estado funciona entre instâncias (ADR 0005, aceito); falta confirmar no Vercel. Na 13, o A2A não usa streaming e funcionou em produção. Em instâncias que não duram, `GetTask` não é garantido; a resposta de `SendMessage` já é final.
+- **MCP e A2A no Vercel:** prova de conceito antes de 06 (ADR 0002), feita em 2026-11-07: o MCP sem estado funciona entre instâncias (ADR 0005, aceito); confirmado no Vercel na 06 (`text/event-stream`, PR #24). Na 13, o A2A não usa streaming e funcionou em produção. Em instâncias que não duram, `GetTask` não é garantido; a resposta de `SendMessage` já é final.
 - **Tamanho no Vercel:** o corpo da requisição é recusado entre 4,4 MB e 4,6 MB (medido em 2026-11-05), com HTTP 413. A mudança 07 precisa decidir o que fazer com arquivos reais maiores; na rede Docker esse limite não existe.
 - **Fontes oficiais:** as regras de 07 a 09 só entram com localização no Manual da ECF, leiaute 12 (DP-04), registrado em `docs/fontes-oficiais.md`. A extração dessas localizações é a primeira tarefa dos esclarecimentos de cada uma.

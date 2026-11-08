@@ -41,12 +41,12 @@
 
 ## 6. Gabarito
 
-- [x] 6.1 Preparar as ECF sintéticas com erro plantado e a planilha do erro esperado de cada uma (D10).
-- [ ] 6.2 Baixar o programa da ECF do portal oficial e importar nele os arquivos, sem assinar nem transmitir, anotando o que ele aponta (feito pelo assistente, a pedido de Kaio Macedo em 2026-11-07).
+- [x] 6.1 Preparar as ECF sintéticas com erro plantado e a planilha do erro esperado de cada uma (D10). Corrigidas no PR #28: um erro por arquivo, e o teste `Gabarito` confere a planilha pelo serviço de análise.
+- [ ] 6.2 Baixar o programa da ECF do portal oficial e importar nele os arquivos, sem assinar nem transmitir, anotando o que ele aponta (feito pelo assistente, a pedido de Kaio Macedo em 2026-11-07). **Pendente:** o programa da ECF é uma aplicação Java de interface gráfica, sem modo de linha de comando para validar arquivo, e a sessão de 2026-11-07 não tinha o controle da tela (computer use). Fazer numa sessão com Computer use ligado no app do Claude, ou por uma pessoa, com os 12 arquivos de `tests/Api.Agente.Tests/Dados/ecf/gabarito/`, preenchendo a última coluna de `erros-esperados.md`.
 - [ ] 6.3 Comparar com o agente e registrar as divergências; resolver antes do arquivamento, no gerador ou como esclarecimento (D10).
 
 ## 7. Entrega e fechamento
 
-- [ ] 7.1 Depois do merge, verificar em produção, só com dados sintéticos, a ECF válida e as com erro plantado.
-- [ ] 7.2 Atualizar `docs/contratos/sofia-a2a.md`, `docs/fontes-oficiais.md` (catálogo), o cofre Obsidian e `docs/roteiro.md`.
+- [x] 7.1 Depois do merge, verificar em produção, só com dados sintéticos, a ECF válida e as com erro plantado. Feito em 2026-11-07: a primeira rodada, depois do PR #27, achou três defeitos, corrigidos no PR #28 (design, "Correções da verificação em produção"). Na segunda, o cartão está em 1.2.0, os 12 arquivos do gabarito deram exatamente as regras da planilha, com a etapa 4 concluída, de 0,7 a 1,9 s por pedido, e a Api.RAG não fez nenhuma chamada de embedding.
+- [x] 7.2 Atualizar `docs/contratos/sofia-a2a.md`, `docs/fontes-oficiais.md` (catálogo), o cofre Obsidian e `docs/roteiro.md`. O exemplo do guia da Sofia é uma chamada real à produção, com a ECF sintética `01-valor-fora-da-lista.txt`.
 - [ ] 7.3 Atualizar DP-04 com o catálogo e as tabelas pendentes; executar `/opsx:verify` e conferir a Definition of Done (seção 7 da constitution).
