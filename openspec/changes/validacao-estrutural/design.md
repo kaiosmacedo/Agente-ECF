@@ -57,12 +57,12 @@ Medido na versão em Word do Leiaute 12: 188 registros em 18 blocos e 1.122 camp
 | `EST-OCOR-002` | Ocorrência máxima por registro pai, onde cabeçalho e Tabela de Registros concordam | p. 43 e 59 | `impeditiva` |
 | `REGRA_OCORRENCIA_UNITARIA_ARQ` | Cada abertura de bloco (x001) aparece uma vez no arquivo | p. 70 e seguintes, tipo `Erro` | `impeditiva` |
 | `EST-ORDEM-001` | Os blocos seguem a ordem da Relação de Blocos e da Tabela de Registros | p. 42 e 58 | `impeditiva` |
-| `EST-TOT-001` | Quantidade de cada x990 igual aos registros do bloco, abertura e encerramento incluídos | p. 42 e 108 | `observacao` |
+| `EST-TOT-001` | Quantidade de cada x990 igual aos registros do bloco, abertura e encerramento incluídos | p. 38, 41, 42 e 108; decisão E06 | `impeditiva` no Bloco 0 e nos blocos com `IND_DAD` igual a 0, exceto C e E; `observacao` nos demais |
 | `EST-TOT-002` | Cada registro presente aparece no 9900 com a quantidade certa, o próprio 9900 incluído | p. 616 | `observacao` |
 | `EST-TOT-003` | Quantidades do 9990 e do 9999, este com o total de linhas do arquivo | p. 41, 618 e 619 | `observacao` |
 | `REGRA_DUPLICIDADE_DESPREZADA` | Registro repetido com a mesma chave sob o mesmo pai, nos 59 dos 60 registros com a regra que têm chave no cabeçalho | p. 607 e demais, tipo `Aviso` | `observacao` (`baixa`) |
 
-**Classes:** violação de leiaute é `impeditiva`, pelo critério aprovado na mudança 15 (`docs/classificacao-das-regras.md`, linha `impeditiva`, que cita as p. 33 a 36 e 43): o manual diz que erros de estrutura impedem a importação (p. 38). As contagens não têm tipo declarado no manual e não impedem determinar a estrutura, então ficam em `observacao`. `REGRA_DUPLICIDADE_DESPREZADA` é `Aviso` de comportamento de importação, por isso `baixa`.
+**Classes:** violação de leiaute é `impeditiva`, pelo critério aprovado na mudança 15 (`docs/classificacao-das-regras.md`, linha `impeditiva`, que cita as p. 33 a 36 e 43): o manual diz que erros de estrutura impedem a importação (p. 38). As contagens não têm tipo declarado no manual e, salvo a decisão E06, ficam em `observacao`. Pela E06, tomada depois do gabarito, o x990 errado de um bloco que a importação lê é `impeditiva`, porque o programa da ECF recusa o arquivo. `REGRA_DUPLICIDADE_DESPREZADA` é `Aviso` de comportamento de importação, por isso `baixa`.
 
 **Decisões sobre o que o manual deixa em aberto (para aprovação, E01):**
 
@@ -181,7 +181,7 @@ O programa valida em duas fases, como a p. 38 descreve. A **importação** cobre
 | 06 | `EST-OCOR-001` | **Importou, sem apontamento** | Diverge: E05 |
 | 07 | `REGRA_OCORRENCIA_UNITARIA_ARQ` | Recusou, linha 3, e também acusou a ordem | Concorda; a ordem dos irmãos fica no E08 |
 | 08 | `EST-TOT-003` | **Importou, sem apontamento** | Diverge: E07 |
-| 09 | `EST-TOT-001` | Recusou, linha 6 | Concorda com a regra; a classe fica no E06 |
+| 09 | `EST-TOT-001` | Recusou, linha 6 | Concorda; o agente também recusa, pela decisão E06 |
 | 10 | `EST-TOT-002` | **Importou, sem apontamento** | Diverge: E07 |
 | 11 | `EST-HIER-001` | Recusou, linha 11; a linha 12 é consequência | Concorda |
 
@@ -199,7 +199,9 @@ O programa valida em duas fases, como a p. 38 descreve. A **importação** cobre
 
 **Em produção, depois do PR #30:** os 12 arquivos deram exatamente as regras da planilha, de 0,3 a 2,5 s por pedido, com o catálogo `ecf-l12-1.1.0`. `RRRX` dá `EST-CAMPO-006`, e `FORMA_TRIB` igual a 10 não acusa tamanho.
 
-**Esclarecimentos abertos para Kaio Macedo:** E05 a E09 do `proposal.md`. Nenhuma regra mudou por comportamento do programa sem respaldo no manual (P01).
+**Decisões de Kaio Macedo (2026-11-08):** E05 a E09 do `proposal.md`, com as propostas do assistente. Só a E06 muda o comportamento.
+
+**Alcance da E06, testado depois da decisão:** o `0990` e o `J990` já eram recusados, e o programa recusou também os blocos J a Y com `IND_DAD` igual a 0 (13 erros de "Quantidade de linhas do bloco"). Importou sem apontamento o `C990` e o `9990` errados, e os blocos J a Y com `IND_DAD` igual a 1. A regra segue esse recorte, para o agente não recusar o que o programa aceita. Com o catálogo `ecf-l12-1.2.0`, o `9990` também passou para `EST-TOT-003`, como a D2 sempre disse: o validador o conferia em `EST-TOT-001`.
 
 ## Dimensionamento
 
@@ -220,7 +222,7 @@ Sem provedor pago. Uma passada linear sobre até 4 MiB de texto. O catálogo do 
 
 ## Open Questions
 
-- O gabarito (D10) foi feito em 2026-11-08. Ficaram os esclarecimentos E05 a E09 do `proposal.md`, com Kaio Macedo, que bloqueiam só o arquivamento.
+- Nenhuma. O gabarito (D10) foi feito em 2026-11-08, e Kaio Macedo decidiu os esclarecimentos E05 a E09. Para arquivar, faltam as tarefas 1.4 e 7.3.
 
 ## Skills aplicáveis
 

@@ -1,6 +1,6 @@
 # Catálogo estrutural da ECF, leiaute 12
 
-Gerado por `.github/scripts/catalogo/gerar-catalogo.py` a partir da versão em Word do manual, com as páginas do PDF. Versão `ecf-l12-1.1.0`. É o que Kaio Macedo revisa (mudança 08, E02). Correções vão no gerador, nunca no JSON.
+Gerado por `.github/scripts/catalogo/gerar-catalogo.py` a partir da versão em Word do manual, com as páginas do PDF. Versão `ecf-l12-1.2.0`. É o que Kaio Macedo revisa (mudança 08, E02). Correções vão no gerador, nunca no JSON.
 
 **Ordem dos blocos:** 0, C, E, J, K, L, M, N, P, Q, S, T, U, V, W, X, Y, 9.
 

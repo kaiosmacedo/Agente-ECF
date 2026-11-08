@@ -14,7 +14,7 @@ import zipfile
 import xml.etree.ElementTree as ET
 
 W = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
-VERSAO_DO_CATALOGO = "ecf-l12-1.1.0"
+VERSAO_DO_CATALOGO = "ecf-l12-1.2.0"
 TIPOS = ("C", "N", "NS")
 # Campo preenchido posição a posição, como "no formato XXXX onde X é igual a" (p. 73 e 74): a lista vale para cada caractere.
 POR_POSICAO = re.compile(r"formato\s+(X{2,})\s")

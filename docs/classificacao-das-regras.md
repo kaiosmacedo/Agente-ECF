@@ -15,6 +15,7 @@ Só a divisão entre `Erro` e `Aviso` é oficial. Veredito, classes e a lista de
 | 5 | Quando o regime exige recuperação, só o arquivo exportado do programa oficial pode chegar a `conforme`. O TXT de entrada termina em `parcial`. Com `TIP_ESC_PRE` = "L", os dados recuperados não se aplicam, com justificativa. | Mudanças 07, 08 e 09 |
 | 6 | Gabarito no programa oficial: antes de fechar a mudança 08, uma pessoa roda arquivos sintéticos, sem assinar nem transmitir, cobrindo K155 × E155 com e sem justificativa, E020 × M010, conta da Parte B sumida, compensação acima de 30%, Outras Exclusões acima do gatilho, CNA divergente e conteúdo do 9100. Registra a versão do programa e das tabelas. | Mudança 08 |
 | 7 | Regra pode ter tipo não declarado, e o nível só aparece quando o manual o declara. `critica` sem regra só para leiaute. `grave` aciona revisão humana. A síntese de `conforme-com-ressalvas` separa graves de observações. | Mudança 15 |
+| 8 | Contagem errada no x990 de um bloco que a importação lê é `impeditiva`, porque o programa da ECF recusa o arquivo (Manual L12, p. 38). Em 2026-11-08, Kaio Macedo aprovou a proposta. As demais contagens seguem `observacao`. | Mudança 08, E06 |
 
 ## Critério de cada classe
 
