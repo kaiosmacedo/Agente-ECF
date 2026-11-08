@@ -352,34 +352,42 @@ public sealed class ValidacaoEstruturalTests
         Assert.True(resultado.Achados.Count <= 200);
     }
 
-    [Theory(DisplayName = "D10 Cada arquivo do gabarito tem o erro plantado acusado pela regra esperada")]
-    [InlineData("00-valida", null)]
-    [InlineData("01-valor-fora-da-lista", "EST-CAMPO-006")]
-    [InlineData("02-data-invalida", "EST-CAMPO-005")]
-    [InlineData("03-registro-inexistente", "EST-ARQ-002")]
-    [InlineData("04-campos-a-mais", "EST-ARQ-003")]
-    [InlineData("05-sem-delimitador", "EST-ARQ-001")]
-    [InlineData("06-sem-9999", "EST-OCOR-001")]
-    [InlineData("07-abertura-repetida", "REGRA_OCORRENCIA_UNITARIA_ARQ")]
-    [InlineData("08-total-de-linhas", "EST-TOT-003")]
-    [InlineData("09-contagem-do-bloco", "EST-TOT-001")]
-    [InlineData("10-contagem-do-9900", "EST-TOT-002")]
-    [InlineData("11-filho-sem-pai", "EST-HIER-001")]
-    public void Gabarito(string arquivo, string? regra)
+    /// <summary>Os arquivos da planilha <c>erros-esperados.md</c>, que o gerador do gabarito escreve (D10).</summary>
+    public static TheoryData<string> ArquivosDoGabarito => [.. Planilha().Keys];
+
+    [Fact(DisplayName = "D10 A planilha do gabarito tem uma linha para cada arquivo, e nenhuma a mais")]
+    public void PlanilhaCompleta()
+    {
+        var arquivos = Directory.GetFiles(Repositorio.Caminho("tests", "Api.Agente.Tests", "Dados", "ecf", "gabarito"), "*.txt").Select(Path.GetFileNameWithoutExtension);
+
+        Assert.Equal(arquivos.Order(StringComparer.Ordinal), Planilha().Keys.Order(StringComparer.Ordinal));
+        Assert.Equal(12, Planilha().Count);
+    }
+
+    [Theory(DisplayName = "D10 Pelo serviço, cada arquivo do gabarito chega à etapa 4 e dá exatamente as regras da planilha")]
+    [MemberData(nameof(ArquivosDoGabarito))]
+    public async Task Gabarito(string arquivo)
     {
         var texto = System.Text.Encoding.Latin1.GetString(File.ReadAllBytes(Repositorio.Caminho("tests", "Api.Agente.Tests", "Dados", "ecf", "gabarito", arquivo + ".txt")));
+        var servico = new ServicoDeAnalise(
+            new AmbienteDaAnalise(4_194_304, "org-teste", "teste"), TimeProvider.System, catalogos: CatalogosDosLeiautes.Ler());
 
-        var resultado = Validar(texto);
+        var envelope = await servico.AnalisarAsync(Pedido(texto), "corr", TestContext.Current.CancellationToken);
 
-        if (regra is null)
-        {
-            Assert.Empty(resultado.Achados);
-        }
-        else
-        {
-            Assert.NotEmpty(Da(resultado, regra));
-        }
+        Assert.Equal("concluida", Estado(envelope, 4));
+        var regras = envelope.Achados.Select(achado => achado.Fundamento.Split(' ')[0]).Distinct().Order(StringComparer.Ordinal);
+        Assert.Equal(Planilha()[arquivo].Order(StringComparer.Ordinal), regras);
     }
+
+    /// <summary>Arquivo e regras de cada linha da tabela; o <c>\|</c> escapado não separa colunas.</summary>
+    private static Dictionary<string, IReadOnlyList<string>> Planilha() =>
+        File.ReadAllLines(Repositorio.Caminho("tests", "Api.Agente.Tests", "Dados", "ecf", "gabarito", "erros-esperados.md"))
+            .Where(linha => linha.StartsWith("| `", StringComparison.Ordinal))
+            .Select(linha => System.Text.RegularExpressions.Regex.Split(linha, @"(?<!\\)\|"))
+            .ToDictionary(
+                celulas => celulas[1].Trim().Trim('`')[..^".txt".Length],
+                celulas => (IReadOnlyList<string>)[.. System.Text.RegularExpressions.Regex.Matches(celulas[3], "`([^`]+)`").Select(item => item.Groups[1].Value)],
+                StringComparer.Ordinal);
 
     private static PedidoDeAnalise Pedido(string texto) =>
         new(Guid.NewGuid(), Guid.NewGuid(), CanalDaAnalise.A2A, null, [new DocumentoDoPedido("doc-001", texto, "hash")]);

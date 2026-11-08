@@ -188,7 +188,8 @@ resposta=$(curl -fsS -X POST "http://localhost:8080/a2a" -H "Content-Type: appli
 execucao=$(echo "$resposta" | jq -r '.result.task.artifacts[0].parts[0].text | fromjson | .idExecucaoAgente')
 curl -fsS "http://localhost:8080/analises/$execucao" \
   | jq -e '.veredito == "recusado" and .status == "parcial" and ([.etapas[] | select(.numero == 4) | .estado] == ["concluida"])
-           and ([.etapas[] | select(.numero == 5) | .estado] == ["nao-executada"]) and (.limitacoes | index("consulta ao manual desativada")) != null' > /dev/null \
+           and ([.etapas[] | select(.numero == 5) | .estado] == ["nao-executada"]) and (.limitacoes | index("consulta ao manual desativada")) != null
+           and (.limitacoes | index("Etapa não realizada: Consulta ao manual. Motivo: a busca no manual está desligada na base de conhecimento.")) != null' > /dev/null \
   || falhar "$id" "A etapa 5 não consultou a Api.RAG por MCP ou não tratou a busca desligada."
 docker logs "$RAG" 2>&1 | jq -e -s 'any(.[]; .Message? == "Busca no manual recusada: busca_desativada")' > /dev/null \
   || falhar "$id" "A Api.RAG não recebeu a chamada MCP da Api.Agente."

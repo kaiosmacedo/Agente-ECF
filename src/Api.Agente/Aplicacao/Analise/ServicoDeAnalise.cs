@@ -37,7 +37,7 @@ internal sealed record AmbienteDaAnalise(
     int QuantidadeMaximaDeLinhas = int.MaxValue);
 
 /// <summary>
-/// Serviço de aplicação comum aos canais: executa as etapas 1 a 3 do fluxo (P03) sobre o pedido normalizado e monta o
+/// Serviço de aplicação comum aos canais: executa as etapas 1 a 5 do fluxo (P03) sobre o pedido normalizado e monta o
 /// envelope. O conteúdo recebido é dado não confiável (P10): ele só é lido, nunca interpretado como instrução.
 /// </summary>
 internal sealed class ServicoDeAnalise(
@@ -51,6 +51,10 @@ internal sealed class ServicoDeAnalise(
     private readonly Func<string, IdentificacaoDoLeiaute> identificar = identificador ?? IdentificadorDeLeiaute.Identificar;
 
     public const string LimitacaoDocumentoCortado = "documento cortado antes de chegar ao agente";
+
+    public const string MotivoSemValidacaoEstrutural = "depende da validação estrutural, que não foi realizada";
+
+    private static EstadoDaEtapa Estado(Execucao execucao, Etapa etapa) => execucao.Etapas.Single(item => item.Etapa == etapa).Estado;
 
     public async Task<EnvelopeDoResultado> AnalisarAsync(PedidoDeAnalise pedido, string? correlacao, CancellationToken cancelamento)
     {
@@ -88,13 +92,29 @@ internal sealed class ServicoDeAnalise(
             }
 
             Identificar(execucao, ecf!);
-            if (execucao.Leiaute is { Situacao: SituacaoDaIdentificacao.Identificado, Leiaute: { } leiaute } && !ReconhecedorDeEcf.CortadoPelaSofia(ecf!.Texto))
+            var cortado = ReconhecedorDeEcf.CortadoPelaSofia(ecf!.Texto);
+            if (execucao.Leiaute is { Situacao: SituacaoDaIdentificacao.Identificado, Leiaute: { } leiaute } && !cortado)
             {
                 ValidarEstrutura(execucao, ecf, leiaute);
-                if (consultaAoManual is not null && execucao.Etapas.Any(etapa => etapa.Etapa == Etapa.ValidacaoEstrutural && etapa.Estado == EstadoDaEtapa.Concluida))
+                if (consultaAoManual is not null && Estado(execucao, Etapa.ValidacaoEstrutural) == EstadoDaEtapa.Concluida)
                 {
                     await consultaAoManual.ExecutarAsync(execucao, ManualDaVersao.DaEcf(leiaute), correlacao, cancelamento);
                 }
+            }
+            else if (Estado(execucao, Etapa.IdentificacaoDoLeiaute) == EstadoDaEtapa.Concluida)
+            {
+                // A identificação terminou, mas a estrutura não se valida: versão sem suporte ou arquivo incompleto (REQ-RESULT-006).
+                execucao.DeixarNaoExecutada(
+                    Etapa.ValidacaoEstrutural,
+                    execucao.Leiaute is { Situacao: SituacaoDaIdentificacao.VersaoNaoSuportada, CodVer: var codVer }
+                        ? $"versão do leiaute não suportada (COD_VER {codVer})"
+                        : "o documento chegou cortado, e a estrutura só se valida com o arquivo inteiro");
+            }
+
+            if (execucao.MotivosDaNaoExecucao.ContainsKey(Etapa.ValidacaoEstrutural))
+            {
+                // A etapa 5 fundamenta os achados da etapa 4 (REQ-CONSULTA-005).
+                execucao.DeixarNaoExecutada(Etapa.ConsultaAoManual, MotivoSemValidacaoEstrutural);
             }
 
             sintese = Sintese(execucao);
@@ -210,6 +230,7 @@ internal sealed class ServicoDeAnalise(
     {
         if (catalogos?.GetValueOrDefault(leiaute) is not { } catalogo)
         {
+            execucao.DeixarNaoExecutada(Etapa.ValidacaoEstrutural, string.Create(CultureInfo.InvariantCulture, $"o leiaute {leiaute} ainda não tem catálogo de regras"));
             execucao.AdicionarLimitacao(string.Create(CultureInfo.InvariantCulture, $"catálogo de regras do leiaute {leiaute} ainda não cadastrado"));
             return;
         }

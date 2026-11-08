@@ -81,20 +81,27 @@ internal sealed partial class EtapaDeConsultaAoManual(IConsultaAoManual consulta
         }
         else if (desfechos.Contains(DesfechoDaConsulta.BuscaDesativada))
         {
-            execucao.AdicionarLimitacao(LimitacaoDesativada);
+            NaoRealizada(execucao, LimitacaoDesativada, "a busca no manual está desligada na base de conhecimento");
         }
         else if (desfechos.Contains(DesfechoDaConsulta.LimiteDeUsoAtingido))
         {
-            execucao.AdicionarLimitacao(LimitacaoLimiteDiario);
+            NaoRealizada(execucao, LimitacaoLimiteDiario, "o limite diário de consultas ao manual foi atingido");
         }
         else if (desfechos.Contains(DesfechoDaConsulta.VersaoIndisponivel))
         {
-            execucao.AdicionarLimitacao(LimitacaoVersaoAusente);
+            NaoRealizada(execucao, LimitacaoVersaoAusente, "o manual da versão identificada não está na base de conhecimento");
         }
         else
         {
             execucao.ConcluirEtapa(Etapa.ConsultaAoManual);
         }
+    }
+
+    /// <summary>A etapa existe e foi tentada: o motivo vai para a etapa, e a limitação, para o resultado (REQ-CONSULTA-007, REQ-RESULT-006).</summary>
+    private static void NaoRealizada(Execucao execucao, string limitacao, string motivo)
+    {
+        execucao.DeixarNaoExecutada(Etapa.ConsultaAoManual, motivo);
+        execucao.AdicionarLimitacao(limitacao);
     }
 
     private static PedidoDeTrechos Pedido(Achado achado, ManualDaVersao manual, Guid idExecucao, string? correlacao)

@@ -68,7 +68,7 @@ public sealed class IdentificacaoDoLeiauteTests
         Assert.Contains("2023", identificacao.Motivo, StringComparison.Ordinal);
     }
 
-    [Theory(DisplayName = "REQ-LEIAUTE-004 DT_FIN fora do formato ddmmaaaa torna a identificação ambígua")]
+    [Theory(DisplayName = "REQ-LEIAUTE-004 DT_FIN vazio, fora do formato ddmmaaaa ou com data inexistente torna a identificação ambígua")]
     [InlineData("31022025")]
     [InlineData("2025-12-31")]
     [InlineData("")]

@@ -57,6 +57,9 @@ internal sealed class ValidadorEstrutural(CatalogoDoLeiaute catalogo, Parametros
         private readonly List<(int Linha, string Regra, Func<Achado> Criar)> pendentes = [];
         private readonly Dictionary<string, int> porRegra = new(StringComparer.Ordinal);
         private readonly Dictionary<string, int> contagem = new(StringComparer.Ordinal);
+
+        // Linhas com código fora do leiaute: já acusadas por EST-ARQ-002, mas existem no arquivo e contam no 9900.
+        private readonly Dictionary<string, int> desconhecidos = new(StringComparer.Ordinal);
         private readonly Dictionary<char, int> contagemPorBloco = [];
         private readonly Dictionary<(long Pai, string Codigo), int> ocorrencias = [];
         private readonly HashSet<(long Pai, string Codigo, string Chave)> chaves = [];
@@ -133,6 +136,7 @@ internal sealed class ValidadorEstrutural(CatalogoDoLeiaute catalogo, Parametros
                 Achar(RegrasEstruturais.RegistroExistente, null, Recortar(codigo), linha, null, codigo,
                     $"A linha {linha} tem o código de registro \"{Recortar(codigo)}\", que não existe no leiaute.",
                     "Use um dos registros da Tabela de Registros do manual, ou retire a linha.", SeveridadeDoAchado.Critica);
+                desconhecidos[codigo] = desconhecidos.GetValueOrDefault(codigo) + 1;
                 return;
             }
 
@@ -380,7 +384,7 @@ internal sealed class ValidadorEstrutural(CatalogoDoLeiaute catalogo, Parametros
 
             foreach (var (linha, registro, valor) in declaradosNo9900)
             {
-                var real = contagem.GetValueOrDefault(registro);
+                var real = contagem.GetValueOrDefault(registro) + desconhecidos.GetValueOrDefault(registro);
                 if (int.TryParse(valor, NumberStyles.None, CultureInfo.InvariantCulture, out var declarado) && declarado != real)
                 {
                     AcharContagem(RegrasEstruturais.ContagemDoRegistro, "9900", linha, valor,

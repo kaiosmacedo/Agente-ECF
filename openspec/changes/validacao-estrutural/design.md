@@ -156,6 +156,14 @@ Mudanças em relação ao plano aprovado, sem efeito nos requisitos:
 - **Etapa 5 no fluxo:** a etapa 5 roda depois da etapa 4 concluída, com as consultas da mudança 06 (tarefa 5.3). Sem achado, ela fica não aplicável.
 - **Gerador e arquivos de teste:** `gerar-catalogo.sh` baixa os originais e confere os hashes; `gerar-ecf-sintetica.py` faz a ECF estruturalmente válida dos testes; `gerar-gabarito.py` faz os 12 arquivos do gabarito, com `erros-esperados.md`.
 
+### Correções da verificação em produção (2026-11-07)
+
+A verificação da tarefa 7.1 achou três defeitos, corrigidos antes do gabarito no PGE:
+
+- **Motivo das etapas não realizadas (REQ-RESULT-006):** a etapa 5 desligada aparecia como "ainda não implementada nesta versão", motivo que a mudança 13 dava a qualquer etapa não executada sem falha anterior. Agora a etapa que existe e não rodou guarda o motivo: busca desligada, limite diário ou manual ausente na etapa 5; leiaute sem catálogo, versão não suportada ou documento cortado na etapa 4, e então a etapa 5 depende dela. "Ainda não implementada" fica para as etapas 6 a 8. As limitações de REQ-CONSULTA-007 e da mudança 07 continuam com o mesmo texto.
+- **Contagem do 9900 com código fora do leiaute:** a linha com código inexistente, já acusada por `EST-ARQ-002`, não entrava na contagem real, e o achado de `EST-TOT-002` dizia que o arquivo tinha 0 ocorrências de um registro que estava nele. Agora ela conta.
+- **Gabarito com mais de um erro:** o gerador contava como uma linha os registros inseridos juntos, o que plantava erros de contagem nos arquivos 07 e 11; o J051 do arquivo 11 vinha sem o campo obrigatório `COD_CTA_REF`; o arquivo 06 mantinha o 9999 nas contagens; e a data inválida do arquivo 02 estava no `DT_FIN`, que a etapa 3 usa para identificar o leiaute, de modo que a etapa 4 nem rodava. A planilha passou a listar também as regras que acusam a consequência do erro plantado (arquivo 05), e o teste `Gabarito` confere a planilha pelo serviço de análise, da recepção à etapa 4, e não mais só pelo validador.
+
 ## Dimensionamento
 
 Sem provedor pago. Uma passada linear sobre até 4 MiB de texto. O catálogo do leiaute 12 tem 188 registros e 1.122 campos, algumas dezenas de KB em JSON.
