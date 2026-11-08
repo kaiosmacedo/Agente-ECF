@@ -303,6 +303,48 @@ public sealed class ValidacaoEstruturalTests
                 yield return ("EST-CAMPO-006", fora);
             }
         }
+
+        if (v.Valores is { PorPosicao: not null } && v.TamanhoMaximo is { } posicoes)
+        {
+            yield return ("EST-CAMPO-006", new string('Q', posicoes));
+        }
+    }
+
+    /// <summary>O programa da ECF 12.2.8 recusou <c>0</c> em FORMA_TRIB_PER ("O tamanho do campo está incorreto", 4 posições) e aceitou RRRR (D10).</summary>
+    [Theory(DisplayName = "REQ-ESTRUT-014 Campo por posição: cada caractere é conferido na lista, com o tamanho exato (manual, p. 73 e 74)")]
+    [InlineData(7, "RRRR", null)]
+    [InlineData(7, "0RPA", null)]
+    [InlineData(7, "ESRP", null)]
+    [InlineData(7, "", null)]
+    [InlineData(7, "0", "EST-CAMPO-003")]
+    [InlineData(7, "RRR", "EST-CAMPO-003")]
+    [InlineData(7, "RRRRR", "EST-CAMPO-003")]
+    [InlineData(7, "RRRX", "EST-CAMPO-006")]
+    [InlineData(8, "EEEEEEEEEEEE", null)]
+    [InlineData(8, "000000000000", null)]
+    [InlineData(8, "EB0EB0EB0EB0", null)]
+    [InlineData(8, "E", "EST-CAMPO-003")]
+    [InlineData(8, "EEEEEEEEEEEX", "EST-CAMPO-006")]
+    public void CampoPorPosicao(int campo, string valor, string? regraEsperada)
+    {
+        var campos = "|0010||N|1|T|01|RRRR|||||||".Split('|');
+        campos[campo] = valor;
+        var texto = Valida().Replace("|0010||N|1|T|01|RRRR|||||||", string.Join('|', campos), StringComparison.Ordinal);
+
+        var achados = Validar(texto).Achados.Select(achado => achado.Fundamento).ToList();
+
+        var nome = campo == 7 ? "FORMA_TRIB_PER" : "MES_BAL_RED";
+        Assert.Equal(regraEsperada is null ? [] : [$"{regraEsperada} 0010.{nome}"], achados);
+    }
+
+    /// <summary>A coluna diz tamanho 1, e a lista traz 10. O programa da ECF 12.2.8 aceita o valor (D10), e a divergência fica no catálogo.</summary>
+    [Fact(DisplayName = "REQ-ESTRUT-011 Valor da lista mais longo que a coluna Tamanho: FORMA_TRIB igual a 10 não acusa tamanho (manual, p. 71 e 72)")]
+    public void ValorDaListaAcimaDaColunaTamanho()
+    {
+        var texto = Valida().Replace("|0010||N|1|T|", "|0010||N|10|T|", StringComparison.Ordinal);
+
+        Assert.Empty(Validar(texto).Achados);
+        Assert.Contains(Catalogo.Divergencias, divergencia => divergencia.Contains("FORMA_TRIB", StringComparison.Ordinal));
     }
 
     [Fact(DisplayName = "REQ-ESTRUT-002 e D7 Pelo serviço: leiaute 12 conclui a etapa 4 e lista o não verificado; leiaute 7 não tem catálogo")]
@@ -362,6 +404,17 @@ public sealed class ValidacaoEstruturalTests
 
         Assert.Equal(arquivos.Order(StringComparer.Ordinal), Planilha().Keys.Order(StringComparer.Ordinal));
         Assert.Equal(12, Planilha().Count);
+    }
+
+    [Fact(DisplayName = "D10 A planilha do gabarito traz o que o programa da ECF apontou em cada arquivo")]
+    public void PlanilhaPreenchidaPeloPrograma()
+    {
+        var linhas = File.ReadAllLines(Repositorio.Caminho("tests", "Api.Agente.Tests", "Dados", "ecf", "gabarito", "erros-esperados.md"))
+            .Where(linha => linha.StartsWith("| `", StringComparison.Ordinal))
+            .ToList();
+
+        Assert.Equal(12, linhas.Count);
+        Assert.DoesNotContain(linhas, linha => linha.Contains("(a preencher)", StringComparison.Ordinal));
     }
 
     [Theory(DisplayName = "D10 Pelo serviço, cada arquivo do gabarito chega à etapa 4 e dá exatamente as regras da planilha")]

@@ -4,9 +4,9 @@ Arquivos **sintéticos**, sem dado de contribuinte real (SQ-10). O CNPJ `1111111
 
 **Os `ecf-leiaute-NN.txt` não são ECF completas:** têm só o Registro 0000 e registros de abertura e encerramento, o bastante para a recepção (mudança 07) e a identificação do leiaute; pela validação estrutural (mudança 08), eles têm erros de estrutura.
 
-**`ecf-leiaute-12-estrutural.txt`:** ECF do leiaute 12 estruturalmente válida pelo catálogo, com os 13 registros obrigatórios na importação e na transmissão, gerada por `.github/scripts/catalogo/gerar-ecf-sintetica.py` (REQ-ESTRUT-001 a 013). As regras de conteúdo (mudança 09) não foram consideradas.
+**`ecf-leiaute-12-estrutural.txt`:** ECF do leiaute 12 estruturalmente válida pelo catálogo, com os 13 registros obrigatórios na importação e na transmissão, gerada por `.github/scripts/catalogo/gerar-ecf-sintetica.py` (REQ-ESTRUT-001 a 014). O 0010, o 0020 e o 0030 seguem os exemplos de preenchimento do manual (p. 79, 94 e 102), com os ajustes que o programa da ECF 12.2.8 exigiu, e ele a importa. As regras de conteúdo (mudança 09) não foram consideradas: na validação, o programa aponta erros de negócio nela.
 
-**`gabarito/`:** a ECF válida e uma variante por erro de estrutura plantado, para o gabarito no programa da ECF (mudança 08, D10), com a regra esperada de cada arquivo em `gabarito/erros-esperados.md`. Gerados por `.github/scripts/catalogo/gerar-gabarito.py`.
+**`gabarito/`:** a ECF válida e uma variante por erro de estrutura plantado, para o gabarito no programa da ECF (mudança 08, D10), com a regra esperada de cada arquivo e o que o programa apontou em `gabarito/erros-esperados.md`. Gerados por `.github/scripts/catalogo/gerar-gabarito.py`, que preserva a coluna do programa.
 
 | Arquivo | Leiaute | `COD_VER` | `DT_INI` e `DT_FIN` | Requisito | Fonte |
 | --- | --- | --- | --- | --- | --- |

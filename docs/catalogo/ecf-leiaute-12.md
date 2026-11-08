@@ -1,10 +1,10 @@
 # Catálogo estrutural da ECF, leiaute 12
 
-Gerado por `.github/scripts/catalogo/gerar-catalogo.py` a partir da versão em Word do manual, com as páginas do PDF. Versão `ecf-l12-1.0.0`. É o que Kaio Macedo revisa (mudança 08, E02). Correções vão no gerador, nunca no JSON.
+Gerado por `.github/scripts/catalogo/gerar-catalogo.py` a partir da versão em Word do manual, com as páginas do PDF. Versão `ecf-l12-1.1.0`. É o que Kaio Macedo revisa (mudança 08, E02). Correções vão no gerador, nunca no JSON.
 
 **Ordem dos blocos:** 0, C, E, J, K, L, M, N, P, Q, S, T, U, V, W, X, Y, 9.
 
-**Divergências do próprio manual, sem achado (REQ-ESTRUT-011):** Registro Y681, p. 596: o campo REG traz [X681] nos valores válidos, e não [Y681]. Ocorrência e nível divergentes entre o cabeçalho do registro e a Tabela de Registros (p. 43 a 58) ficam sem verificação.
+**Divergências do próprio manual, sem achado (REQ-ESTRUT-011):** Registro 0010, p. 71: o campo FORMA_TRIB tem tamanho 1 na coluna, e os valores válidos [1;2;3;4;5;6;7;8;9;10] vão até 2 caracteres; vale a lista, que o programa da ECF aceita. Registro Y681, p. 596: o campo REG traz [X681] nos valores válidos, e não [Y681]. Ocorrência e nível divergentes entre o cabeçalho do registro e a Tabela de Registros (p. 43 a 58) ficam sem verificação.
 
 | Registro | Nome | Nível | Pai | Ocorrência (cabeçalho / tabela) | Entrada / saída | Página |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -238,11 +238,11 @@ Página 71. Chave: REG. Regras do registro: —.
 | 1 | REG | C | 4 | - | [0010] | Sim | tipo, até 4, obrigatório |
 | 2 | HASH_ECF_ANTERIOR | C | 40 | - | - | Não | tipo, até 40 |
 | 3 | OPT_REFIS | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
-| 4 | FORMA_TRIB | N | 1 | - | [1;2;3;4;5;6;7;8;9;10] | Sim | tipo, até 1, 0 decimais, valores, obrigatório |
+| 4 | FORMA_TRIB | N | 1 | - | [1;2;3;4;5;6;7;8;9;10] | Sim | tipo, até 2, 0 decimais, valores, obrigatório |
 | 5 | FORMA_APUR | C | 1 | - | [T;A] | Não | tipo, até 1, valores |
 | 6 | COD_QUALIF_PJ | C | 2 | - | [01;02;03;04] | Não | tipo, até 2, valores |
-| 7 | FORMA_TRIB_PER | C | 4 | - | [0;R;P;A;E;S] | Não | tipo, até 4, valores |
-| 8 | MES_BAL_RED | C | 12 | - | [0;E;B] | Não | tipo, até 12, valores |
+| 7 | FORMA_TRIB_PER | C | 4 | - | [0;R;P;A;E;S] | Não | tipo, exatamente 4, valores por posição |
+| 8 | MES_BAL_RED | C | 12 | - | [0;E;B] | Não | tipo, exatamente 12, valores por posição |
 | 9 | TIP_ESC_PRE | C | 1 | - | [L;C] | Não | tipo, até 1, valores |
 | 10 | TIP_ENT | N | 2 | - | [01;02;03;04;05;06;07;08;09;10;11;12;13;14;15;99] | Não | tipo, até 2, 0 decimais, valores |
 | 11 | FORMA_APUR_I | C | 1 | - | [A;T;D] | Não | tipo, até 1, valores |

@@ -14,8 +14,10 @@ import zipfile
 import xml.etree.ElementTree as ET
 
 W = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
-VERSAO_DO_CATALOGO = "ecf-l12-1.0.0"
+VERSAO_DO_CATALOGO = "ecf-l12-1.1.0"
 TIPOS = ("C", "N", "NS")
+# Campo preenchido posição a posição, como "no formato XXXX onde X é igual a" (p. 73 e 74): a lista vale para cada caractere.
+POR_POSICAO = re.compile(r"formato\s+(X{2,})\s")
 # Tabelas externas ou dinâmicas citadas na coluna de valores válidos: ficam sem verificação (E04).
 EXTERNA = re.compile(r"tabela|Código da Natureza Jurídica|CNAE Fiscal|Sigla da UF|Código do Município|Códigos existentes no registro", re.I)
 REGRA = re.compile(r"REGRA_[A-Z0-9_]+")
@@ -112,6 +114,14 @@ def campo(linha, pagina):
     else:
         decimais = None
     marca = obrigatorio.lower()
+    verificacao_de_valores = valores_validos(valores)
+    posicoes = POR_POSICAO.search(descricao)
+    if verificacao_de_valores and "lista" in verificacao_de_valores and posicoes and len(posicoes.group(1)) == tamanho_maximo:
+        verificacao_de_valores = {"porPosicao": verificacao_de_valores["lista"]}
+    # Valor da lista mais longo que a coluna Tamanho, como o 10 de FORMA_TRIB (p. 71 e 72): vale a lista, e a divergência fica no catálogo.
+    lista = (verificacao_de_valores or {}).get("lista") or []
+    if tamanho_maximo is not None and lista and max(map(len, lista)) > tamanho_maximo:
+        tamanho_maximo = max(map(len, lista))
     return {
         "numero": int(numero),
         "nome": nome,
@@ -127,7 +137,7 @@ def campo(linha, pagina):
             "decimaisMaximos": decimais,
             # Datas no padrão ddmmaaaa (p. 34), nos campos DT_ de tamanho 8.
             "data": nome.startswith("DT_") and tamanho.lstrip("0") == "8",
-            "valores": valores_validos(valores),
+            "valores": verificacao_de_valores,
             "obrigatorio": True if marca in ("sim", "s") else None if marca.startswith("oc") else False,
         },
     }
@@ -182,6 +192,9 @@ def gerar(word, texto_pdf):
         if lista and lista != [codigo]:
             divergencias.append(f"Registro {codigo}, p. {pagina}: o campo REG traz {reg['valoresValidos']} nos valores válidos, e não [{codigo}].")
         reg["verificacoes"]["valores"] = None
+        for c in registros[-1]["campos"]:
+            if re.fullmatch(r"\d+", c["tamanho"]) and c["verificacoes"]["tamanhoMaximo"] > int(c["tamanho"]):
+                divergencias.append(f"Registro {codigo}, p. {pagina}: o campo {c['nome']} tem tamanho {c['tamanho']} na coluna, e os valores válidos {c['valoresValidos']} vão até {c['verificacoes']['tamanhoMaximo']} caracteres; vale a lista, que o programa da ECF aceita.")
 
     # Pai: o registro anterior de nível imediatamente superior, na ordem sequencial (p. 58 e 59).
     for indice, registro in enumerate(registros):
@@ -231,11 +244,12 @@ def markdown(catalogo):
         for c in r["campos"]:
             v = c["verificacoes"]
             aplicadas = [n for n, ok in (("tipo", v["tipo"]), ("data", v["data"])) if ok]
+            por_posicao = (v["valores"] or {}).get("porPosicao")
             if v["tamanhoMaximo"] is not None:
-                aplicadas.append(f"até {v['tamanhoMaximo']}")
+                aplicadas.append(f"exatamente {v['tamanhoMaximo']}, valores por posição" if por_posicao else f"até {v['tamanhoMaximo']}")
             if v["decimaisMaximos"] is not None:
                 aplicadas.append(f"{v['decimaisMaximos']} decimais")
-            if v["valores"]:
+            if v["valores"] and not por_posicao:
                 aplicadas.append("valores")
             if v["obrigatorio"]:
                 aplicadas.append("obrigatório")

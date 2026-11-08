@@ -138,7 +138,7 @@ Saída real do serviço para a solicitação de `tests/Api.Agente.Tests/Fixtures
     },
     {
       "item": "Tamanho exato dos campos",
-      "motivo": "O manual diverge: a p. 59 fala em tamanho exato, e a p. 34 mostra valores de tamanho variável. Só o máximo foi conferido."
+      "motivo": "O manual fala em tamanho exato no caso geral (p. 59), e o programa da ECF só o exige em alguns campos, sem lista publicada. Foram conferidos o máximo e o tamanho exato dos campos preenchidos por posição."
     },
     {
       "item": "Ocorrência mínima e máxima de 43 registros: C051, C150, C155, C157, E155, J051, K156, K356, K915, K935, L200, M300, M350, N500, N610, N615, N650, N660, P030, P200, P300, P400, P500, S100, S150, S200, S300, S500, S700, U030, U182, V010, W250, X350, X351, X352, X353, X354, X355, X356, Y681, 9100, 9900",
@@ -185,7 +185,7 @@ Saída real do serviço para a solicitação de `tests/Api.Agente.Tests/Fixtures
   "versoes": {
     "contrato": "1.2",
     "servico": "0.1.0+local",
-    "validadores": "ecf-l12-1.0.0"
+    "validadores": "ecf-l12-1.1.0"
   },
   "criadaEm": "2026-11-08T00:16:04.0492467+00:00",
   "concluidaEm": "2026-11-08T00:16:04.0913863+00:00",

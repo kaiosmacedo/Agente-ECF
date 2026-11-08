@@ -48,10 +48,10 @@ Medido na versão em Word do Leiaute 12: 188 registros em 18 blocos e 1.122 camp
 | `EST-ARQ-003` | A linha não tem mais campos que o registro | p. 32 e tabela do registro | `impeditiva` |
 | `EST-CAMPO-001` | Campo obrigatório preenchido | Coluna "Obrigatório" da tabela | `impeditiva` |
 | `EST-CAMPO-002` | Tipo: `C` sem `\|` nem caracteres de 0 a 31; `N` só algarismos e vírgula; `NS` com sinal opcional | p. 33 | `impeditiva` |
-| `EST-CAMPO-003` | Tamanho máximo; `C` sem tamanho até 255 | p. 33 e 59 | `impeditiva` |
+| `EST-CAMPO-003` | Tamanho máximo; `C` sem tamanho até 255; tamanho exato nos campos por posição | p. 33, 59, 73 e 74 | `impeditiva` |
 | `EST-CAMPO-004` | Casas decimais: nenhuma com "-", no máximo as indicadas com número | p. 34 e 59 | `impeditiva` |
 | `EST-CAMPO-005` | Data `ddmmaaaa` válida no calendário, nos campos `DT_` do tipo `N` 8 | p. 34 | `impeditiva` |
-| `EST-CAMPO-006` | Valor dentro da lista ou do intervalo da coluna "Valores Válidos" | p. 37 e tabela do registro | `impeditiva` |
+| `EST-CAMPO-006` | Valor dentro da lista ou do intervalo da coluna "Valores Válidos"; nos campos por posição, cada caractere | p. 37, 73, 74 e tabela do registro | `impeditiva` |
 | `EST-HIER-001` | Registro filho com o pai aberto antes dele | p. 32 e 59 | `impeditiva` |
 | `EST-OCOR-001` | Os 13 registros obrigatórios na entrada e na saída estão presentes | p. 43 e 58 | `impeditiva` |
 | `EST-OCOR-002` | Ocorrência máxima por registro pai, onde cabeçalho e Tabela de Registros concordam | p. 43 e 59 | `impeditiva` |
@@ -66,9 +66,9 @@ Medido na versão em Word do Leiaute 12: 188 registros em 18 blocos e 1.122 camp
 
 **Decisões sobre o que o manual deixa em aberto (para aprovação, E01):**
 
-- **Tamanho exato:** a p. 59 diz que o número na coluna é o tamanho exato, mas a p. 34 mostra valores de tamanho variável em campos de valor, como `1255,42`. A primeira entrega confere só o máximo; o tamanho exato fica como validação não realizada até o gabarito no PGE (REQ-ESTRUT-011).
+- **Tamanho exato:** a p. 59 diz que o número na coluna é o tamanho exato, mas a p. 34 mostra valores de tamanho variável em campos de valor, como `1255,42`. A primeira entrega confere só o máximo; o tamanho exato fica como validação não realizada (REQ-ESTRUT-011). O gabarito mostrou que o programa só o exige em alguns campos (E09).
 - **Campos finais vazios omitidos:** os exemplos do 0000 têm 15 campos, e a tabela, 16. Linha com menos campos só gera achado se faltar campo obrigatório.
-- **Contagem dos encerramentos:** a p. 42 diz que cada bloco tem abertura, dados e encerramento, e a p. 41, que o arquivo vai do registro inicial ao final. Por isso as contagens incluem a abertura, o encerramento e o próprio 9999. O gabarito confirma.
+- **Contagem dos encerramentos:** a p. 42 diz que cada bloco tem abertura, dados e encerramento, e a p. 41, que o arquivo vai do registro inicial ao final. Por isso as contagens incluem a abertura, o encerramento e o próprio 9999. O gabarito confirmou o x990: para o Bloco 0 de 6 linhas, com abertura e encerramento, o programa espera 6 (arquivo 09). O total do 9999 o programa não confere (E07).
 - **Vírgula em `NS`:** a definição da p. 33 não cita a vírgula, mas há campos `NS` com decimais, como `9100.CONTEÚDO`. Vírgula aceita quando o campo tem decimais.
 - **Pai de cada registro:** o registro anterior de nível imediatamente superior na Tabela de Registros (p. 43 a 58), pela ordem sequencial (p. 58).
 - **Erros do próprio manual:** o encerramento do Bloco 9 é `9990`, como no Capítulo 4 (p. 618), e não `9099`, como na Tabela de Registros (p. 58). O Bloco S não tem registro de encerramento no manual, então nenhuma regra o exige.
@@ -164,6 +164,41 @@ A verificação da tarefa 7.1 achou três defeitos, corrigidos antes do gabarito
 - **Contagem do 9900 com código fora do leiaute:** a linha com código inexistente, já acusada por `EST-ARQ-002`, não entrava na contagem real, e o achado de `EST-TOT-002` dizia que o arquivo tinha 0 ocorrências de um registro que estava nele. Agora ela conta.
 - **Gabarito com mais de um erro:** o gerador contava como uma linha os registros inseridos juntos, o que plantava erros de contagem nos arquivos 07 e 11; o J051 do arquivo 11 vinha sem o campo obrigatório `COD_CTA_REF`; o arquivo 06 mantinha o 9999 nas contagens; e a data inválida do arquivo 02 estava no `DT_FIN`, que a etapa 3 usa para identificar o leiaute, de modo que a etapa 4 nem rodava. A planilha passou a listar também as regras que acusam a consequência do erro plantado (arquivo 05), e o teste `Gabarito` confere a planilha pelo serviço de análise, da recepção à etapa 4, e não mais só pelo validador.
 
+## Gabarito no programa da ECF (2026-11-08)
+
+Rodado pelo assistente, com computer use, no programa da ECF 12.2.8, descritor 12003.1, baixado da área de downloads da Receita Federal (`docs/fontes-oficiais.md`). Nada foi assinado nem transmitido. A resposta do programa a cada arquivo está na última coluna de `tests/Api.Agente.Tests/Dados/ecf/gabarito/erros-esperados.md`.
+
+O programa valida em duas fases, como a p. 38 descreve. A **importação** cobre a estrutura e já aplica parte das regras de campo; a maioria dos erros interrompe a importação, com "Importação não realizada". A **validação** roda depois de importar, com as regras de negócio. Os erros da validação do arquivo 00 são de conteúdo ou do que a importação não exige, como a recuperação da ECD e os registros 0930, J050, K155, K355, L200 e Y600, todos facultativos na entrada pela Tabela de Registros. Isso confirma a decisão da D5 de `EST-OCOR-001` só exigir os 13 registros obrigatórios na entrada e na saída.
+
+| Arquivo | Regras do agente | Programa | Resultado |
+| --- | --- | --- | --- |
+| 00 | nenhuma | Importou | Concorda |
+| 01 | `EST-CAMPO-006` | Recusou, linha 1 | Concorda |
+| 02 | `EST-CAMPO-005` | Recusou ao abrir o arquivo | Concorda |
+| 03 | `EST-ARQ-002` | Recusou, linha 7 | Concorda |
+| 04 | `EST-ARQ-003` | Recusou, linha 2 | Concorda |
+| 05 | `EST-ARQ-001`, `EST-OCOR-001` | Recusou, linha 7, e parou nesse erro | Concorda com a causa; a consequência o programa não chega a citar |
+| 06 | `EST-OCOR-001` | **Importou, sem apontamento** | Diverge: E05 |
+| 07 | `REGRA_OCORRENCIA_UNITARIA_ARQ` | Recusou, linha 3, e também acusou a ordem | Concorda; a ordem dos irmãos fica no E08 |
+| 08 | `EST-TOT-003` | **Importou, sem apontamento** | Diverge: E07 |
+| 09 | `EST-TOT-001` | Recusou, linha 6 | Concorda com a regra; a classe fica no E06 |
+| 10 | `EST-TOT-002` | **Importou, sem apontamento** | Diverge: E07 |
+| 11 | `EST-HIER-001` | Recusou, linha 11; a linha 12 é consequência | Concorda |
+
+**Achado sobre a base.** A ECF sintética anterior foi recusada pelo programa antes de validar, com `FORMA_TRIB_PER` igual a `0` ("O tamanho do campo está incorreto", 4 posições). Ela preenchia campos opcionais com o primeiro valor da lista, o que o programa recusou em `MES_BAL_RED`, `TIP_ESC_PRE`, `IND_RED_ISEN` e `IND_REC_RECEITA`. `gerar-ecf-sintetica.py` agora usa os exemplos de preenchimento do manual (p. 79, 94 e 102), com os indicadores do 0020 em `N` e sem o `IND_REC_RECEITA`, e o programa a importa.
+
+**Corrigido no gerador do catálogo e no validador, com fonte no manual e no programa:**
+
+- **Campos por posição (falso positivo, REQ-ESTRUT-014):** `FORMA_TRIB_PER` é "para cada trimestre no formato XXXX" (p. 73), e `MES_BAL_RED`, "no formato XXXXXXXXXXXX" (p. 74). O catálogo guardava a lista como valor inteiro, então uma ECF correta com `RRRR` recebia `EST-CAMPO-006` e o veredito `recusado`. Agora cada caractere é conferido na lista, com o tamanho exato. O programa confirma os dois lados: recusa `0` por tamanho e `RRRX` por valor, e aceita `RRRR`.
+- **`FORMA_TRIB` igual a 10 (falso positivo, REQ-ESTRUT-011):** a coluna diz tamanho 1, e a lista traz `10` (p. 71 e 72). O programa aceita o valor, e o agente acusava `EST-CAMPO-003`. Vale a lista, e a divergência fica no catálogo (REQ-ESTRUT-011).
+- **Versão:** catálogo `ecf-l12-1.1.0`.
+
+**Para a mudança 09:** o programa recusa na importação valores incoerentes entre si que o agente ainda não confere, como `TIP_ESC_PRE` e `IND_REC_RECEITA` com `FORMA_TRIB` igual a 1 e `MES_BAL_RED` que não combina com `FORMA_TRIB_PER`. Essas regras estão em `naoVerificados`. Uma ECF com veredito `parcial` no agente ainda pode ser recusada pelo programa.
+
+**Divergência entre as fontes:** o exemplo de preenchimento da p. 79 traz `IND_REC_RECEITA` igual a 1 com `FORMA_TRIB` igual a 1, e o programa recusa ("Campo não deve ser preenchido se a forma de tributação for igual a 1, 2, 6, 8 ou 9").
+
+**Esclarecimentos abertos para Kaio Macedo:** E05 a E09 do `proposal.md`. Nenhuma regra mudou por comportamento do programa sem respaldo no manual (P01).
+
 ## Dimensionamento
 
 Sem provedor pago. Uma passada linear sobre até 4 MiB de texto. O catálogo do leiaute 12 tem 188 registros e 1.122 campos, algumas dezenas de KB em JSON.
@@ -183,7 +218,7 @@ Sem provedor pago. Uma passada linear sobre até 4 MiB de texto. O catálogo do 
 
 ## Open Questions
 
-- Nenhuma. O gabarito (D10) é feito pelo assistente, a pedido de Kaio Macedo, e bloqueia só o arquivamento.
+- O gabarito (D10) foi feito em 2026-11-08. Ficaram os esclarecimentos E05 a E09 do `proposal.md`, com Kaio Macedo, que bloqueiam só o arquivamento.
 
 ## Skills aplicáveis
 

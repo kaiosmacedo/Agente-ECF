@@ -84,7 +84,7 @@ As tabelas de regras trazem número, código, descrição, "como obter" e tipo. 
 
 | Fonte | Onde |
 | --- | --- |
-| Programa da ECF, versão 12.2.8, publicada em 19/10/2026: valida e transmite a escrituração (E03 da mudança 08) | [Comunicado](https://www.gov.br/sped/pt-br/assuntos/comunicados/ecf/copy4_of_publicacao-da-versao-12-2-4-do-programa-da-ecf) e [download](https://www.gov.br/receitafederal/pt-br/centrais-de-conteudo/download/sped/ecf) |
+| Programa da ECF, versão 12.2.8, publicada em 19/10/2026: valida e transmite a escrituração (E03 da mudança 08). Instalador `SpedEcf_w64-12.2.8.exe`, 143.767.808 bytes, assinado pelo SERPRO, SHA-256 `1981d174e464c782569e0672432db9937de151186a627cb06f18d07f5d39f13d`, descritor 12003.1. Usado no gabarito da mudança 08 em 2026-11-08 | [Comunicado](https://www.gov.br/sped/pt-br/assuntos/comunicados/ecf/copy4_of_publicacao-da-versao-12-2-4-do-programa-da-ecf) e [download](https://www.gov.br/receitafederal/pt-br/centrais-de-conteudo/download/sped/ecf) |
 | Normas citadas pela página da ECF: IN RFB nº 2.004/2021, IN RFB nº 1.700/2017, Decreto nº 9.580/2018 e Lei nº 12.973/2014 | [Página da ECF](https://www.gov.br/sped/pt-br/assuntos/escrituracoes-digitais/ecf) |
 
 ## Como atualizar

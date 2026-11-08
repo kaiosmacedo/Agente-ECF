@@ -43,6 +43,11 @@ internal static class EcfSintetica
     private static string ValorValido(CampoDoCatalogo campo)
     {
         var v = campo.Verificacoes;
+        if (v.Valores?.PorPosicao is [var porPosicao, ..] && v.TamanhoMaximo is { } posicoes)
+        {
+            return string.Concat(Enumerable.Repeat(porPosicao, posicoes));
+        }
+
         if (v.Valores?.Lista is [var primeiro, ..])
         {
             return primeiro;
