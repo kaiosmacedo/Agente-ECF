@@ -30,7 +30,7 @@ As skills da turma fixavam v0.3.x "até decisão explícita de migração". Kaio
 
 ## Exemplo
 
-Chamada real à produção em 2026-11-07, com a ECF sintética `01-valor-fora-da-lista.txt` do gabarito, atualizada em 2026-11-08 com os valores que o programa da ECF aceita (`tests/Api.Agente.Tests/Dados/ecf/gabarito/`), que tem `IND_SIT_INI_PER` igual a 9 no Registro 0000. O veredito é `recusado`, com o que corrigir, e a consulta ao manual não roda porque a busca está desligada em produção.
+Chamada real à produção, refeita em 2026-11-08, com a ECF sintética `01-valor-fora-da-lista.txt` do gabarito (`tests/Api.Agente.Tests/Dados/ecf/gabarito/`), que tem `IND_SIT_INI_PER` igual a 9 no Registro 0000. O veredito é `recusado`, com o que corrigir, e a consulta ao manual não roda porque a busca está desligada em produção.
 
 Requisição (`POST` no endereço do cartão, com `Content-Type: application/json` e `A2A-Version: 1.0`):
 
@@ -116,7 +116,7 @@ Resposta (o texto do Artifact foi formatado aqui para leitura; ele chega como st
                   }
                 ],
                 "observacoes": [
-                  "Documento doc-001 recebido: 524 caracteres, SHA-256 1fb3aae04435ea6a35ce1b0c6ba0daa2a1ad18a8652dff65a917c37e86647bdf.",
+                  "Documento doc-001 recebido: 607 caracteres, SHA-256 3a73c964e82514d32f38cc7e6632929f02c5ed463c83a471baed23816635772f.",
                   "Leiaute identificado no documento doc-001: 12 (COD_VER 0012, DT_FIN em 2025).",
                   "Etapa não realizada: Consulta ao manual. Motivo: a busca no manual está desligada na base de conhecimento.",
                   "Etapa não realizada: Ferramentas externas. Motivo: ainda não implementada nesta versão.",

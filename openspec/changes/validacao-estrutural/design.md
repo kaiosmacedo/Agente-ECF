@@ -197,6 +197,8 @@ O programa valida em duas fases, como a p. 38 descreve. A **importação** cobre
 
 **Divergência entre as fontes:** o exemplo de preenchimento da p. 79 traz `IND_REC_RECEITA` igual a 1 com `FORMA_TRIB` igual a 1, e o programa recusa ("Campo não deve ser preenchido se a forma de tributação for igual a 1, 2, 6, 8 ou 9").
 
+**Em produção, depois do PR #30:** os 12 arquivos deram exatamente as regras da planilha, de 0,3 a 2,5 s por pedido, com o catálogo `ecf-l12-1.1.0`. `RRRX` dá `EST-CAMPO-006`, e `FORMA_TRIB` igual a 10 não acusa tamanho.
+
 **Esclarecimentos abertos para Kaio Macedo:** E05 a E09 do `proposal.md`. Nenhuma regra mudou por comportamento do programa sem respaldo no manual (P01).
 
 ## Dimensionamento
