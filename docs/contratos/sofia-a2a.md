@@ -30,6 +30,8 @@ As skills da turma fixavam v0.3.x "até decisão explícita de migração". Kaio
 
 ## Exemplo
 
+Chamada real à produção em 2026-11-07, com a ECF sintética `01-valor-fora-da-lista.txt` do gabarito (`tests/Api.Agente.Tests/Dados/ecf/gabarito/`), que tem `IND_SIT_INI_PER` igual a 9 no Registro 0000. O veredito é `recusado`, com o que corrigir, e a consulta ao manual não roda porque a busca está desligada em produção.
+
 Requisição (`POST` no endereço do cartão, com `Content-Type: application/json` e `A2A-Version: 1.0`):
 
 ```json
@@ -40,10 +42,10 @@ Requisição (`POST` no endereço do cartão, com `Content-Type: application/jso
   "params": {
     "message": {
       "role": "ROLE_USER",
-      "messageId": "5f92c2ba-6870-4862-87ba-1ae8669a77f4",
+      "messageId": "8c74437a-3bb3-4e2d-86f1-5074bf30e6eb",
       "parts": [
         {
-          "text": "{\"versaoContrato\":\"1.0\",\"idExecucao\":\"8b2f0ad6-c2e4-4a68-8bdd-20f785bc798e\",\"idSolicitacao\":\"e1b3a4cb-d729-4bd4-b796-b9c94be07b46\",\"usuario\":{\"nome\":\"Maria Oliveira\"},\"pergunta\":\"Analise o documento\",\"documentos\":[{\"idDocumento\":\"doc-001\",\"nome\":\"documento-sintetico.txt\",\"texto\":\"Documento sintético de teste.\"}]}"
+          "text": "{\"versaoContrato\":\"1.0\",\"idExecucao\":\"1bf40689-5619-4f5e-ac8a-330e4136d9e4\",\"idSolicitacao\":\"a5c6f634-2553-4c86-b62f-3cb5b209f714\",\"usuario\":{\"nome\":\"Maria Oliveira\"},\"pergunta\":\"Valide esta ECF e diga o que precisa ser corrigido.\",\"documentos\":[{\"idDocumento\":\"doc-001\",\"nome\":\"ecf-2025.txt\",\"tipo\":\"text/plain\",\"texto\":\"|0000|LECF|0012|11111111000191|EMPRESA SINTETICA DE TESTE|9|0|||01012025|31122025|N||0||\\r\\n|0001|0|\\r\\n|0010||S|1|T|01|0|0|L|01|A|A|1|\\r\\n|0020|1|1|S|S|S|S|S|S|S|S|S|S|S|S|S|S|S|S|S|S|S|S|S|S|S|S|S|S|S|S||\\r\\n|0030|1|1|A|A||A|A|A|A||A|\\r\\n|0990|6|\\r\\n|C001|1|\\r\\n|C990|2|\\r\\n|E001|1|\\r\\n|9001|0|\\r\\n|9900|0000|1|||\\r\\n|9900|0001|1|||\\r\\n|9900|0010|1|||\\r\\n|9900|0020|1|||\\r\\n|9900|0030|1|||\\r\\n|9900|0990|1|||\\r\\n|9900|C001|1|||\\r\\n|9900|C990|1|||\\r\\n|9900|E001|1|||\\r\\n|9900|9001|1|||\\r\\n|9900|9900|13|||\\r\\n|9900|9990|1|||\\r\\n|9900|9999|1|||\\r\\n|9990|16|\\r\\n|9999|25|\\r\\n\"}]}"
         }
       ]
     }
@@ -59,42 +61,75 @@ Resposta (o texto do Artifact foi formatado aqui para leitura; ele chega como st
   "id": "rpc-001",
   "result": {
     "task": {
-      "id": "5cd591b8-6cd1-4dd2-87d2-ede0a99ac066",
-      "contextId": "4441e6c2-5d89-4715-9a9f-f9e4885d029e",
-      "status": { "state": "TASK_STATE_COMPLETED", "timestamp": "2026-11-05T13:58:45.7168463+00:00" },
+      "id": "f044450ab4884526a1b59feadb6fe3d6",
+      "contextId": "dac0c992d7b8427794a7b19316b7ca66",
+      "status": {
+        "state": "TASK_STATE_COMPLETED",
+        "timestamp": "2026-11-08T00:52:30.5112806Z"
+      },
       "artifacts": [
         {
-          "artifactId": "a147e2de-93ac-4c60-a764-efeae072d3df",
+          "artifactId": "6b34264a-e417-4f68-9c03-4b9931b32df3",
           "name": "analise-sofia-v1",
           "parts": [
             {
               "text": {
                 "versaoContrato": "1.0",
-                "idExecucao": "8b2f0ad6-c2e4-4a68-8bdd-20f785bc798e",
-                "idSolicitacao": "e1b3a4cb-d729-4bd4-b796-b9c94be07b46",
+                "idExecucao": "1bf40689-5619-4f5e-ac8a-330e4136d9e4",
+                "idSolicitacao": "a5c6f634-2553-4c86-b62f-3cb5b209f714",
                 "agente": {
                   "idAgente": "agente-ecf",
                   "nome": "Agente ECF"
                 },
                 "status": "parcial",
-                "analise": "Avaliação parcial: nem todas as validações foram realizadas. 2 documento(s) recebido(s). Esta versão ainda não executa as validações da ECF: nenhum achado foi produzido e nenhuma conformidade é declarada.",
-                "achados": [],
+                "analise": "Recusada na avaliação: 1 regra(s) impeditiva(s) violada(s). O resultado vale para as validações realizadas e é apoio à conferência, sem substituir o programa oficial da ECF. ECF do leiaute 12 recebida e validada na estrutura: 1 achado(s) estrutural(is). As regras de conteúdo e a análise ainda não existem, então nenhuma conformidade é declarada.",
+                "achados": [
+                  {
+                    "idAchado": "est-0001",
+                    "descricao": "O campo IND_SIT_INI_PER do Registro 0000 tem um valor fora dos valores válidos, na linha 1.",
+                    "idDocumentos": [
+                      "doc-001"
+                    ],
+                    "evidencias": [
+                      "Linha 1"
+                    ],
+                    "severidade": "critica",
+                    "categoria": "erro-estrutural",
+                    "origem": "validador",
+                    "regra": "EST-CAMPO-006 0000.IND_SIT_INI_PER",
+                    "classe": "impeditiva",
+                    "registros": [
+                      {
+                        "idDocumento": "doc-001",
+                        "registro": "0000",
+                        "linha": 1,
+                        "campo": "IND_SIT_INI_PER",
+                        "valorEncontrado": "9"
+                      }
+                    ],
+                    "orientacao": "Preencha IND_SIT_INI_PER com um dos valores válidos: [0; 1; 2; 3; 4;5;6;7;8].",
+                    "fonte": {
+                      "documento": "Manual de Orientação do Leiaute 12 da ECF",
+                      "versao": "leiaute-12",
+                      "localizacao": "p. 63, Registro 0000, campo 6 IND_SIT_INI_PER"
+                    }
+                  }
+                ],
                 "observacoes": [
-                  "Documento doc-001 recebido: 50 caracteres, SHA-256 8d5e75d4a95a7e77b3e5f11e5d1a45aa6c0063b6708948a28ffc89f6657cbccf.",
-                  "Documento doc-002 recebido: 30 caracteres, SHA-256 c0e8a6303b06ec5cfb98b65c05b9c551036a4d4101a23c7cea64031fe8fc7a73.",
-                  "Etapa não realizada: Identificação do leiaute. Motivo: ainda não implementada nesta versão.",
-                  "Etapa não realizada: Validação estrutural. Motivo: ainda não implementada nesta versão.",
-                  "Etapa não realizada: Consulta ao manual. Motivo: ainda não implementada nesta versão.",
+                  "Documento doc-001 recebido: 524 caracteres, SHA-256 1fb3aae04435ea6a35ce1b0c6ba0daa2a1ad18a8652dff65a917c37e86647bdf.",
+                  "Leiaute identificado no documento doc-001: 12 (COD_VER 0012, DT_FIN em 2025).",
+                  "Etapa não realizada: Consulta ao manual. Motivo: a busca no manual está desligada na base de conhecimento.",
                   "Etapa não realizada: Ferramentas externas. Motivo: ainda não implementada nesta versão.",
                   "Etapa não realizada: Análise com LLM. Motivo: ainda não implementada nesta versão.",
-                  "Etapa não realizada: Validação da saída. Motivo: ainda não implementada nesta versão."
+                  "Etapa não realizada: Validação da saída. Motivo: ainda não implementada nesta versão.",
+                  "consulta ao manual desativada"
                 ],
                 "erro": null,
-                "idExecucaoAgente": "14fa6878-4e5e-4189-8ac0-2897fd0aa555",
+                "idExecucaoAgente": "89aba8c8-6e28-49c9-8413-3f9e9fad9e12",
                 "revisaoHumana": true,
-                "veredito": "parcial",
+                "veredito": "recusado",
                 "resumoAchados": {
-                  "impeditivas": 0,
+                  "impeditivas": 1,
                   "graves": 0,
                   "observacoes": 0
                 },
@@ -122,6 +157,50 @@ Resposta (o texto do Artifact foi formatado aqui para leitura; ele chega como st
                   {
                     "item": "REGRA_DV_RECIBO, REGRA_VALIDA_HASH_ARQUIVO, regras das tabelas dinâmicas fora do manual e fórmulas com funções sem definição",
                     "motivo": "Não há algoritmo ou fonte acessível, e adotar um violaria P01."
+                  },
+                  {
+                    "item": "Regras REGRA_ de conteúdo do manual: valores, cruzamentos entre registros, cálculos, preenchimento e existência condicionados",
+                    "motivo": "Ficam para a mudança 09, de regras de negócio."
+                  },
+                  {
+                    "item": "Dígito verificador de CNPJ, CPF e recibo (REGRA_VALIDA_CNPJ, REGRA_VALIDA_CPF_CNPJ e outras)",
+                    "motivo": "O algoritmo não está no manual; adotar um sem fonte violaria P01."
+                  },
+                  {
+                    "item": "REGRA_LEIAUTE_VIGENTE e REGRA_SEM_LEIAUTE",
+                    "motivo": "Dependem de tabelas que não estão no manual."
+                  },
+                  {
+                    "item": "Valores de campos que dependem de tabela externa ou dinâmica",
+                    "motivo": "As tabelas ficam fora do manual, como a planilha de tabelas dinâmicas (p. 620)."
+                  },
+                  {
+                    "item": "Tamanho exato dos campos",
+                    "motivo": "O manual diverge: a p. 59 fala em tamanho exato, e a p. 34 mostra valores de tamanho variável. Só o máximo foi conferido."
+                  },
+                  {
+                    "item": "Ocorrência mínima e máxima de 43 registros: C051, C150, C155, C157, E155, J051, K156, K356, K915, K935, L200, M300, M350, N500, N610, N615, N650, N660, P030, P200, P300, P400, P500, S100, S150, S200, S300, S500, S700, U030, U182, V010, W250, X350, X351, X352, X353, X354, X355, X356, Y681, 9100, 9900",
+                    "motivo": "O cabeçalho de cada registro (página em docs/catalogo/ecf-leiaute-12.md) e a Tabela de Registros (p. 43 a 58) divergem (REQ-ESTRUT-011)."
+                  },
+                  {
+                    "item": "Hierarquia dos registros X451 e Y650",
+                    "motivo": "O nível do cabeçalho e o da Tabela de Registros divergem (REQ-ESTRUT-011)."
+                  },
+                  {
+                    "item": "Ordem entre registros irmãos",
+                    "motivo": "O manual só diz que a ordem é sequencial (p. 58); foram conferidas a ordem dos blocos e a hierarquia."
+                  },
+                  {
+                    "item": "Fim de linha CR LF",
+                    "motivo": "O texto que chega pela Sofia pode ter as quebras de linha trocadas."
+                  },
+                  {
+                    "item": "Campos do tipo D (X280.VIG_INI e X280.VIG_FIM)",
+                    "motivo": "O tipo não está definido no manual (p. 33)."
+                  },
+                  {
+                    "item": "Duplicidade no Registro V100",
+                    "motivo": "A chave do registro está vazia no cabeçalho (p. 424)."
                   }
                 ]
               }
@@ -187,8 +266,8 @@ Para quem mantém a Sofia e para o agente validador que recebe o resultado depoi
 | Campo | Significado |
 | --- | --- |
 | `veredito` | Como a ECF está: `conforme`, `conforme-com-ressalvas`, `recusado`, `parcial` ou `nao-avaliado`. |
-| `achados` | O que corrigir, com registro, linha, campo, valor encontrado, orientação e fonte com página. A regra fica em `regra` (as do manual, como `REGRA_OCORRENCIA_UNITARIA_ARQ`) ou no início de `fundamento` (as estruturais, como `EST-CAMPO-006 0000.IND_SIT_INI_PER`; lista no design da mudança 08, D2). |
-| `naoVerificados` e `observacoes` | O que ficou de fora, como o leiaute identificado, documentos que não são ECF e etapas não realizadas. |
+| `achados` | O que corrigir, com registro, linha, campo, valor encontrado, orientação e fonte com página. O campo `regra` começa pelo identificador da regra, do manual (como `REGRA_OCORRENCIA_UNITARIA_ARQ`) ou estrutural (como `EST-CAMPO-006`; lista no design da mudança 08, D2), seguido do registro e do campo: `EST-CAMPO-006 0000.IND_SIT_INI_PER`. No envelope de `GET /analises/{id}`, o mesmo texto está em `fundamento`. |
+| `naoVerificados` e `observacoes` | O que ficou de fora, como o leiaute identificado, documentos que não são ECF e etapas não realizadas, cada uma com o motivo real: a consulta ao manual, por exemplo, diz que a busca está desligada. |
 | `idExecucaoAgente` | Identificador para consultar `GET /analises/{id}`, com o envelope completo. |
 | `erro.codigo` | Por que nada foi analisado, na tabela de desfechos. |
 
