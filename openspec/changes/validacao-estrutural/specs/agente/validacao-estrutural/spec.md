@@ -185,8 +185,8 @@ Fonte: Manual da ECF, leiaute 12 (23/07/2026), p. 38 (erro de estrutura impede a
 - **THEN** o achado da regra `EST-TOT-001` tem classe `observacao`, porque o Bloco C não é importado
 
 ### Requirement: REQ-ESTRUT-016 Divergência entre o manual e o programa da ECF
-Onde o manual e o programa da ECF divergem, o agente MUST NOT recusar o que o programa aceita: o valor aceito SHALL passar sem achado, e o que só o manual obriga SHALL gerar achado de classe `observacao`, citando o manual. O catálogo SHALL registrar o programa como fonte, com versão e descritor, em arquivo separado do que vem do manual. A única exceção é a falta do Registro 9999, que MUST continuar `impeditiva` (E05).
-Fonte: decisão E10 de Kaio Macedo (2026-11-08); programa da ECF 12.2.8, descritor 12003 versão 1, e testes na tela em `tests/Api.Agente.Tests/Dados/ecf/programa/resultados.md`.
+Onde o manual e o programa da ECF divergem, o agente MUST NOT recusar o que o programa aceita: o valor aceito SHALL passar sem achado, e o que só o manual obriga SHALL gerar `observacao`. O catálogo SHALL citar o programa como fonte. A única exceção é a falta do Registro 9999, que MUST continuar `impeditiva` (E05).
+Fonte: decisão E10 (2026-11-08); programa da ECF 12.2.8, descritor 12003 v1; `tests/Api.Agente.Tests/Dados/ecf/programa/resultados.md`.
 
 #### Scenario: Registro que só o programa tem
 - **GIVEN** uma ECF sintética com o Bloco S e o Registro `S990`, que o manual não cita
