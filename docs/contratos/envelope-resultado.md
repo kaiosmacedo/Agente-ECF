@@ -133,6 +133,10 @@ Saída real do serviço para a solicitação de `tests/Api.Agente.Tests/Fixtures
       "motivo": "Dependem de tabelas que não estão no manual."
     },
     {
+      "item": "Valores de campos que remetem a outro registro: M305, M310, M355, M360, M500 e M510",
+      "motivo": "A coluna de valores válidos cita o campo de outro registro, como [M010.COD_CTA_B] (p. 251). É cruzamento e fica para a mudança 09."
+    },
+    {
       "item": "Valores de campos que dependem de tabela externa ou dinâmica",
       "motivo": "As tabelas ficam fora do manual, como a planilha de tabelas dinâmicas (p. 620)."
     },
@@ -185,7 +189,7 @@ Saída real do serviço para a solicitação de `tests/Api.Agente.Tests/Fixtures
   "versoes": {
     "contrato": "1.2",
     "servico": "0.1.0+local",
-    "validadores": "ecf-l12-1.2.0"
+    "validadores": "ecf-l12-1.3.0"
   },
   "criadaEm": "2026-11-08T00:16:04.0492467+00:00",
   "concluidaEm": "2026-11-08T00:16:04.0913863+00:00",

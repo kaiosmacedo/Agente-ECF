@@ -98,6 +98,7 @@ Cada item entra em `naoVerificados`, com o motivo, e a etapa 4 fica concluída c
 | Regras `REGRA_...` de existência condicionada ao valor de um campo | 12 aplicações | Mudança 09, porque dependem do conteúdo |
 | Dígito verificador: `REGRA_VALIDA_CNPJ`, `REGRA_VALIDA_CPF_CNPJ` e outras | 13 aplicações | O algoritmo não está no manual (P01) |
 | `REGRA_LEIAUTE_VIGENTE` e `REGRA_SEM_LEIAUTE` | 2 | Dependem de tabelas fora do manual (mudança 07, D5) |
+| Valores que remetem ao campo de outro registro, como `[M010.COD_CTA_B]` | 8 campos (M305, M310, M355, M360, M500 e M510) | É cruzamento entre registros: mudança 09 |
 | Valores que dependem de tabela externa ou dinâmica | 141 campos | Tabelas fora do manual, como a planilha de tabelas dinâmicas (p. 620) e as do programa (E04) |
 | Tamanho exato | — | Divergência entre as p. 34 e 59 |
 | Ocorrência mínima e máxima onde cabeçalho e Tabela de Registros divergem | 47 registros | Divergência do manual (REQ-ESTRUT-011) |
@@ -202,6 +203,15 @@ O programa valida em duas fases, como a p. 38 descreve. A **importação** cobre
 **Decisões de Kaio Macedo (2026-11-08):** E05 a E09 do `proposal.md`, com as propostas do assistente. Só a E06 muda o comportamento.
 
 **Alcance da E06, testado depois da decisão:** o `0990` e o `J990` já eram recusados, e o programa recusou também os blocos J a Y com `IND_DAD` igual a 0 (13 erros de "Quantidade de linhas do bloco"). Importou sem apontamento o `C990` e o `9990` errados, e os blocos J a Y com `IND_DAD` igual a 1. A regra segue esse recorte, para o agente não recusar o que o programa aceita. Com o catálogo `ecf-l12-1.2.0`, o `9990` também passou para `EST-TOT-003`, como a D2 sempre disse: o validador o conferia em `EST-TOT-001`.
+
+### Revisão do catálogo (2026-11-08)
+
+Antes da revisão de Kaio Macedo (tarefa 1.4), o assistente conferiu o catálogo por dois caminhos independentes do gerador:
+
+- **Segunda leitura do Word:** um leitor escrito à parte conferiu número, nome, tipo, tamanho, decimal, valores e obrigatoriedade dos 1.122 campos, sem nenhuma diferença.
+- **Descritor do programa:** comparado com `descritor/escrituracao/estrutura12003/v1/descritor.xml`, de `lib/br.gov.serpro.sped.irpjpva/irpjpva-infra.jar`, no programa da ECF 12.2.8. Os 188 registros existem nele, na mesma ordem e com a mesma quantidade de campos, na mesma posição.
+
+**Defeito corrigido (catálogo `ecf-l12-1.3.0`):** o gerador tomava como valor literal a referência da coluna de valores válidos, como `[M010.COD_CTA_B]`, em 8 campos dos registros M305, M310, M355, M360, M500 e M510. O agente recusava toda linha real desses registros, porque só aceitava o texto `M010.COD_CTA_B`. A referência agora é cruzamento, da mudança 09, e consta de `naoVerificados`.
 
 ## Dimensionamento
 

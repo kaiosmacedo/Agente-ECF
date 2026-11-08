@@ -45,6 +45,39 @@ public sealed class ValidacaoEstruturalTests
         Assert.Contains(semPagina.Problemas(), problema => problema.StartsWith("fonte ausente", StringComparison.Ordinal));
     }
 
+    [Theory(DisplayName = "REQ-ESTRUT-008 Valor que remete a outro registro, como [M010.COD_CTA_B], é cruzamento: um código real não dá achado de valor")]
+    [InlineData("M305", 1)]
+    [InlineData("M310", 1)]
+    [InlineData("M310", 2)]
+    [InlineData("M355", 1)]
+    [InlineData("M360", 1)]
+    [InlineData("M360", 2)]
+    [InlineData("M500", 1)]
+    [InlineData("M510", 1)]
+    public void ReferenciaNaColunaDeValores(string registro, int campo)
+    {
+        var linhas = Valida().Split("\r\n").ToList();
+        linhas.Insert(linhas.FindIndex(linha => linha.StartsWith("|9001|", StringComparison.Ordinal)), EcfSintetica.LinhaValida(Catalogo, registro, (campo, "CONTA123")));
+
+        var resultado = Validar(string.Join("\r\n", linhas));
+
+        Assert.Null(Catalogo.Registro(registro)!.Campos[campo].Verificacoes.Valores);
+        Assert.Empty(Da(resultado, "EST-CAMPO-006"));
+    }
+
+    [Fact(DisplayName = "REQ-ESTRUT-008 Nenhuma lista de valores do catálogo tem referência ao campo de outro registro")]
+    public void CatalogoSemReferenciaNaLista()
+    {
+        var referencias =
+            from registro in Catalogo.Registros
+            from campo in registro.Campos
+            from valor in campo.Verificacoes.Valores?.Lista ?? []
+            where System.Text.RegularExpressions.Regex.IsMatch(valor, @"\A[0-9A-Z]\d{3}[._][A-Z_]+\z")
+            select $"{registro.Codigo}.{campo.Nome}: {valor}";
+
+        Assert.Empty(referencias);
+    }
+
     [Fact(DisplayName = "D12 A ECF sintética estruturalmente válida não gera nenhum achado, indício ou falha")]
     public void EcfValida()
     {
