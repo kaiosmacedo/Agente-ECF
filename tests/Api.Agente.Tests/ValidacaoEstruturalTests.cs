@@ -135,16 +135,42 @@ public sealed class ValidacaoEstruturalTests
         Assert.NotEmpty(Da(resultado, "EST-ORDEM-001"));
     }
 
-    [Theory(DisplayName = "REQ-ESTRUT-010 Contagens de encerramento divergentes geram achado de observação")]
+    [Theory(DisplayName = "REQ-ESTRUT-010 Contagens que o programa da ECF não confere geram achado de observação")]
     [InlineData("|9999|", "|9999|41|", "EST-TOT-003")]
-    [InlineData("|0990|", "|0990|9|", "EST-TOT-001")]
+    [InlineData("|9990|", "|9990|9|", "EST-TOT-003")]
     [InlineData("|9900|0030|", "|9900|0030|2|||", "EST-TOT-002")]
+    [InlineData("|C990|", "|C990|9|", "EST-TOT-001")]
     public void ContagemDivergente(string inicio, string nova, string regra)
     {
         var achado = Assert.Single(Validar(TrocarLinha(Valida(), inicio, nova)).Achados);
 
         Assert.StartsWith(regra, achado.Fundamento, StringComparison.Ordinal);
         Assert.Equal(ClasseDoAchado.Observacao, achado.Classe);
+    }
+
+    [Fact(DisplayName = "REQ-ESTRUT-015 Contagem errada no Bloco 0 é impeditiva: o programa da ECF recusa a importação (decisão E06)")]
+    public void ContagemDoBloco0()
+    {
+        var achado = Assert.Single(Validar(TrocarLinha(Valida(), "|0990|", "|0990|9|")).Achados);
+
+        Assert.StartsWith("EST-TOT-001", achado.Fundamento, StringComparison.Ordinal);
+        Assert.Equal(ClasseDoAchado.Impeditiva, achado.Classe);
+    }
+
+    /// <summary>O programa da ECF 12.2.8 recusou os blocos J a Y com IND_DAD igual a 0 e ignorou os mesmos blocos com IND_DAD igual a 1.</summary>
+    [Theory(DisplayName = "REQ-ESTRUT-015 Contagem errada em bloco com dados é impeditiva; em bloco sem dados, observação (decisão E06)")]
+    [InlineData("J", "0", true)]
+    [InlineData("K", "0", true)]
+    [InlineData("Y", "0", true)]
+    [InlineData("J", "1", false)]
+    [InlineData("Y", "1", false)]
+    public void ContagemDoBlocoConformeODado(string bloco, string indicador, bool impeditiva)
+    {
+        var texto = TrocarLinha(Valida(), "|9001|", $"|{bloco}001|{indicador}|\r\n|{bloco}990|9|\r\n|9001|0|");
+
+        var achado = Assert.Single(Da(Validar(texto), "EST-TOT-001"));
+
+        Assert.Equal(impeditiva ? ClasseDoAchado.Impeditiva : ClasseDoAchado.Observacao, achado.Classe);
     }
 
     [Fact(DisplayName = "REQ-ESTRUT-011 Ocorrência divergente no manual (C155) não gera achado e consta como não verificada")]

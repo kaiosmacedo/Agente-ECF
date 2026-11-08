@@ -41,7 +41,7 @@ internal sealed record ResultadoDaValidacaoEstrutural(
     IReadOnlyList<string> RegrasComFalha);
 
 /// <summary>
-/// Validação estrutural determinística da ECF pelo catálogo do leiaute (mudança 08; REQ-ESTRUT-001 a 014). Lê o texto em
+/// Validação estrutural determinística da ECF pelo catálogo do leiaute (mudança 08; REQ-ESTRUT-001 a 015). Lê o texto em
 /// uma passada e devolve os mesmos achados, na mesma ordem, para o mesmo texto e a mesma versão do catálogo (REQ-ESTRUT-004).
 /// O conteúdo dos campos é dado não confiável (P10): ele só é comparado, nunca interpretado.
 /// </summary>
@@ -61,6 +61,7 @@ internal sealed class ValidadorEstrutural(CatalogoDoLeiaute catalogo, Parametros
         // Linhas com código fora do leiaute: já acusadas por EST-ARQ-002, mas existem no arquivo e contam no 9900.
         private readonly Dictionary<string, int> desconhecidos = new(StringComparer.Ordinal);
         private readonly Dictionary<char, int> contagemPorBloco = [];
+        private readonly HashSet<char> blocosComDados = [];
         private readonly Dictionary<(long Pai, string Codigo), int> ocorrencias = [];
         private readonly HashSet<(long Pai, string Codigo, string Chave)> chaves = [];
         private readonly List<(int Linha, string Codigo, string Valor)> declaradosNoBloco = [];
@@ -343,7 +344,11 @@ internal sealed class ValidadorEstrutural(CatalogoDoLeiaute catalogo, Parametros
 
         private void GuardarContagens(int linha, string codigo, string[] campos)
         {
-            if (codigo.EndsWith("990", StringComparison.Ordinal) && campos.Length > 1)
+            if (codigo.EndsWith("001", StringComparison.Ordinal) && campos.Length > 1 && campos[1] == "0")
+            {
+                blocosComDados.Add(codigo[0]);
+            }
+            else if (codigo.EndsWith("990", StringComparison.Ordinal) && campos.Length > 1)
             {
                 declaradosNoBloco.Add((linha, codigo, campos[1]));
             }
@@ -375,12 +380,19 @@ internal sealed class ValidadorEstrutural(CatalogoDoLeiaute catalogo, Parametros
                 var real = contagemPorBloco.GetValueOrDefault(codigo[0]);
                 if (int.TryParse(valor, NumberStyles.None, CultureInfo.InvariantCulture, out var declarado) && declarado != real)
                 {
-                    AcharContagem(RegrasEstruturais.ContagemDoBloco, codigo, linha, valor,
+                    AcharContagem(codigo == "9990" ? RegrasEstruturais.ContagemDoArquivo : RegrasEstruturais.ContagemDoBloco, codigo, linha, valor,
                         string.Create(CultureInfo.InvariantCulture, $"O Registro {codigo} declara {declarado} registros no Bloco {codigo[0]}, e o bloco tem {real}, contando a abertura e o encerramento."),
-                        string.Create(CultureInfo.InvariantCulture, $"Informe {real} no campo 2 do Registro {codigo}."));
+                        string.Create(CultureInfo.InvariantCulture, $"Informe {real} no campo 2 do Registro {codigo}."),
+                        BlocoImportado(codigo[0]) ? SeveridadeDoAchado.Critica : SeveridadeDoAchado.Media);
                 }
             }
         }
+
+        /// <summary>
+        /// Contagem errada num bloco que a importação lê impede a importação (p. 38; REQ-ESTRUT-015, decisão E06). O Bloco 0 sempre é lido, e os
+        /// demais só com dados (IND_DAD igual a 0). Os blocos C e E não são importados (p. 41), e o Bloco 9 encerra o arquivo.
+        /// </summary>
+        private bool BlocoImportado(char bloco) => bloco == '0' || (blocosComDados.Contains(bloco) && bloco is not ('C' or 'E' or '9'));
 
         /// <summary>O 9900 traz cada registro do arquivo, inclusive ele mesmo (p. 616).</summary>
         private void VerificarContagensDo9900()
@@ -492,8 +504,8 @@ internal sealed class ValidadorEstrutural(CatalogoDoLeiaute catalogo, Parametros
         private void AcharNoCampo(string regra, RegistroDoCatalogo registro, CampoDoCatalogo campo, int linha, string? valor, string descricao, string orientacao) =>
             Achar(regra, registro, registro.Codigo, linha, campo, valor, descricao, orientacao, SeveridadeDoAchado.Critica);
 
-        private void AcharContagem(string regra, string codigo, int? linha, string valor, string descricao, string orientacao) =>
-            Achar(regra, catalogo.Registro(codigo), codigo, linha, null, valor, descricao, orientacao, SeveridadeDoAchado.Media);
+        private void AcharContagem(string regra, string codigo, int? linha, string valor, string descricao, string orientacao, SeveridadeDoAchado severidade = SeveridadeDoAchado.Media) =>
+            Achar(regra, catalogo.Registro(codigo), codigo, linha, null, valor, descricao, orientacao, severidade);
 
         private void Achar(
             string regra, RegistroDoCatalogo? registro, string codigo, int? linha, CampoDoCatalogo? campo, string? valor,

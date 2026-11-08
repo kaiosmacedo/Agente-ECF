@@ -98,7 +98,7 @@ Fonte: Manual da ECF, leiaute 12 (23/07/2026), p. 32, 42, 43, 58, 59 e 70 (`REGR
 - **THEN** existe um achado impeditivo de hierarquia na linha do J051
 
 ### Requirement: REQ-ESTRUT-010 Contagens de encerramento
-As quantidades dos registros x990, 9900, 9990 e 9999 SHALL conferir com as linhas do arquivo. A divergência SHALL gerar achado de classe `observacao`, porque o manual não declara tipo para ela.
+As quantidades dos registros x990, 9900, 9990 e 9999 SHALL conferir com as linhas do arquivo. A divergência SHALL gerar achado de classe `observacao`, porque o manual não declara tipo para ela, salvo o caso de REQ-ESTRUT-015.
 Fonte: Manual da ECF, leiaute 12 (23/07/2026), p. 41 e 42 (composição do arquivo e dos blocos), 108, 616, 618 e 619.
 
 #### Scenario: Total de linhas divergente
@@ -158,3 +158,22 @@ Fonte: Manual da ECF, leiaute 12 (23/07/2026), p. 73 (`0010.FORMA_TRIB_PER`) e 7
 - **GIVEN** um Registro 0010 sintético com `FORMA_TRIB_PER` igual a `RRRX`
 - **WHEN** a etapa 4 executa
 - **THEN** existe um achado impeditivo de valor no campo `FORMA_TRIB_PER`
+
+### Requirement: REQ-ESTRUT-015 Contagem de bloco que a importação lê
+A divergência no x990 de um bloco que a importação lê SHALL gerar achado de classe `impeditiva`, porque o programa da ECF recusa o arquivo. A importação lê o Bloco 0 e os blocos com `IND_DAD` igual a 0, exceto C e E.
+Fonte: Manual da ECF, leiaute 12 (23/07/2026), p. 38 (erro de estrutura impede a importação) e 41 (os blocos C e E não são importados); programa da ECF 12.2.8; decisão E06, de Kaio Macedo.
+
+#### Scenario: Contagem errada no Bloco 0
+- **GIVEN** uma ECF sintética com o Bloco 0 de 6 linhas e `0990.QTD_LIN` igual a `9`
+- **WHEN** a etapa 4 executa
+- **THEN** existe um achado de classe `impeditiva` da regra `EST-TOT-001`
+
+#### Scenario: Contagem errada em bloco sem dados
+- **GIVEN** uma ECF sintética com `K001.IND_DAD` igual a `1` e `K990.QTD_LIN` errado
+- **WHEN** a etapa 4 executa
+- **THEN** o achado da regra `EST-TOT-001` tem classe `observacao`
+
+#### Scenario: Contagem errada no Bloco C
+- **GIVEN** uma ECF sintética com `C990.QTD_LIN` errado
+- **WHEN** a etapa 4 executa
+- **THEN** o achado da regra `EST-TOT-001` tem classe `observacao`, porque o Bloco C não é importado
