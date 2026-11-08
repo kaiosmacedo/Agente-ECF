@@ -228,7 +228,7 @@ Todos são preenchidos pelo sistema, nunca pelo modelo (P13).
 | `sintese` | Texto curto sobre o resultado, a partir do veredito. |
 | `etapas` | As nove etapas de P03, sempre todas, cada uma com `numero`, `nome`, `estado`, `justificativa` e `causa`. A `causa` só vem em etapa com falha: `tecnica` torna o status `falha-tecnica`; `documento`, como `COD_VER` ausente, deixa a análise `parcial` (mudança 07, D7). |
 | `achados` | Lista de achados, descritos abaixo. |
-| `limitacoes` | Cada validação obrigatória não realizada, com o motivo, e as demais limitações da análise. |
+| `limitacoes` | Cada validação obrigatória não realizada, com o motivo, e as demais limitações da análise. O motivo de uma etapa que existe e não rodou é o real, como "a busca no manual está desligada na base de conhecimento" ou "o leiaute 7 ainda não tem catálogo de regras"; depois de uma falha, é "uma etapa anterior falhou"; "ainda não implementada nesta versão" só vale para as etapas 6 a 8. |
 | `naoVerificados` | O que o arquivo não prova, com `item` e `motivo`. Não muda o status nem o veredito, e fica vazio em `nao-avaliado`. |
 | `documentos` | Para cada documento: `idDocumento`, `hash` (SHA-256 do texto) e `caracteres`. O texto nunca é guardado. |
 | `identidade` | `usuarioPseudonimo` (SHA-256 de `usuario.nome`), `organizacao` (valor configurado) e `verificada`, sempre `false` nesta versão. |

@@ -40,6 +40,7 @@ internal sealed class Execucao
     private readonly List<ValidacaoNaoRealizada> naoRealizadas = [];
     private readonly List<DocumentoRecebido> documentos = [];
     private readonly Dictionary<string, IReadOnlyList<TrechoConsultado>> trechos = new(StringComparer.Ordinal);
+    private readonly Dictionary<Etapa, string> motivosDaNaoExecucao = [];
 
     private Execucao(Guid id, Guid idExecucaoSofia, Guid idSolicitacao, IdentidadeDeclarada identidade, DateTimeOffset criadaEm)
     {
@@ -85,6 +86,12 @@ internal sealed class Execucao
 
     /// <summary>Trechos recebidos por regra consultada, na chave de <see cref="Achado.ChaveDaRegra"/>.</summary>
     public IReadOnlyDictionary<string, IReadOnlyList<TrechoConsultado>> TrechosConsultados => trechos;
+
+    /// <summary>
+    /// Por que uma etapa que existe nesta versão não rodou, como a busca no manual desligada ou o leiaute sem catálogo
+    /// (REQ-RESULT-006). Etapa sem motivo registrado e sem falha anterior é etapa ainda não implementada.
+    /// </summary>
+    public IReadOnlyDictionary<Etapa, string> MotivosDaNaoExecucao => motivosDaNaoExecucao;
 
     /// <summary>Regra da tabela D2 do plano da mudança 03, nesta ordem.</summary>
     public StatusDaExecucao Status
@@ -144,7 +151,18 @@ internal sealed class Execucao
     public static Execucao Criar(Guid idExecucaoSofia, Guid idSolicitacao, IdentidadeDeclarada identidade, DateTimeOffset criadaEm) =>
         new(Guid.NewGuid(), idExecucaoSofia, idSolicitacao, identidade, criadaEm);
 
-    public void ConcluirEtapa(Etapa etapa) => etapas[etapa] = new EtapaDaExecucao(etapa, EstadoDaEtapa.Concluida);
+    public void ConcluirEtapa(Etapa etapa)
+    {
+        etapas[etapa] = new EtapaDaExecucao(etapa, EstadoDaEtapa.Concluida);
+        motivosDaNaoExecucao.Remove(etapa);
+    }
+
+    /// <summary>A etapa existe, mas não rodou nesta análise, pelo motivo dado (REQ-RESULT-006).</summary>
+    public void DeixarNaoExecutada(Etapa etapa, string motivo)
+    {
+        etapas[etapa] = new EtapaDaExecucao(etapa, EstadoDaEtapa.NaoExecutada);
+        motivosDaNaoExecucao[etapa] = motivo;
+    }
 
     /// <summary>
     /// Registra a falha e deixa as etapas dependentes como não executadas (REQ-EXEC-002). Só a falha de causa técnica
@@ -153,9 +171,11 @@ internal sealed class Execucao
     public void FalharEtapa(Etapa etapa, CausaDaFalha causa = CausaDaFalha.Tecnica)
     {
         etapas[etapa] = new EtapaDaExecucao(etapa, EstadoDaEtapa.ComFalha, Causa: causa);
+        motivosDaNaoExecucao.Remove(etapa);
         foreach (var dependente in FluxoDeEtapas.DependentesDe(etapa))
         {
             etapas[dependente] = new EtapaDaExecucao(dependente, EstadoDaEtapa.NaoExecutada);
+            motivosDaNaoExecucao.Remove(dependente);
         }
     }
 
@@ -168,6 +188,7 @@ internal sealed class Execucao
         }
 
         etapas[etapa] = new EtapaDaExecucao(etapa, EstadoDaEtapa.NaoAplicavel, justificativa);
+        motivosDaNaoExecucao.Remove(etapa);
     }
 
     public void AdicionarAchado(Achado achado) => achados.Add(achado);

@@ -95,6 +95,9 @@ internal static class MontadorDoEnvelope
     /// <summary>Quando a etapa 4 não roda, nenhum catálogo de validadores é usado.</summary>
     private const string VersaoDosValidadores = "nenhum";
 
+    /// <summary>Motivo de etapa que esta versão ainda não tem (hoje, as etapas 6 a 8).</summary>
+    public const string MotivoNaoImplementada = "ainda não implementada nesta versão";
+
     private static readonly Dictionary<Etapa, string> NomeDaEtapa = new()
     {
         [Etapa.Recepcao] = "Recepção",
@@ -197,14 +200,18 @@ internal static class MontadorDoEnvelope
         };
     }
 
-    /// <summary>Cada validação obrigatória não realizada, com o motivo (REQ-RESULT-006).</summary>
+    /// <summary>
+    /// Cada validação obrigatória não realizada, com o motivo (REQ-RESULT-006): o registrado pela etapa que existe e não
+    /// rodou; depois de uma falha, a falha; sem nenhum dos dois, a etapa ainda não existe nesta versão.
+    /// </summary>
     private static IEnumerable<string> ValidacoesNaoRealizadas(Execucao execucao)
     {
         var etapas = execucao.Etapas.ToDictionary(etapa => etapa.Etapa);
         var falhou = execucao.Etapas.Any(etapa => etapa.Estado == EstadoDaEtapa.ComFalha);
         foreach (var obrigatoria in FluxoDeEtapas.Obrigatorias.Where(etapa => etapas[etapa].Estado == EstadoDaEtapa.NaoExecutada))
         {
-            var motivo = falhou ? "uma etapa anterior falhou" : "ainda não implementada nesta versão";
+            var motivo = execucao.MotivosDaNaoExecucao.GetValueOrDefault(obrigatoria)
+                ?? (falhou ? "uma etapa anterior falhou" : MotivoNaoImplementada);
             yield return $"Etapa não realizada: {NomeDaEtapa[obrigatoria]}. Motivo: {motivo}.";
         }
     }

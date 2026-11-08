@@ -91,7 +91,7 @@ internal static class IdentificadorDeLeiaute
         var dtFin = campos.Length > CampoDtFin ? campos[CampoDtFin] : string.Empty;
         if (!DateOnly.TryParseExact(dtFin, "ddMMyyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var fim))
         {
-            return Ambigua(codVer, null, "DT_FIN fora do formato ddmmaaaa (Registro 0000, campo 11).");
+            return Ambigua(codVer, null, "DT_FIN vazio ou não é uma data válida em ddmmaaaa (Registro 0000, campo 11).");
         }
 
         var sitEspecial = campos.Length > CampoSitEspecial ? campos[CampoSitEspecial] : string.Empty;
