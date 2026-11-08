@@ -2,7 +2,7 @@
 
 Como a Sofia aciona o Agente-ECF. Requisitos em `openspec/changes/servidor-a2a/` e regras em RA-07, SQ-12 e SQ-13 da constitution. O contrato de negócio é compartilhado entre os agentes da turma e está em [`.claude/skills/sofia-a2a-contrato/references/contrato-sofia-v1.md`](../../.claude/skills/sofia-a2a-contrato/references/contrato-sofia-v1.md).
 
-**Situação:** em produção desde 2026-11-05. Desde a mudança 07, o agente reconhece a ECF, recusa o que não é ECF e identifica o leiaute pelo `COD_VER`. Ele ainda não valida o conteúdo: toda ECF aceita termina com status `parcial`, sem achados, e declara as validações não realizadas. Sem autenticação nem token (SQ-12): use somente dados sintéticos ou anonimizados.
+**Situação:** em produção desde 2026-11-05. O agente reconhece a ECF e identifica o leiaute (mudança 07) e valida a estrutura do leiaute 12: registros, campos, hierarquia, ocorrências e contagens (mudança 08). Com erro de estrutura impeditivo, o veredito é `recusado`, e cada achado diz o que corrigir; sem ele, é `parcial`, porque as regras de conteúdo (09) e a análise (10) ainda não existem. Sem autenticação nem token (SQ-12): use somente dados sintéticos ou anonimizados.
 
 ## Identificação
 
@@ -187,7 +187,7 @@ Para quem mantém a Sofia e para o agente validador que recebe o resultado depoi
 | Campo | Significado |
 | --- | --- |
 | `veredito` | Como a ECF está: `conforme`, `conforme-com-ressalvas`, `recusado`, `parcial` ou `nao-avaliado`. |
-| `achados` | O que corrigir, com registro, linha, campo, valor encontrado, orientação e fonte com página. |
+| `achados` | O que corrigir, com registro, linha, campo, valor encontrado, orientação e fonte com página. A regra fica em `regra` (as do manual, como `REGRA_OCORRENCIA_UNITARIA_ARQ`) ou no início de `fundamento` (as estruturais, como `EST-CAMPO-006 0000.IND_SIT_INI_PER`; lista no design da mudança 08, D2). |
 | `naoVerificados` e `observacoes` | O que ficou de fora, como o leiaute identificado, documentos que não são ECF e etapas não realizadas. |
 | `idExecucaoAgente` | Identificador para consultar `GET /analises/{id}`, com o envelope completo. |
 | `erro.codigo` | Por que nada foi analisado, na tabela de desfechos. |

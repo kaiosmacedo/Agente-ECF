@@ -8,4 +8,4 @@
 *.zip binary
 
 # ECF sintéticas: ISO 8859-1 e CR LF, como o manual pede (mudança 07).
-tests/Api.Agente.Tests/Dados/ecf/*.txt -text
+tests/Api.Agente.Tests/Dados/ecf/**/*.txt -text

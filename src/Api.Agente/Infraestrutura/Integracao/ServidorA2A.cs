@@ -15,7 +15,6 @@ internal static class ServidorA2A
         servicos.AdicionarOpcoesValidadas<OpcoesA2A>(configuracao, OpcoesA2A.Secao);
         servicos.AddHttpContextAccessor();
         servicos.AddSingleton(TimeProvider.System);
-        servicos.AddSingleton<ProcessadorDeSolicitacoes>();
         servicos.AddSingleton<ITaskStore, ArmazemDeTarefas>();
 
         // O SDK lê as capacidades deste cartão; o endereço real vem das opções validadas, abaixo.

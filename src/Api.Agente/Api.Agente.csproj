@@ -10,6 +10,8 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Infraestrutura\Persistencia\Migracoes\*.sql" />
+    <!-- Catálogo estrutural do leiaute 12, gerado da versão em Word do manual (mudança 08, D1). -->
+    <EmbeddedResource Include="Dominio\Leiaute\ecf-leiaute-12.json" LogicalName="ecf-leiaute-12.json" />
   </ItemGroup>
 
   <ItemGroup>

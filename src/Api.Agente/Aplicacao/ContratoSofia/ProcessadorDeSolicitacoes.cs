@@ -15,9 +15,13 @@ internal sealed record DesfechoDaSolicitacao(ResultadoAnaliseSofia? Resultado, s
 /// Entrada do canal A2A (REQ-A2A-002): lê o contrato SOFIA, valida os identificadores e o contrato, entrega o pedido
 /// normalizado ao serviço de análise, registra a execução e projeta o resultado. O conteúdo é dado não confiável (P10).
 /// </summary>
-internal sealed class ProcessadorDeSolicitacoes(IRepositorioDeExecucoes repositorio, AmbienteDaAnalise ambiente, TimeProvider relogio)
+internal sealed class ProcessadorDeSolicitacoes(IRepositorioDeExecucoes repositorio, ServicoDeAnalise servico)
 {
-    private readonly ServicoDeAnalise servico = new(ambiente, relogio);
+    /// <summary>Sem catálogo nem consulta ao manual: as etapas 4 e 5 não rodam. Para os testes do contrato.</summary>
+    public ProcessadorDeSolicitacoes(IRepositorioDeExecucoes repositorio, AmbienteDaAnalise ambiente, TimeProvider relogio)
+        : this(repositorio, new ServicoDeAnalise(ambiente, relogio))
+    {
+    }
 
     public async Task<DesfechoDaSolicitacao> ProcessarAsync(string json, string? correlacao, CancellationToken cancelamento)
     {
@@ -40,7 +44,7 @@ internal sealed class ProcessadorDeSolicitacoes(IRepositorioDeExecucoes reposito
         {
             // Retentativa da mesma chamada devolve o que já foi registrado (D7).
             var envelope = await repositorio.BuscarPorSolicitacaoAsync(Guid.Parse(solicitacao.IdSolicitacao!), cancelamento)
-                ?? await repositorio.RegistrarAsync(Analisar(solicitacao, correlacao), cancelamento);
+                ?? await repositorio.RegistrarAsync(await AnalisarAsync(solicitacao, correlacao, cancelamento), cancelamento);
             return new DesfechoDaSolicitacao(ProjecaoParaSofia.Projetar(envelope), null);
         }
         catch (FalhaDoRepositorio)
@@ -49,16 +53,17 @@ internal sealed class ProcessadorDeSolicitacoes(IRepositorioDeExecucoes reposito
         }
     }
 
-    private EnvelopeDoResultado Analisar(SolicitacaoAnaliseSofia solicitacao, string? correlacao)
+    private Task<EnvelopeDoResultado> AnalisarAsync(SolicitacaoAnaliseSofia solicitacao, string? correlacao, CancellationToken cancelamento)
     {
         var erro = ValidarContrato(solicitacao);
         IReadOnlyList<DocumentoDoPedido> documentos = erro is null
             ? [.. solicitacao.Documentos!.Select(documento => new DocumentoDoPedido(documento.IdDocumento!, documento.Texto!, Hash(documento.Texto!)))]
             : [];
-        return servico.Analisar(
+        return servico.AnalisarAsync(
             new PedidoDeAnalise(
                 Guid.Parse(solicitacao.IdExecucao!), Guid.Parse(solicitacao.IdSolicitacao!), CanalDaAnalise.A2A, solicitacao.Usuario?.Nome, documentos, erro),
-            correlacao);
+            correlacao,
+            cancelamento);
     }
 
     private static ErroDoEnvelope? ValidarContrato(SolicitacaoAnaliseSofia solicitacao)

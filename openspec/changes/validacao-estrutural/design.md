@@ -142,6 +142,20 @@ A descrição da skill passa a dizer que o agente valida a estrutura da ECF do l
 - **Desempenho:** ECF sintética de 4 MiB validada dentro de um tempo registrado no PR.
 - **Adversarial:** instrução escrita num campo `C` não muda achados nem veredito (P10).
 
+## Ajustes na implementação (2026-11-07)
+
+Mudanças em relação ao plano aprovado, sem efeito nos requisitos:
+
+- **Campo `REG`:** é conferido pela existência do registro, e a coluna de valores válidos dele só serve para registrar divergência do manual. O Registro Y681 traz `[X681]` no `REG` (p. 596), erro de digitação do manual, que vai para a lista de divergências do catálogo (REQ-ESTRUT-011).
+- **Listas de valores:** só listas de valores literais, separados por ponto e vírgula ou vírgula, são conferidas; listas com faixas por extenso, como `X370.TIPO_DEMAIS`, ficam sem verificação.
+- **Tamanho de `N` e `NS`:** conta só os algarismos, sem sinal e vírgula, porque o manual não diz se eles entram no tamanho. Evita achado falso.
+- **`NS` com vírgula:** o tipo aceita a vírgula; quem decide as casas decimais é `EST-CAMPO-004`.
+- **Datas:** campos `DT_` de tamanho 8, do tipo `N` ou `C`.
+- **`EST-OCOR-002` e as aberturas de bloco:** para os x001, vale `REGRA_OCORRENCIA_UNITARIA_ARQ`, para não dar dois achados do mesmo problema.
+- **`9999.QTD_LIN`:** aceita a contagem de linhas físicas ou de registros, que só diferem quando o Y800 ocupa várias linhas.
+- **Etapa 5 no fluxo:** a etapa 5 roda depois da etapa 4 concluída, com as consultas da mudança 06 (tarefa 5.3). Sem achado, ela fica não aplicável.
+- **Gerador e arquivos de teste:** `gerar-catalogo.sh` baixa os originais e confere os hashes; `gerar-ecf-sintetica.py` faz a ECF estruturalmente válida dos testes; `gerar-gabarito.py` faz os 12 arquivos do gabarito, com `erros-esperados.md`.
+
 ## Dimensionamento
 
 Sem provedor pago. Uma passada linear sobre até 4 MiB de texto. O catálogo do leiaute 12 tem 188 registros e 1.122 campos, algumas dezenas de KB em JSON.

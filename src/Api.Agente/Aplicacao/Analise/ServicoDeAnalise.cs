@@ -1,4 +1,5 @@
 using System.Globalization;
+using Api.Agente.Aplicacao.Conhecimento;
 using Api.Agente.Aplicacao.Execucoes;
 using Api.Agente.Dominio.Execucoes;
 using Api.Agente.Dominio.Leiaute;
@@ -39,13 +40,19 @@ internal sealed record AmbienteDaAnalise(
 /// Serviço de aplicação comum aos canais: executa as etapas 1 a 3 do fluxo (P03) sobre o pedido normalizado e monta o
 /// envelope. O conteúdo recebido é dado não confiável (P10): ele só é lido, nunca interpretado como instrução.
 /// </summary>
-internal sealed class ServicoDeAnalise(AmbienteDaAnalise ambiente, TimeProvider relogio, Func<string, IdentificacaoDoLeiaute>? identificador = null)
+internal sealed class ServicoDeAnalise(
+    AmbienteDaAnalise ambiente,
+    TimeProvider relogio,
+    Func<string, IdentificacaoDoLeiaute>? identificador = null,
+    IReadOnlyDictionary<int, CatalogoDoLeiaute>? catalogos = null,
+    EtapaDeConsultaAoManual? consultaAoManual = null,
+    ParametrosDaValidacao? validacao = null)
 {
     private readonly Func<string, IdentificacaoDoLeiaute> identificar = identificador ?? IdentificadorDeLeiaute.Identificar;
 
     public const string LimitacaoDocumentoCortado = "documento cortado antes de chegar ao agente";
 
-    public EnvelopeDoResultado Analisar(PedidoDeAnalise pedido, string? correlacao)
+    public async Task<EnvelopeDoResultado> AnalisarAsync(PedidoDeAnalise pedido, string? correlacao, CancellationToken cancelamento)
     {
         var execucao = Execucao.Criar(
             pedido.IdExecucaoExterna,
@@ -81,6 +88,15 @@ internal sealed class ServicoDeAnalise(AmbienteDaAnalise ambiente, TimeProvider 
             }
 
             Identificar(execucao, ecf!);
+            if (execucao.Leiaute is { Situacao: SituacaoDaIdentificacao.Identificado, Leiaute: { } leiaute } && !ReconhecedorDeEcf.CortadoPelaSofia(ecf!.Texto))
+            {
+                ValidarEstrutura(execucao, ecf, leiaute);
+                if (consultaAoManual is not null && execucao.Etapas.Any(etapa => etapa.Etapa == Etapa.ValidacaoEstrutural && etapa.Estado == EstadoDaEtapa.Concluida))
+                {
+                    await consultaAoManual.ExecutarAsync(execucao, ManualDaVersao.DaEcf(leiaute), correlacao, cancelamento);
+                }
+            }
+
             sintese = Sintese(execucao);
         }
 
@@ -189,11 +205,66 @@ internal sealed class ServicoDeAnalise(AmbienteDaAnalise ambiente, TimeProvider 
         }
     }
 
+    /// <summary>Etapa 4 (mudança 08): o catálogo do leiaute, ou a limitação para os leiautes sem catálogo (D7).</summary>
+    private void ValidarEstrutura(Execucao execucao, DocumentoDoPedido ecf, int leiaute)
+    {
+        if (catalogos?.GetValueOrDefault(leiaute) is not { } catalogo)
+        {
+            execucao.AdicionarLimitacao(string.Create(CultureInfo.InvariantCulture, $"catálogo de regras do leiaute {leiaute} ainda não cadastrado"));
+            return;
+        }
+
+        var resultado = new ValidadorEstrutural(catalogo, validacao ?? new ParametrosDaValidacao()).Validar(ecf.Texto, ecf.IdDocumento);
+        execucao.RegistrarValidadores(catalogo.VersaoDoCatalogo);
+        foreach (var achado in resultado.Achados)
+        {
+            execucao.AdicionarAchado(achado);
+        }
+
+        foreach (var (regra, quantidade) in resultado.NaoListadosPorRegra.OrderBy(par => par.Key, StringComparer.Ordinal))
+        {
+            execucao.AdicionarLimitacao(string.Create(CultureInfo.InvariantCulture, $"{quantidade} achado(s) da regra {regra} não listados, pelo limite da lista"));
+        }
+
+        foreach (var indicio in resultado.Indicios)
+        {
+            execucao.AdicionarObservacao(indicio);
+        }
+
+        foreach (var naoRealizada in resultado.NaoRealizadas)
+        {
+            execucao.AdicionarNaoRealizada(naoRealizada);
+        }
+
+        if (resultado.RegrasComFalha.Count == 0)
+        {
+            execucao.ConcluirEtapa(Etapa.ValidacaoEstrutural);
+            return;
+        }
+
+        // Falha de uma regra é do sistema, não do documento (REQ-ESTRUT-006; D8).
+        execucao.FalharEtapa(Etapa.ValidacaoEstrutural, CausaDaFalha.Tecnica);
+        foreach (var regra in resultado.RegrasComFalha)
+        {
+            execucao.AdicionarAchado(Achado.Criar(
+                $"ach-falha-{regra}",
+                CategoriaDoAchado.FalhaTecnica,
+                OrigemDoAchado.Sistema,
+                regra,
+                $"A regra {regra} falhou por erro interno e não foi verificada; nenhum erro foi atribuído ao documento por essa falha.",
+                SeveridadeDoAchado.Media));
+            execucao.AdicionarLimitacao($"regra {regra} não verificada por falha técnica");
+        }
+    }
+
     private static string Sintese(Execucao execucao) => execucao.Leiaute switch
     {
+        { Situacao: SituacaoDaIdentificacao.Identificado } leiaute when execucao.VersaoDosValidadores is not null => string.Create(
+            CultureInfo.InvariantCulture,
+            $"ECF do leiaute {leiaute.Leiaute} recebida e validada na estrutura: {execucao.Achados.Count(achado => achado.Deterministico)} achado(s) estrutural(is). As regras de conteúdo e a análise ainda não existem, então nenhuma conformidade é declarada."),
         { Situacao: SituacaoDaIdentificacao.Identificado } leiaute => string.Create(
             CultureInfo.InvariantCulture,
-            $"ECF do leiaute {leiaute.Leiaute} recebida. Esta versão ainda não executa as validações de conteúdo: nenhum achado foi produzido e nenhuma conformidade é declarada."),
+            $"ECF do leiaute {leiaute.Leiaute} recebida. A validação estrutural não rodou para ela: nenhum achado foi produzido e nenhuma conformidade é declarada."),
         _ => "ECF recebida, mas o leiaute não pôde ser identificado ou não é suportado: nenhuma validação dependente de versão foi executada.",
     };
 

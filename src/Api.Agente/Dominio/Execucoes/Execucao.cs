@@ -37,6 +37,7 @@ internal sealed class Execucao
     private readonly List<Achado> achados = [];
     private readonly List<string> limitacoes = [];
     private readonly List<string> observacoes = [];
+    private readonly List<ValidacaoNaoRealizada> naoRealizadas = [];
     private readonly List<DocumentoRecebido> documentos = [];
     private readonly Dictionary<string, IReadOnlyList<TrechoConsultado>> trechos = new(StringComparer.Ordinal);
 
@@ -72,6 +73,12 @@ internal sealed class Execucao
     public IReadOnlyList<string> Observacoes => observacoes;
 
     public IReadOnlyList<DocumentoRecebido> Documentos => documentos;
+
+    /// <summary>O que a validação estrutural não verificou, com o motivo (REQ-ESTRUT-002).</summary>
+    public IReadOnlyList<ValidacaoNaoRealizada> NaoRealizadas => naoRealizadas;
+
+    /// <summary>Versão do catálogo usado na etapa 4, ou nula quando ela não rodou (P19).</summary>
+    public string? VersaoDosValidadores { get; private set; }
 
     /// <summary>O que a etapa 3 identificou, ou o motivo de não identificar (REQ-LEIAUTE-001).</summary>
     public IdentificacaoDoLeiaute? Leiaute { get; private set; }
@@ -168,6 +175,10 @@ internal sealed class Execucao
     public void AdicionarLimitacao(string limitacao) => limitacoes.Add(limitacao);
 
     public void AdicionarObservacao(string observacao) => observacoes.Add(observacao);
+
+    public void AdicionarNaoRealizada(ValidacaoNaoRealizada validacao) => naoRealizadas.Add(validacao);
+
+    public void RegistrarValidadores(string versao) => VersaoDosValidadores = versao;
 
     public void RegistrarDocumento(DocumentoRecebido documento) => documentos.Add(documento);
 

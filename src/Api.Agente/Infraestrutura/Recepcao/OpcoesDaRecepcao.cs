@@ -1,6 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using Api.Agente.Aplicacao.Analise;
+using Api.Agente.Aplicacao.Conhecimento;
+using Api.Agente.Aplicacao.ContratoSofia;
+using Api.Agente.Aplicacao.Execucoes;
+using Api.Agente.Dominio.Leiaute;
 using Api.Agente.Infraestrutura.Configuracao;
 using Api.Agente.Infraestrutura.Integracao;
 using Api.Agente.Infraestrutura.Observabilidade;
@@ -56,7 +60,20 @@ internal static class RegistroDaRecepcao
                 recepcao.TamanhoMaximoDaLinha,
                 recepcao.MaximoDeLinhas);
         });
-        servicos.AddSingleton(provedor => new ServicoDeAnalise(provedor.GetRequiredService<AmbienteDaAnalise>(), provedor.GetRequiredService<TimeProvider>()));
+        servicos.AdicionarOpcoesValidadas<OpcoesDaValidacaoEstrutural>(configuracao, OpcoesDaValidacaoEstrutural.Secao);
+        servicos.AddSingleton(_ => CatalogosDosLeiautes.Ler());
+        servicos.AddSingleton(provedor =>
+        {
+            var limites = provedor.GetRequiredService<IOptions<OpcoesDaValidacaoEstrutural>>().Value;
+            return new ServicoDeAnalise(
+                provedor.GetRequiredService<AmbienteDaAnalise>(),
+                provedor.GetRequiredService<TimeProvider>(),
+                catalogos: provedor.GetRequiredService<IReadOnlyDictionary<int, CatalogoDoLeiaute>>(),
+                consultaAoManual: provedor.GetRequiredService<EtapaDeConsultaAoManual>(),
+                validacao: new ParametrosDaValidacao(limites.MaximoDeAchadosPorRegra, limites.MaximoDeAchados));
+        });
+        servicos.AddSingleton(provedor => new ProcessadorDeSolicitacoes(
+            provedor.GetRequiredService<IRepositorioDeExecucoes>(), provedor.GetRequiredService<ServicoDeAnalise>()));
         return servicos;
     }
 }

@@ -15,7 +15,7 @@ internal static class ContratoDeTeste
 
     /// <summary>
     /// A solicitação de exemplo do contrato, com um ajuste opcional. O primeiro documento vira uma ECF sintética do
-    /// leiaute 12 (mudança 07); o segundo continua um documento que não é ECF.
+    /// leiaute 12, estruturalmente válida (mudanças 07 e 08); o segundo continua um documento que não é ECF.
     /// </summary>
     public static string Solicitacao(Action<JsonObject>? ajuste = null)
     {
@@ -23,7 +23,7 @@ internal static class ContratoDeTeste
         var ecf = solicitacao["documentos"]![0]!;
         ecf["nome"] = "ecf-2025.txt";
         ecf["tipo"] = "text/plain";
-        ecf["texto"] = EcfSintetica.Texto();
+        ecf["texto"] = EcfSintetica.Estrutural();
         ajuste?.Invoke(solicitacao);
         return solicitacao.ToJsonString();
     }

@@ -9,9 +9,11 @@ TEMPORARIO=$(mktemp -d)
 # Banco descartável de cada serviço, na imagem do compose. Sem senha: só existe durante este teste, em rede própria.
 REDE=agente-ecf-ci
 BANCO=agente-ecf-ci-banco
+RAG=agente-ecf-ci-rag
 CONEXAO="Host=$BANCO;Database=postgres;Username=postgres"
 
 remover_banco() {
+  docker rm -f "$RAG" > /dev/null 2>&1 || true
   docker rm -f "$BANCO" > /dev/null 2>&1 || true
   docker network rm "$REDE" > /dev/null 2>&1 || true
   rm -rf "$TEMPORARIO" 2> /dev/null || true
@@ -52,13 +54,23 @@ falhar() {
   exit 1
 }
 
+# ECF sintéticas dos testes (SQ-10): uma estruturalmente válida e uma mínima, com erros de estrutura (mudança 08).
+ECF_VALIDA=tests/Api.Agente.Tests/Dados/ecf/ecf-leiaute-12-estrutural.txt
+ECF_COM_ERROS=tests/Api.Agente.Tests/Dados/ecf/ecf-leiaute-12.txt
+
+# SendMessage com uma ECF do arquivo dado, no contrato SOFIA v1.0.
+corpo_a2a() {
+  jq -n --arg ecf "$(cat "$1")" --arg solicitacao "$2" \
+    '({versaoContrato:"1.0",idExecucao:"8b2f0ad6-c2e4-4a68-8bdd-20f785bc798e",idSolicitacao:$solicitacao,usuario:{nome:"Usuario Teste"},pergunta:"Valide esta ECF",documentos:[{idDocumento:"doc-001",nome:"ecf.txt",tipo:"text/plain",texto:$ecf}]} | tojson) as $texto
+     | {jsonrpc:"2.0",id:"ci",method:"SendMessage",params:{message:{role:"ROLE_USER",messageId:"5f92c2ba-6870-4862-87ba-1ae8669a77f4",parts:[{text:$texto}]}}}'
+}
+
 # Cartão e SendMessage com dados sintéticos: Task concluída, com o resultado do contrato no Artifact.
 testar_a2a() {
   local id="$1" corpo resposta execucao
   curl -fsS "http://localhost:8080/.well-known/agent-card.json" | jq -e '.supportedInterfaces[0].protocolVersion == "1.0" and .skills[0].id == "analisar_documentos"' > /dev/null \
     || falhar "$id" "Cartão do agente inválido."
-  corpo=$(jq -n --arg texto '{"versaoContrato":"1.0","idExecucao":"8b2f0ad6-c2e4-4a68-8bdd-20f785bc798e","idSolicitacao":"e1b3a4cb-d729-4bd4-b796-b9c94be07b46","usuario":{"nome":"Usuario Teste"},"pergunta":"Analise o documento","documentos":[{"idDocumento":"doc-001","nome":"ecf.txt","texto":"|0000|LECF|0012|11111111000191|EMPRESA SINTETICA DE TESTE|0|0|||01012025|31122025|N||0||\r\n|9999|2|\r\n"}]}' \
-    '{jsonrpc:"2.0",id:"ci",method:"SendMessage",params:{message:{role:"ROLE_USER",messageId:"5f92c2ba-6870-4862-87ba-1ae8669a77f4",parts:[{text:$texto}]}}}')
+  corpo=$(corpo_a2a "$ECF_VALIDA" e1b3a4cb-d729-4bd4-b796-b9c94be07b46)
   resposta=$(curl -fsS -X POST "http://localhost:8080/a2a" -H "Content-Type: application/json" -H "A2A-Version: 1.0" -d "$corpo")
   echo "$resposta" | jq -e '.result.task.status.state == "TASK_STATE_COMPLETED" and (.result.task.artifacts[0].parts[0].text | fromjson | .status == "parcial" and .veredito == "parcial" and .idSolicitacao == "e1b3a4cb-d729-4bd4-b796-b9c94be07b46")' > /dev/null \
     || falhar "$id" "SendMessage não devolveu o resultado do contrato."
@@ -72,7 +84,7 @@ testar_a2a() {
     || falhar "$id" "O documento OpenAPI não descreve /analises."
   # REST com a mesma ECF sintética, em ISO 8859-1 e CR LF, como o manual pede (mudança 07, REQ-RECEPCAO-001 e 008).
   mkdir -p "$TEMPORARIO"
-  printf '|0000|LECF|0012|11111111000191|EMPRESA SINTETICA DE TESTE|0|0|||01012025|31122025|N||0||\r\n|9999|2|\r\n' > "$TEMPORARIO/ecf.txt"
+  cp "$ECF_VALIDA" "$TEMPORARIO/ecf.txt"
   (cd "$TEMPORARIO" && curl -fsS -X POST "http://localhost:8080/analises" -F "arquivo=@ecf.txt;type=text/plain") \
     | jq -e '.canal == "rest" and .status == "parcial" and .leiaute.leiaute == 12 and .leiaute.codVer == "0012"' > /dev/null \
     || falhar "$id" "POST /analises não identificou o leiaute da ECF."
@@ -162,3 +174,23 @@ for servico in Api.Agente Api.RAG; do
 
   echo "::endgroup::"
 done
+
+# Ponta a ponta (mudança 08, tarefa 5.3): a ECF com erros de estrutura gera achados, a etapa 5 chama a ferramenta MCP
+# da Api.RAG real, e a busca desligada vira limitação, sem falha técnica (REQ-CONSULTA-007).
+echo "::group::Api.Agente com a Api.RAG"
+subir_banco
+docker run --rm --network "$REDE" -e "ConnectionStrings__Execucoes=$CONEXAO" agente-ecf-api-agente:ci --migrar > /dev/null
+docker run --rm --network "$REDE" -e "ConnectionStrings__Conhecimento=$CONEXAO" agente-ecf-api-rag:ci --migrar > /dev/null
+docker run -d --name "$RAG" --network "$REDE" -e "ConnectionStrings__Conhecimento=$CONEXAO" agente-ecf-api-rag:ci > /dev/null
+id=$(docker run -d --network "$REDE" -e "ConnectionStrings__Execucoes=$CONEXAO" -e "Conhecimento__UrlDoServidorMcp=http://$RAG:8080/mcp" -p 8080:8080 agente-ecf-api-agente:ci)
+esperar_saude "http://localhost:8080/health/live" 30 || falhar "$id" "A Api.Agente não subiu com a Api.RAG."
+resposta=$(curl -fsS -X POST "http://localhost:8080/a2a" -H "Content-Type: application/json" -H "A2A-Version: 1.0" -d "$(corpo_a2a "$ECF_COM_ERROS" 0c6f1f6e-6a4b-4b8e-9d3a-2f7d1c9b5a10)")
+execucao=$(echo "$resposta" | jq -r '.result.task.artifacts[0].parts[0].text | fromjson | .idExecucaoAgente')
+curl -fsS "http://localhost:8080/analises/$execucao" \
+  | jq -e '.veredito == "recusado" and .status == "parcial" and ([.etapas[] | select(.numero == 4) | .estado] == ["concluida"])
+           and ([.etapas[] | select(.numero == 5) | .estado] == ["nao-executada"]) and (.limitacoes | index("consulta ao manual desativada")) != null' > /dev/null \
+  || falhar "$id" "A etapa 5 não consultou a Api.RAG por MCP ou não tratou a busca desligada."
+docker logs "$RAG" 2>&1 | jq -e -s 'any(.[]; .Message? == "Busca no manual recusada: busca_desativada")' > /dev/null \
+  || falhar "$id" "A Api.RAG não recebeu a chamada MCP da Api.Agente."
+docker rm -f "$id" "$RAG" > /dev/null
+echo "::endgroup::"
