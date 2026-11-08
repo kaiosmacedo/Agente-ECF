@@ -2,16 +2,16 @@
 
 Formato do resultado de uma execução, devolvido por `GET /analises/{id}`. Requisitos em `openspec/changes/execucao-e-resultado/` (REQ-RESULT-001 a 006, REQ-EXEC-001 a 006) e regras em P03 a P09, GD-03, GD-04 e GD-05 da constitution.
 
-**Situação:** o agente recebe a ECF e identifica o leiaute (mudança 07), mas ainda não valida o conteúdo. Toda ECF aceita termina com status e veredito `parcial`, com a revisão humana indicada e sem achados. Sem autenticação (SQ-12): a consulta não exige credencial nem restringe por organização, então use somente dados sintéticos ou anonimizados.
+**Situação:** o agente recebe a ECF, identifica o leiaute (mudança 07) e valida a estrutura do leiaute 12 (mudança 08). Uma ECF com erro de estrutura impeditivo termina com veredito `recusado` e o que corrigir; sem esse erro, termina `parcial`, porque as regras de conteúdo (09) e a análise (10) ainda não existem. Sem autenticação (SQ-12): a consulta não exige credencial nem restringe por organização, então use somente dados sintéticos ou anonimizados.
 
 ## Exemplo
 
-Saída real do serviço para a solicitação de `tests/Api.Agente.Tests/Fixtures/Sofia/solicitacao-exemplo.json`, com o primeiro documento trocado pela ECF sintética do leiaute 12 (`tests/Api.Agente.Tests/Dados/ecf/`), como nos testes. Um teste confere que este exemplo continua igual ao contrato.
+Saída real do serviço para a solicitação de `tests/Api.Agente.Tests/Fixtures/Sofia/solicitacao-exemplo.json`, com o primeiro documento trocado pela ECF sintética do leiaute 12 estruturalmente válida (`tests/Api.Agente.Tests/Dados/ecf/ecf-leiaute-12-estrutural.txt`), como nos testes, e a busca no manual desligada, como em produção. Um teste confere que este exemplo continua igual ao contrato.
 
 ```json
 {
   "versaoContrato": "1.2",
-  "idExecucao": "0b198f54-5004-4357-a3bb-2847f3eaad56",
+  "idExecucao": "ebfd4865-3797-4b52-b465-baf545cc057b",
   "idExecucaoSofia": "8b2f0ad6-c2e4-4a68-8bdd-20f785bc798e",
   "idSolicitacao": "e1b3a4cb-d729-4bd4-b796-b9c94be07b46",
   "idCorrelacao": "exemplo-doc-1",
@@ -23,7 +23,7 @@ Saída real do serviço para a solicitação de `tests/Api.Agente.Tests/Fixtures
     "graves": 0,
     "observacoes": 0
   },
-  "sintese": "Avaliação parcial: nem todas as validações foram realizadas. ECF do leiaute 12 recebida. Esta versão ainda não executa as validações de conteúdo: nenhum achado foi produzido e nenhuma conformidade é declarada.",
+  "sintese": "Avaliação parcial: nem todas as validações foram realizadas. ECF do leiaute 12 recebida e validada na estrutura: 0 achado(s) estrutural(is). As regras de conteúdo e a análise ainda não existem, então nenhuma conformidade é declarada.",
   "etapas": [
     {
       "numero": 1,
@@ -49,15 +49,15 @@ Saída real do serviço para a solicitação de `tests/Api.Agente.Tests/Fixtures
     {
       "numero": 4,
       "nome": "Validação estrutural",
-      "estado": "nao-executada",
+      "estado": "concluida",
       "justificativa": null,
       "causa": null
     },
     {
       "numero": 5,
       "nome": "Consulta ao manual",
-      "estado": "nao-executada",
-      "justificativa": null,
+      "estado": "nao-aplicavel",
+      "justificativa": "Nenhum achado a fundamentar no manual.",
       "causa": null
     },
     {
@@ -91,8 +91,6 @@ Saída real do serviço para a solicitação de `tests/Api.Agente.Tests/Fixtures
   ],
   "achados": [],
   "limitacoes": [
-    "Etapa não realizada: Validação estrutural. Motivo: ainda não implementada nesta versão.",
-    "Etapa não realizada: Consulta ao manual. Motivo: ainda não implementada nesta versão.",
     "Etapa não realizada: Ferramentas externas. Motivo: ainda não implementada nesta versão.",
     "Etapa não realizada: Análise com LLM. Motivo: ainda não implementada nesta versão.",
     "Etapa não realizada: Validação da saída. Motivo: ainda não implementada nesta versão."
@@ -121,13 +119,57 @@ Saída real do serviço para a solicitação de `tests/Api.Agente.Tests/Fixtures
     {
       "item": "REGRA_DV_RECIBO, REGRA_VALIDA_HASH_ARQUIVO, regras das tabelas dinâmicas fora do manual e fórmulas com funções sem definição",
       "motivo": "Não há algoritmo ou fonte acessível, e adotar um violaria P01."
+    },
+    {
+      "item": "Regras REGRA_ de conteúdo do manual: valores, cruzamentos entre registros, cálculos, preenchimento e existência condicionados",
+      "motivo": "Ficam para a mudança 09, de regras de negócio."
+    },
+    {
+      "item": "Dígito verificador de CNPJ, CPF e recibo (REGRA_VALIDA_CNPJ, REGRA_VALIDA_CPF_CNPJ e outras)",
+      "motivo": "O algoritmo não está no manual; adotar um sem fonte violaria P01."
+    },
+    {
+      "item": "REGRA_LEIAUTE_VIGENTE e REGRA_SEM_LEIAUTE",
+      "motivo": "Dependem de tabelas que não estão no manual."
+    },
+    {
+      "item": "Valores de campos que dependem de tabela externa ou dinâmica",
+      "motivo": "As tabelas ficam fora do manual, como a planilha de tabelas dinâmicas (p. 620)."
+    },
+    {
+      "item": "Tamanho exato dos campos",
+      "motivo": "O manual diverge: a p. 59 fala em tamanho exato, e a p. 34 mostra valores de tamanho variável. Só o máximo foi conferido."
+    },
+    {
+      "item": "Ocorrência mínima e máxima de 43 registros: C051, C150, C155, C157, E155, J051, K156, K356, K915, K935, L200, M300, M350, N500, N610, N615, N650, N660, P030, P200, P300, P400, P500, S100, S150, S200, S300, S500, S700, U030, U182, V010, W250, X350, X351, X352, X353, X354, X355, X356, Y681, 9100, 9900",
+      "motivo": "O cabeçalho de cada registro (página em docs/catalogo/ecf-leiaute-12.md) e a Tabela de Registros (p. 43 a 58) divergem (REQ-ESTRUT-011)."
+    },
+    {
+      "item": "Hierarquia dos registros X451 e Y650",
+      "motivo": "O nível do cabeçalho e o da Tabela de Registros divergem (REQ-ESTRUT-011)."
+    },
+    {
+      "item": "Ordem entre registros irmãos",
+      "motivo": "O manual só diz que a ordem é sequencial (p. 58); foram conferidas a ordem dos blocos e a hierarquia."
+    },
+    {
+      "item": "Fim de linha CR LF",
+      "motivo": "O texto que chega pela Sofia pode ter as quebras de linha trocadas."
+    },
+    {
+      "item": "Campos do tipo D (X280.VIG_INI e X280.VIG_FIM)",
+      "motivo": "O tipo não está definido no manual (p. 33)."
+    },
+    {
+      "item": "Duplicidade no Registro V100",
+      "motivo": "A chave do registro está vazia no cabeçalho (p. 424)."
     }
   ],
   "documentos": [
     {
       "idDocumento": "doc-001",
-      "hash": "4fcc568d741837390469a2019c1eee5367d3bba78fdfa3ada09720e8e92f6701",
-      "caracteres": 140
+      "hash": "720931664fd611f3c2fee431a7d0cc9d8ce07c49345bb528c7b33cde12eab8e3",
+      "caracteres": 524
     },
     {
       "idDocumento": "doc-002",
@@ -143,11 +185,11 @@ Saída real do serviço para a solicitação de `tests/Api.Agente.Tests/Fixtures
   "versoes": {
     "contrato": "1.2",
     "servico": "0.1.0+local",
-    "validadores": "nenhum"
+    "validadores": "ecf-l12-1.0.0"
   },
-  "criadaEm": "2026-11-07T23:22:55.0812409+00:00",
-  "concluidaEm": "2026-11-07T23:22:55.0882484+00:00",
-  "duracaoMs": 7.0075,
+  "criadaEm": "2026-11-08T00:16:04.0492467+00:00",
+  "concluidaEm": "2026-11-08T00:16:04.0913863+00:00",
+  "duracaoMs": 42.1396,
   "erro": null,
   "canal": "a2a",
   "leiaute": {

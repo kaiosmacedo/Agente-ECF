@@ -47,6 +47,8 @@ As contagens são automáticas, sobre o texto extraído, e precisam ser conferid
 | 8 | 408 | 336 | 176 |
 | 7 | 406 | 331 | 182 |
 
+**Catálogo estrutural (mudança 08):** `src/Api.Agente/Dominio/Leiaute/ecf-leiaute-12.json`, com 188 registros e 1.122 campos, cada um com a página do manual, gerado da versão em Word e do PDF acima por `.github/scripts/catalogo/gerar-catalogo.sh`, que confere os dois hashes. A revisão legível fica em `docs/catalogo/ecf-leiaute-12.md`, com as divergências do próprio manual que não viram achado.
+
 A medição mais precisa, feita na versão em Word do Leiaute 12, dá 382 códigos e 808 aplicações: 523 `Erro`, 231 `Aviso`, 32 `Habilita`, 19 sem tipo e 3 condicionais (`docs/pesquisa/avaliacao-da-ecf-alem-do-manual.md`). O catálogo de regras deve partir da versão em Word, porque a extração do PDF desalinha a coluna de tipo.
 
 São 462 regras distintas nos seis leiautes. A maior parte se repete, então o catálogo pode começar pelo 12 e registrar as diferenças dos anteriores. Mesmo com o mesmo nome, uma regra pode ter mudado de um leiaute para outro, o que também precisa ser conferido.

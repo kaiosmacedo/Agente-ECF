@@ -92,7 +92,7 @@ internal static class MontadorDoEnvelope
         new("REGRA_DV_RECIBO, REGRA_VALIDA_HASH_ARQUIVO, regras das tabelas dinâmicas fora do manual e fórmulas com funções sem definição", "Não há algoritmo ou fonte acessível, e adotar um violaria P01."),
     ];
 
-    /// <summary>Nenhum validador existe ainda: entram nas mudanças 08 e 09.</summary>
+    /// <summary>Quando a etapa 4 não roda, nenhum catálogo de validadores é usado.</summary>
     private const string VersaoDosValidadores = "nenhum";
 
     private static readonly Dictionary<Etapa, string> NomeDaEtapa = new()
@@ -124,10 +124,12 @@ internal static class MontadorDoEnvelope
             [.. execucao.Etapas.Select(etapa => new EtapaDoEnvelope((int)etapa.Etapa, NomeDaEtapa[etapa.Etapa], NomeDoEstado(etapa.Estado), etapa.Justificativa, NomeDaCausa(etapa.Causa)))],
             [.. execucao.Achados.Select(achado => Achado(achado, execucao))],
             [.. ValidacoesNaoRealizadas(execucao), .. execucao.Limitacoes],
-            execucao.Veredito == VereditoDaExecucao.NaoAvaliado ? [] : NaoVerificadosSempre,
+            execucao.Veredito == VereditoDaExecucao.NaoAvaliado
+                ? []
+                : [.. NaoVerificadosSempre, .. execucao.NaoRealizadas.Select(item => new ItemNaoVerificado(item.Item, item.Motivo))],
             execucao.Documentos,
             new IdentidadeDoEnvelope(execucao.Identidade.UsuarioPseudonimo, execucao.Identidade.Organizacao, Verificada: false),
-            new VersoesDoEnvelope(VersaoDoContrato, versaoDoServico, VersaoDosValidadores),
+            new VersoesDoEnvelope(VersaoDoContrato, versaoDoServico, execucao.VersaoDosValidadores ?? VersaoDosValidadores),
             execucao.CriadaEm,
             execucao.ConcluidaEm,
             execucao.ConcluidaEm is { } fim ? (fim - execucao.CriadaEm).TotalMilliseconds : 0,

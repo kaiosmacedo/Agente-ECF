@@ -79,7 +79,7 @@ internal static class AnalisesEndpoints
                     CanalDaAnalise.Rest,
                     null,
                     [new DocumentoDoPedido(ParteDoArquivo, Encoding.Latin1.GetString(bytes), Convert.ToHexStringLower(SHA256.HashData(bytes)))]);
-            var envelope = servico.Analisar(pedido, contexto.Response.Headers[CorrelacaoMiddleware.Cabecalho].ToString());
+            var envelope = await servico.AnalisarAsync(pedido, contexto.Response.Headers[CorrelacaoMiddleware.Cabecalho].ToString(), cancelamento);
             try
             {
                 var registrado = await repositorio.RegistrarAsync(envelope, cancelamento);

@@ -2,7 +2,11 @@
 
 Arquivos **sintéticos**, sem dado de contribuinte real (SQ-10). O CNPJ `11111111000191` e o nome são os do exemplo de preenchimento dos próprios manuais. Os arquivos ficam em ISO 8859-1 e com CR LF, como pede a seção 2.2 do manual (leiaute 12, p. 32), por isso o `.gitattributes` não converte as quebras de linha.
 
-**Não são ECF completas:** têm só o Registro 0000 e registros de abertura e encerramento, o bastante para a recepção (mudança 07) e a identificação do leiaute. A validação estrutural (mudança 08) traz uma ECF estruturalmente válida.
+**Os `ecf-leiaute-NN.txt` não são ECF completas:** têm só o Registro 0000 e registros de abertura e encerramento, o bastante para a recepção (mudança 07) e a identificação do leiaute; pela validação estrutural (mudança 08), eles têm erros de estrutura.
+
+**`ecf-leiaute-12-estrutural.txt`:** ECF do leiaute 12 estruturalmente válida pelo catálogo, com os 13 registros obrigatórios na importação e na transmissão, gerada por `.github/scripts/catalogo/gerar-ecf-sintetica.py` (REQ-ESTRUT-001 a 013). As regras de conteúdo (mudança 09) não foram consideradas.
+
+**`gabarito/`:** a ECF válida e uma variante por erro de estrutura plantado, para o gabarito no programa da ECF (mudança 08, D10), com a regra esperada de cada arquivo em `gabarito/erros-esperados.md`. Gerados por `.github/scripts/catalogo/gerar-gabarito.py`.
 
 | Arquivo | Leiaute | `COD_VER` | `DT_INI` e `DT_FIN` | Requisito | Fonte |
 | --- | --- | --- | --- | --- | --- |

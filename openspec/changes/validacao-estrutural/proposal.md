@@ -1,6 +1,6 @@
 # Proposal: Validação estrutural da ECF
 
-> **Estado:** especificação aprovada por Kaio Macedo em 2026-10-29 (roteiro, mudança 08; PR #4). Em 2026-11-07, o assistente mediu a versão em Word do Leiaute 12 e propôs as respostas de E01 e E04, os requisitos novos (REQ-ESTRUT-007 a 013), o plano técnico e as tarefas. Kaio Macedo aprovou tudo em 2026-11-07 e pediu que o próprio assistente faça o gabarito no programa da ECF (design, D10).
+> **Estado:** especificação aprovada por Kaio Macedo em 2026-10-29 (roteiro, mudança 08; PR #4). Em 2026-11-07, o assistente mediu a versão em Word do Leiaute 12 e propôs as respostas de E01 e E04, os requisitos novos (REQ-ESTRUT-007 a 013), o plano técnico e as tarefas. Kaio Macedo aprovou tudo em 2026-11-07 e pediu que o próprio assistente faça o gabarito no programa da ECF (design, D10). Implementada em 2026-11-07; o gabarito fecha a mudança.
 
 ## Why
 
