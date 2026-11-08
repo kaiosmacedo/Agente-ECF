@@ -1,0 +1,281 @@
+{
+ "programa": {
+  "versao": "12.2.8",
+  "descritor": "12003 v1",
+  "sha256DoDescritor": "37af2548f8654b6e6a8ec8381e97cfdc703dad5e6bace31f28ed006375253b5a"
+ },
+ "registrosSoNoPrograma": [
+  {
+   "codigo": "S990",
+   "nivel": 1,
+   "bloco": "S",
+   "depoisDe": "S700",
+   "campos": [
+    {
+     "nome": "REG",
+     "tipo": "C",
+     "tamanho": "4"
+    },
+    {
+     "nome": "QTD_LIN_S",
+     "tipo": "N",
+     "tamanho": "-"
+    }
+   ]
+  }
+ ],
+ "registrosSemExigencia": [
+  "C001",
+  "C990",
+  "E001"
+ ],
+ "tipos": {
+  "0010.FORMA_TRIB": "C",
+  "0010.IND_REC_RECEITA": "C",
+  "0020.IND_ALIQ_CSLL": "C",
+  "0030.NUM_TEL": "C",
+  "M300.IND_RELACAO": "C",
+  "M350.IND_RELACAO": "C",
+  "N615.BASE_CALC": "NS",
+  "W100.TIN_SUBSTITUTA": "C",
+  "W200.VL_REC_NAO_REL_EST": "NS",
+  "W200.VL_REC_NAO_REL": "NS",
+  "W200.VL_REC_REL_EST": "NS",
+  "W200.VL_REC_REL": "NS",
+  "W200.VL_REC_TOTAL_EST": "NS",
+  "W200.VL_REC_TOTAL": "NS",
+  "W200.VL_IR_PAGO_EST": "NS",
+  "W200.VL_IR_PAGO": "NS",
+  "W200.VL_IR_DEVIDO_EST": "NS",
+  "W200.VL_IR_DEVIDO": "NS",
+  "W200.VL_CAP_SOC_EST": "NS",
+  "W200.VL_CAP_SOC": "NS",
+  "W200.VL_LUC_ACUM_EST": "NS",
+  "W200.VL_LUC_ACUM": "NS",
+  "W200.VL_ATIV_TANG_EST": "NS",
+  "W200.VL_ATIV_TANG": "NS",
+  "X280.NCM_INCENTIVO": "C",
+  "X280.REC_LIQ_INCENTIVO": "NS",
+  "X280.VL_INCENTIVO": "NS",
+  "X340.PAIS": "C",
+  "X357.PAIS": "C",
+  "X370.VL_TRANSACAO": "NS",
+  "X370.VL_COMPENSATORIO": "NS",
+  "Y600.QUALIF_REP_LEG": "C",
+  "Y800.TIPO_DOC": "C",
+  "9100.NOM_REGRA": "C",
+  "9100.CONTEÚDO": "C",
+  "9100.VALOR_ESPERADO": "C",
+  "9100.CNAE": "C"
+ },
+ "tamanhos": {
+  "0000.NUM_REC": 41,
+  "0000.EVENTO_SCP": 2,
+  "0930.FONE": 15,
+  "L100.DESCRICAO": 512,
+  "L100.COD_NAT": 4,
+  "L210.DESCRICAO": 512,
+  "L300.DESCRICAO": 512,
+  "L300.COD_NAT": 4,
+  "M300.DESCRICAO": 512,
+  "M350.DESCRICAO": 512,
+  "N500.DESCRICAO": 512,
+  "N600.DESCRICAO": 512,
+  "N610.DESCRICAO": 512,
+  "N620.DESCRICAO": 512,
+  "N630.DESCRICAO": 512,
+  "N650.DESCRICAO": 512,
+  "N660.DESCRICAO": 512,
+  "N670.DESCRICAO": 512,
+  "P100.DESCRICAO": 512,
+  "P100.COD_NAT": 4,
+  "P130.DESCRICAO": 512,
+  "P150.DESCRICAO": 512,
+  "P150.COD_NAT": 4,
+  "P200.DESCRICAO": 512,
+  "P230.DESCRICAO": 512,
+  "P300.DESCRICAO": 512,
+  "P400.DESCRICAO": 512,
+  "P500.DESCRICAO": 512,
+  "S100.DESCRICAO": 512,
+  "S100.COD_NAT": 4,
+  "S150.DESCRICAO": 512,
+  "S150.COD_NAT": 4,
+  "S200.DESCRICAO": 512,
+  "S300.DESCRICAO": 512,
+  "S500.DESCRICAO": 512,
+  "S700.DESCRICAO": 512,
+  "T120.DESCRICAO": 512,
+  "T150.DESCRICAO": 512,
+  "T170.DESCRICAO": 512,
+  "T181.DESCRICAO": 512,
+  "U100.DESCRICAO": 512,
+  "U100.COD_NAT": 4,
+  "U150.DESCRICAO": 512,
+  "U150.COD_NAT": 4,
+  "U180.DESCRICAO": 512,
+  "U182.DESCRICAO": 512,
+  "V100.CODIGO": 6,
+  "X292.DESCRICAO": 512,
+  "X365.IDENTIFICADOR": 10,
+  "X370.IDENTIFICADOR": 10,
+  "X390.DESCRICAO": 512,
+  "X451.DESCRICAO": 512,
+  "X460.DESCRICAO": 512,
+  "X470.DESCRICAO": 512,
+  "X480.DESCRICAO": 512,
+  "X490.DESCRICAO": 512,
+  "X500.DESCRICAO": 512,
+  "X510.DESCRICAO": 512,
+  "Y681.DESCRICAO": 512,
+  "Y750.DESCRICAO": 512
+ },
+ "valores": {
+  "0010.TIP_ENT": [
+   "16"
+  ],
+  "M300.TIPO_LANCAMENTO": [
+   "R"
+  ],
+  "M350.TIPO_LANCAMENTO": [
+   "R"
+  ]
+ },
+ "obrigatoriedade": [
+  "0020.IND_ALIQ_CSLL",
+  "0020.IND_QTE_SCP",
+  "0020.POSSUI_CEBRAS",
+  "0930.FONE",
+  "C040.IDENT_MF",
+  "C050.IND_CTA",
+  "C053.COD_IDT",
+  "C053.COD_CNT_CORR",
+  "C053.NAT_SUB_CNT",
+  "C155.IND_VL_SLD_INI",
+  "C155.IND_VL_SLD_FIN",
+  "C355.IND_VL_CTA",
+  "E020.COD_PB_RFB",
+  "E155.IND_VL_SLD_INI",
+  "E155.IND_VL_SLD_FIN",
+  "E355.IND_VL_SLD_FIN",
+  "L100.TIPO",
+  "L300.TIPO",
+  "M500.COD_CTA_B",
+  "M500.COD_TRIBUTO",
+  "M500.SD_INI_LAL",
+  "M500.IND_ SD_INI_LAL",
+  "M500.VL_LCTO_PARTE_A",
+  "M500.IND_ VL_LCTO_PARTE_A",
+  "M500.VL_LCTO_PARTE B",
+  "M500.IND_ VL_LCTO_PARTE B",
+  "M500.SD_FIM_LAL",
+  "M500.IND_ SD_FIM_LAL",
+  "M510.DESCRICAO_PB_RFB",
+  "M510.SD_INI_LAL",
+  "M510.IND_ SD_INI_LAL",
+  "M510.VL_LCTO_PARTE_A",
+  "M510.IND_ VL_LCTO_PARTE_A",
+  "M510.VL_LCTO_PARTE B",
+  "M510.IND_ VL_LCTO_PARTE B",
+  "M510.SD_FIM_LAL",
+  "M510.IND_ SD_FIM_LAL",
+  "P150.TIPO",
+  "S150.TIPO",
+  "U150.TIPO",
+  "W100.IND_CONTROLADORA",
+  "W100.NOME_CONTROLADORA",
+  "W100.JURISDICAO_CONTROLADORA",
+  "W100.TIN_CONTROLADORA",
+  "W100.IND_ENTREGA",
+  "W100.IND_MODALIDADE",
+  "W250.JURISDICAO_TIN",
+  "X351.RES_POS_TRIB",
+  "X370.VL_ESPONTANEO",
+  "X370.VL_COMPENSATORIO",
+  "X370.COMP_INTENCIONAL",
+  "X370.SINERGIA",
+  "X370.IND_TRANS_COMBINADAS",
+  "X370.IND_DADOS_MULTIP",
+  "X370.IND_SIMPLIFIC",
+  "Y600.IND_QUALIF",
+  "Y612.VL_REM_TRAB",
+  "Y612.VL_DEM_REND",
+  "Y612.VL_IR_RET",
+  "Y720.LUC_LIQ",
+  "Y720.DT_LUC_LIQ",
+  "Y720.REC_BRUT_ANT",
+  "Y720.INTIMACAO"
+ ],
+ "chaves": {
+  "0035": [
+   "COD_SCP"
+  ],
+  "0930": [
+   "IDENT_CPF_CNPJ",
+   "IDENT_QUALIF"
+  ],
+  "C157": [],
+  "K915": [
+   "COD_CCUS",
+   "COD_CTA",
+   "ID_REGRA",
+   "PER_APUR"
+  ],
+  "K935": [
+   "COD_CCUS",
+   "COD_CTA",
+   "ID_REGRA",
+   "PER_APUR"
+  ],
+  "M510": [
+   "COD_PB_RFB",
+   "COD_TRIBUTO"
+  ],
+  "N500": [
+   "CODIGO"
+  ],
+  "N650": [
+   "CODIGO"
+  ],
+  "V020": [
+   "NI",
+   "TIPO_DO_C"
+  ],
+  "V030": [
+   "MES"
+  ],
+  "V100": [
+   "CODIGO"
+  ],
+  "X357": [
+   "NIF/CNPJ",
+   "PAIS"
+  ],
+  "X370": [],
+  "X485": [],
+  "Y590": [
+   "DISCRIMINACAO",
+   "PAIS",
+   "TIP_ATIVO"
+  ],
+  "Y680": [
+   "MES"
+  ],
+  "Y682": [
+   "MES"
+  ],
+  "Y730": [
+   "DATA",
+   "DEDUCAO",
+   "DESTINATARIO",
+   "TIPO"
+  ],
+  "Y750": [],
+  "Y800": [
+   "HASH"
+  ],
+  "9900": [
+   "REG_BLC"
+  ]
+ }
+}

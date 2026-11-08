@@ -213,7 +213,11 @@ Antes da revisão de Kaio Macedo (tarefa 1.4), o assistente conferiu o catálogo
 
 **Defeito corrigido (catálogo `ecf-l12-1.3.0`):** o gerador tomava como valor literal a referência da coluna de valores válidos, como `[M010.COD_CTA_B]`, em 8 campos dos registros M305, M310, M355, M360, M500 e M510. O agente recusava toda linha real desses registros, porque só aceitava o texto `M010.COD_CTA_B`. A referência agora é cruzamento, da mudança 09, e consta de `naoVerificados`.
 
-**Divergências entre o manual e o programa:** onde o agente, por seguir o manual, recusa o que o programa aceita, a decisão é de Kaio Macedo (E10). A lista completa, com os campos, está em `docs/catalogo/revisao-ecf-leiaute-12.md`. O comportamento do programa nesses casos vem do descritor e ainda não foi testado na tela.
+**Decisão E10 (REQ-ESTRUT-016):** onde o manual e o programa divergem, o agente não recusa o que o programa aceita. Aplicada no catálogo `ecf-l12-1.4.0`:
+
+- **Fonte:** o que vem do programa fica em `.github/scripts/catalogo/ajustes-do-programa-12.json`, gerado por `extrair-ajustes-do-programa.py` do descritor e das tabelas, com o hash do descritor. `gerar-catalogo.py` aplica os ajustes, e as colunas do manual continuam no catálogo como estão.
+- **Classes:** `EST-CAMPO-001` e `EST-OCOR-001` viram `observacao` só nos 63 campos e nos 3 registros marcados. `EST-TOT-001` não recusa o arquivo no `S990`, porque o programa não confere essa contagem. Os demais casos seguem `impeditiva`.
+- **Testes na tela:** 15 arquivos, em `tests/Api.Agente.Tests/Dados/ecf/programa/`, com o que o programa fez em `resultados.md`. Os testes mudaram a proposta em um ponto: o `S990` errado não recusa o arquivo, ao contrário dos blocos J a Y da E06. A lista completa, com os campos, está em `docs/catalogo/revisao-ecf-leiaute-12.md`.
 
 ## Dimensionamento
 
@@ -234,7 +238,7 @@ Sem provedor pago. Uma passada linear sobre até 4 MiB de texto. O catálogo do 
 
 ## Open Questions
 
-- E10, pendente com Kaio Macedo: o agente deixa de recusar o que o programa aceita quando o manual diverge dele? O gabarito (D10) foi feito em 2026-11-08, e os esclarecimentos E05 a E09 estão decididos. Para arquivar, faltam E10 e as tarefas 1.4 e 7.3.
+- Nenhuma. O gabarito (D10) foi feito em 2026-11-08, e os esclarecimentos E05 a E10 estão decididos. Para arquivar, falta a tarefa 7.3.
 
 ## Skills aplicáveis
 

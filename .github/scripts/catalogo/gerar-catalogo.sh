@@ -39,6 +39,7 @@ pdftotext -layout -enc UTF-8 "$temporario/manual.pdf" "$temporario/manual.txt"
 echo "2/3 Gerando o catálogo e o documento de revisão..."
 "$PYTHON" -I "$RAIZ/.github/scripts/catalogo/gerar-catalogo.py" \
   --word "$temporario/manual.docx" --texto-pdf "$temporario/manual.txt" \
+  --ajustes "$RAIZ/.github/scripts/catalogo/ajustes-do-programa-12.json" \
   --json "$RAIZ/src/Api.Agente/Dominio/Leiaute/ecf-leiaute-12.json" --md "$RAIZ/docs/catalogo/ecf-leiaute-12.md"
 
 echo "3/3 Gerando a ECF sintética estruturalmente válida dos testes..."

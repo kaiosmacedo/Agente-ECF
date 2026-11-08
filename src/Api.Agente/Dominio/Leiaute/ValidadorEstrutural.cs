@@ -41,7 +41,7 @@ internal sealed record ResultadoDaValidacaoEstrutural(
     IReadOnlyList<string> RegrasComFalha);
 
 /// <summary>
-/// Validação estrutural determinística da ECF pelo catálogo do leiaute (mudança 08; REQ-ESTRUT-001 a 015). Lê o texto em
+/// Validação estrutural determinística da ECF pelo catálogo do leiaute (mudança 08; REQ-ESTRUT-001 a 016). Lê o texto em
 /// uma passada e devolve os mesmos achados, na mesma ordem, para o mesmo texto e a mesma versão do catálogo (REQ-ESTRUT-004).
 /// O conteúdo dos campos é dado não confiável (P10): ele só é comparado, nunca interpretado.
 /// </summary>
@@ -245,7 +245,15 @@ internal sealed class ValidadorEstrutural(CatalogoDoLeiaute catalogo, Parametros
             {
                 Executar(RegrasEstruturais.Obrigatorio, () =>
                 {
-                    if (v.Obrigatorio == true)
+                    if (v.Obrigatorio == true && v.ObrigatorioDivergente)
+                    {
+                        // O manual obriga, e o programa da ECF aceita vazio: não recusa o arquivo (REQ-ESTRUT-016, decisão E10).
+                        AcharNoCampo(RegrasEstruturais.Obrigatorio, registro, campo, linha, valor,
+                            $"O campo {campo.Nome} do Registro {registro.Codigo} está vazio na linha {linha}: o manual o dá como obrigatório, e o programa da ECF o aceita vazio.",
+                            $"Confira se {campo.Nome} deve ser preenchido neste caso.",
+                            SeveridadeDoAchado.Media);
+                    }
+                    else if (v.Obrigatorio == true)
                     {
                         AcharNoCampo(RegrasEstruturais.Obrigatorio, registro, campo, linha, valor,
                             $"O campo {campo.Nome} do Registro {registro.Codigo} é obrigatório e está vazio na linha {linha}.",
@@ -255,11 +263,11 @@ internal sealed class ValidadorEstrutural(CatalogoDoLeiaute catalogo, Parametros
                 return;
             }
 
-            if (v.Tipo && !TipoValido(campo.Tipo, valor))
+            if (v.Tipo && !TipoValido(campo.TipoEfetivo, valor))
             {
                 AcharNoCampo(RegrasEstruturais.Tipo, registro, campo, linha, valor,
-                    $"O campo {campo.Nome} do Registro {registro.Codigo} tem caracteres fora do tipo {campo.Tipo} na linha {linha}.",
-                    campo.Tipo switch
+                    $"O campo {campo.Nome} do Registro {registro.Codigo} tem caracteres fora do tipo {campo.TipoEfetivo} na linha {linha}.",
+                    campo.TipoEfetivo switch
                     {
                         "N" => $"Preencha {campo.Nome} só com algarismos e vírgula decimal, sem separador de milhar (manual, p. 33 e 34).",
                         "NS" => $"Preencha {campo.Nome} com sinal opcional (+ ou -) e algarismos (manual, p. 33).",
@@ -270,7 +278,7 @@ internal sealed class ValidadorEstrutural(CatalogoDoLeiaute catalogo, Parametros
 
             Executar(RegrasEstruturais.Tamanho, () =>
             {
-                var tamanho = campo.Tipo == "C" ? valor.Length : valor.Count(char.IsAsciiDigit);
+                var tamanho = campo.TipoEfetivo == "C" ? valor.Length : valor.Count(char.IsAsciiDigit);
                 if (v.Valores?.PorPosicao is not null && v.TamanhoMaximo is { } exato && tamanho != exato)
                 {
                     AcharNoCampo(RegrasEstruturais.Tamanho, registro, campo, linha, valor,
@@ -366,6 +374,15 @@ internal sealed class ValidadorEstrutural(CatalogoDoLeiaute catalogo, Parametros
         {
             foreach (var registro in catalogo.Registros.Where(registro => registro.ObrigatorioNaEntradaENaSaida && !contagem.ContainsKey(registro.Codigo)))
             {
+                if (registro.ObrigatorioDivergente)
+                {
+                    // O programa da ECF preenche esses registros sozinho (p. 41): a falta não recusa o arquivo (REQ-ESTRUT-016, decisão E10).
+                    Achar(RegrasEstruturais.RegistroObrigatorio, registro, registro.Codigo, null, null, null,
+                        $"O arquivo não tem o Registro {registro.Codigo} ({registro.Nome}): o manual o dá como obrigatório, e o programa da ECF o preenche sozinho na importação.",
+                        $"O programa não exige correção; para seguir o manual, inclua o Registro {registro.Codigo}.", SeveridadeDoAchado.Media);
+                    continue;
+                }
+
                 Achar(RegrasEstruturais.RegistroObrigatorio, registro, registro.Codigo, null, null, null,
                     $"O arquivo não tem o Registro {registro.Codigo} ({registro.Nome}), obrigatório na importação e na transmissão.",
                     $"Inclua o Registro {registro.Codigo}. Se o arquivo terminou antes da hora, envie o arquivo inteiro.", SeveridadeDoAchado.Critica);
@@ -390,9 +407,10 @@ internal sealed class ValidadorEstrutural(CatalogoDoLeiaute catalogo, Parametros
 
         /// <summary>
         /// Contagem errada num bloco que a importação lê impede a importação (p. 38; REQ-ESTRUT-015, decisão E06). O Bloco 0 sempre é lido, e os
-        /// demais só com dados (IND_DAD igual a 0). Os blocos C e E não são importados (p. 41), e o Bloco 9 encerra o arquivo.
+        /// demais só com dados (IND_DAD igual a 0). Os blocos C e E não são importados (p. 41), o Bloco 9 encerra o arquivo, e o programa
+        /// não confere a contagem do S990, que o manual nem cita (decisão E10).
         /// </summary>
-        private bool BlocoImportado(char bloco) => bloco == '0' || (blocosComDados.Contains(bloco) && bloco is not ('C' or 'E' or '9'));
+        private bool BlocoImportado(char bloco) => bloco == '0' || (blocosComDados.Contains(bloco) && bloco is not ('C' or 'E' or 'S' or '9'));
 
         /// <summary>O 9900 traz cada registro do arquivo, inclusive ele mesmo (p. 616).</summary>
         private void VerificarContagensDo9900()
@@ -502,8 +520,9 @@ internal sealed class ValidadorEstrutural(CatalogoDoLeiaute catalogo, Parametros
             ];
         }
 
-        private void AcharNoCampo(string regra, RegistroDoCatalogo registro, CampoDoCatalogo campo, int linha, string? valor, string descricao, string orientacao) =>
-            Achar(regra, registro, registro.Codigo, linha, campo, valor, descricao, orientacao, SeveridadeDoAchado.Critica);
+        private void AcharNoCampo(
+            string regra, RegistroDoCatalogo registro, CampoDoCatalogo campo, int linha, string? valor, string descricao, string orientacao, SeveridadeDoAchado severidade = SeveridadeDoAchado.Critica) =>
+            Achar(regra, registro, registro.Codigo, linha, campo, valor, descricao, orientacao, severidade);
 
         private void AcharContagem(string regra, string codigo, int? linha, string valor, string descricao, string orientacao, SeveridadeDoAchado severidade = SeveridadeDoAchado.Media) =>
             Achar(regra, catalogo.Registro(codigo), codigo, linha, null, valor, descricao, orientacao, severidade);
@@ -513,9 +532,13 @@ internal sealed class ValidadorEstrutural(CatalogoDoLeiaute catalogo, Parametros
             string descricao, string orientacao, SeveridadeDoAchado severidade, RegraDoManual? doManual = null)
         {
             var pagina = campo?.Pagina ?? registro?.Pagina;
-            var local = pagina is null
-                ? "seção 2.2, p. 32"
-                : string.Create(CultureInfo.InvariantCulture, $"p. {pagina}, Registro {codigo}{(campo is null ? string.Empty : $", campo {campo.Numero} {campo.Nome}")}");
+            var localNoRegistro = $"Registro {codigo}{(campo is null ? string.Empty : $", campo {campo.Numero} {campo.Nome}")}";
+            var local = pagina switch
+            {
+                null => "seção 2.2, p. 32",
+                _ when registro is { SoNoPrograma: true } => $"{catalogo.Fonte.Programa}, {localNoRegistro}",
+                _ => string.Create(CultureInfo.InvariantCulture, $"p. {pagina}, {localNoRegistro}"),
+            };
             var fundamento = campo is null ? $"{regra} {codigo}" : $"{regra} {codigo}.{campo.Nome}";
             pendentes.Add((linha ?? int.MaxValue, regra, () => Achado.Criar(
                 "est",

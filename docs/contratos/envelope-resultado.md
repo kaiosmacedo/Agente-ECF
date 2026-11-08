@@ -189,7 +189,7 @@ Saída real do serviço para a solicitação de `tests/Api.Agente.Tests/Fixtures
   "versoes": {
     "contrato": "1.2",
     "servico": "0.1.0+local",
-    "validadores": "ecf-l12-1.3.0"
+    "validadores": "ecf-l12-1.4.0"
   },
   "criadaEm": "2026-11-08T00:16:04.0492467+00:00",
   "concluidaEm": "2026-11-08T00:16:04.0913863+00:00",

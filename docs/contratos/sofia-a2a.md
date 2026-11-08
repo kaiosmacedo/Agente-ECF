@@ -270,7 +270,7 @@ Para quem mantém a Sofia e para o agente validador que recebe o resultado depoi
 | Campo | Significado |
 | --- | --- |
 | `veredito` | Como a ECF está: `conforme`, `conforme-com-ressalvas`, `recusado`, `parcial` ou `nao-avaliado`. |
-| `achados` | O que corrigir, com registro, linha, campo, valor encontrado, orientação e fonte com página. O campo `regra` começa pelo identificador da regra, do manual (como `REGRA_OCORRENCIA_UNITARIA_ARQ`) ou estrutural (como `EST-CAMPO-006`; lista no design da mudança 08, D2), seguido do registro e do campo: `EST-CAMPO-006 0000.IND_SIT_INI_PER`. No envelope de `GET /analises/{id}`, o mesmo texto está em `fundamento`. |
+| `achados` | O que corrigir, com registro, linha, campo, valor encontrado, orientação e fonte com página. Só a classe `impeditiva` recusa o arquivo; `observacao` aponta, sem recusar, e o que o programa da ECF aceita não é recusado, mesmo quando o manual diverge (REQ-ESTRUT-016). O campo `regra` começa pelo identificador da regra, do manual (como `REGRA_OCORRENCIA_UNITARIA_ARQ`) ou estrutural (como `EST-CAMPO-006`; lista no design da mudança 08, D2), seguido do registro e do campo: `EST-CAMPO-006 0000.IND_SIT_INI_PER`. No envelope de `GET /analises/{id}`, o mesmo texto está em `fundamento`. |
 | `naoVerificados` e `observacoes` | O que ficou de fora, como o leiaute identificado, documentos que não são ECF e etapas não realizadas, cada uma com o motivo real: a consulta ao manual, por exemplo, diz que a busca está desligada. |
 | `idExecucaoAgente` | Identificador para consultar `GET /analises/{id}`, com o envelope completo. |
 | `erro.codigo` | Por que nada foi analisado, na tabela de desfechos. |

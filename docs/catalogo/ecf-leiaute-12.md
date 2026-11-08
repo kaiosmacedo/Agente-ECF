@@ -1,10 +1,10 @@
 # Catálogo estrutural da ECF, leiaute 12
 
-Gerado por `.github/scripts/catalogo/gerar-catalogo.py` a partir da versão em Word do manual, com as páginas do PDF. Versão `ecf-l12-1.3.0`. É o que Kaio Macedo revisa (mudança 08, E02). Correções vão no gerador, nunca no JSON.
+Gerado por `.github/scripts/catalogo/gerar-catalogo.py` a partir da versão em Word do manual, com as páginas do PDF. Versão `ecf-l12-1.4.0`. É o que Kaio Macedo revisa (mudança 08, E02). Correções vão no gerador, nunca no JSON.
 
 **Ordem dos blocos:** 0, C, E, J, K, L, M, N, P, Q, S, T, U, V, W, X, Y, 9.
 
-**Divergências do próprio manual, sem achado (REQ-ESTRUT-011):** Registro 0010, p. 71: o campo FORMA_TRIB tem tamanho 1 na coluna, e os valores válidos [1;2;3;4;5;6;7;8;9;10] vão até 2 caracteres; vale a lista, que o programa da ECF aceita. Registro Y681, p. 596: o campo REG traz [X681] nos valores válidos, e não [Y681]. Ocorrência e nível divergentes entre o cabeçalho do registro e a Tabela de Registros (p. 43 a 58) ficam sem verificação.
+**Divergências do próprio manual, sem achado (REQ-ESTRUT-011):** Registro 0010, p. 71: o campo FORMA_TRIB tem tamanho 1 na coluna, e os valores válidos [1;2;3;4;5;6;7;8;9;10] vão até 2 caracteres; vale a lista, que o programa da ECF aceita. Registro Y681, p. 596: o campo REG traz [X681] nos valores válidos, e não [Y681]. Registro S990: o manual não o cita, e ele existe no programa, que o aceita mesmo com a contagem errada; o agente o reconhece, sem exigi-lo. Decisão E10, com o Programa da ECF 12.2.8, descritor 12003 v1: 37 campos seguem o tipo do programa, 60 o tamanho e 3 os valores; 63 campos obrigatórios só no manual e 3 registros (C001, C990, E001) ficam em observação, e 21 registros usam a chave do programa. Lista em docs/catalogo/revisao-ecf-leiaute-12.md. Ocorrência e nível divergentes entre o cabeçalho do registro e a Tabela de Registros (p. 43 a 58) ficam sem verificação.
 
 | Registro | Nome | Nível | Pai | Ocorrência (cabeçalho / tabela) | Entrada / saída | Página |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -112,6 +112,7 @@ Gerado por `.github/scripts/catalogo/gerar-catalogo.py` a partir da versão em W
 | S300 | Cálculo do IRPJ | 3 | S030 | 0:N / [0:12] (divergente, não verificada) | F / OC | 367 |
 | S500 | Cálculo da CSLL | 3 | S030 | 0:N / [0:12] (divergente, não verificada) | F / OC | 369 |
 | S700 | Cálculo dos Demais Tributos | 3 | S030 | 0:N / [0:12] (divergente, não verificada) | F / OC | 371 |
+| S990 | Encerramento do Bloco S | 1 | 0000 | 1:1 / - | F / O | só no programa |
 | T001 | Abertura do Bloco T | 1 | 0000 | 1:1 / [1;1] | F / O | 384 |
 | T030 | Identificação dos Períodos e Formas de Apuração do IRPJ e da CSLL das Empresas Tributadas pelo Lucro Arbitrado | 2 | T001 | 0:4 / [0;4] | F / OC | 385 |
 | T120 | Apuração da Base de Cálculo do IRPJ com Base no Lucro Arbitrado | 3 | T030 | 0:N / [0;N] | F / OC | 387 |
@@ -215,10 +216,10 @@ Página 63. Chave: REG. Regras do registro: —.
 | 10 | DT_INI | N | 8 | - | - | Sim | tipo, data, até 8, 0 decimais, obrigatório |
 | 11 | DT_FIN | N | 8 | - | - | Sim | tipo, data, até 8, 0 decimais, obrigatório |
 | 12 | RETIFICADORA | C | 1 | - | [S; N; F] | Sim | tipo, até 1, valores, obrigatório |
-| 13 | NUM_REC | C | 40 | - | - | Não | tipo, até 40 |
+| 13 | NUM_REC | C | 40 | - | - | Não | tipo, até 41 |
 | 14 | TIP_ECF | N | 1 | - | [0; 1; 2] | Sim | tipo, até 1, 0 decimais, valores, obrigatório |
 | 15 | COD_SCP | C | 14 | - | - | Não | tipo, até 14 |
-| 16 | EVENTO_SCP | N | 1 | - | [0;1] | Não | tipo, até 1, 0 decimais, valores |
+| 16 | EVENTO_SCP | N | 1 | - | [0;1] | Não | tipo, até 2, 0 decimais, valores |
 
 ## 0001: Abertura do Bloco 0
 
@@ -238,16 +239,16 @@ Página 71. Chave: REG. Regras do registro: —.
 | 1 | REG | C | 4 | - | [0010] | Sim | tipo, até 4, obrigatório |
 | 2 | HASH_ECF_ANTERIOR | C | 40 | - | - | Não | tipo, até 40 |
 | 3 | OPT_REFIS | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
-| 4 | FORMA_TRIB | N | 1 | - | [1;2;3;4;5;6;7;8;9;10] | Sim | tipo, até 2, 0 decimais, valores, obrigatório |
+| 4 | FORMA_TRIB | N | 1 | - | [1;2;3;4;5;6;7;8;9;10] | Sim | tipo C do programa, até 2, valores, obrigatório |
 | 5 | FORMA_APUR | C | 1 | - | [T;A] | Não | tipo, até 1, valores |
 | 6 | COD_QUALIF_PJ | C | 2 | - | [01;02;03;04] | Não | tipo, até 2, valores |
 | 7 | FORMA_TRIB_PER | C | 4 | - | [0;R;P;A;E;S] | Não | tipo, exatamente 4, valores por posição |
 | 8 | MES_BAL_RED | C | 12 | - | [0;E;B] | Não | tipo, exatamente 12, valores por posição |
 | 9 | TIP_ESC_PRE | C | 1 | - | [L;C] | Não | tipo, até 1, valores |
-| 10 | TIP_ENT | N | 2 | - | [01;02;03;04;05;06;07;08;09;10;11;12;13;14;15;99] | Não | tipo, até 2, 0 decimais, valores |
+| 10 | TIP_ENT | N | 2 | - | [01;02;03;04;05;06;07;08;09;10;11;12;13;14;15;99] e, no programa da ECF, 16 | Não | tipo, até 2, 0 decimais, valores |
 | 11 | FORMA_APUR_I | C | 1 | - | [A;T;D] | Não | tipo, até 1, valores |
 | 12 | APUR_CSLL | C | 1 | - | [A;T;D] | Não | tipo, até 1, valores |
-| 13 | IND_REC_RECEITA | N | 1 | - | [1;2] | Não | tipo, até 1, 0 decimais, valores |
+| 13 | IND_REC_RECEITA | N | 1 | - | [1;2] | Não | tipo C do programa, até 1, valores |
 
 ## 0020: Parâmetros Complementares
 
@@ -256,8 +257,8 @@ Página 81. Chave: REG. Regras do registro: —.
 | Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [0020] | Sim | tipo, até 4, obrigatório |
-| 2 | IND_ALIQ_CSLL | N | 1 | - | [1;3;4] | Sim | tipo, até 1, 0 decimais, valores, obrigatório |
-| 3 | IND_QTE_SCP | N | 3 | - | - | Sim | tipo, até 3, 0 decimais, obrigatório |
+| 2 | IND_ALIQ_CSLL | N | 1 | - | [1;3;4] | Sim | tipo C do programa, até 1, valores, obrigatório, em observação |
+| 3 | IND_QTE_SCP | N | 3 | - | - | Sim | tipo, até 3, 0 decimais, obrigatório, em observação |
 | 4 | IND_ADM_FUN_CLU | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
 | 5 | IND_PART_CONS | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
 | 6 | IND_OP_EXT | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
@@ -285,7 +286,7 @@ Página 81. Chave: REG. Regras do registro: —.
 | 28 | IND_AREA_COM | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
 | 29 | IND_PAIS_A_PAIS | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
 | 30 | IND_DEREX | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
-| 31 | POSSUI_CEBRAS | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
+| 31 | POSSUI_CEBRAS | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório, em observação |
 | 32 | CEBAS | C | 255 | - |  | OC Deve ser preenchi | tipo, até 255 |
 
 ## 0021: Parâmetros de Identificação dos Tipos de Programa
@@ -329,12 +330,12 @@ Página 101. Chave: REG. Regras do registro: —.
 | 8 | UF | C | 2 | - | Sigla da UF | Sim | tipo, até 2, obrigatório |
 | 9 | COD_MUN | C | 7 | - | Código do Município | Sim | tipo, até 7, obrigatório |
 | 10 | CEP | C | 8 | - | - | Sim | tipo, até 8, obrigatório |
-| 11 | NUM_TEL | N | 15 | - | - | Não | tipo, até 15, 0 decimais |
+| 11 | NUM_TEL | N | 15 | - | - | Não | tipo C do programa, até 15 |
 | 12 | EMAIL | C | 115 | - | - | Sim | tipo, até 115, obrigatório |
 
 ## 0035: Identificação das SCP
 
-Página 103. Chave: REG. Regras do registro: —.
+Página 103. Chave: COD_SCP. Regras do registro: —.
 
 | Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -344,7 +345,7 @@ Página 103. Chave: REG. Regras do registro: —.
 
 ## 0930: Identificação dos Signatários da ECF
 
-Página 105. Chave: REG. Regras do registro: REGRA_OBRIGATORIO_ASSIN_CONTADOR, REGRA_OCORRENCIA_0930, REGRA_OCORRENCIA_0930_1, REGRA_OCORRENCIA_0930_2.
+Página 105. Chave: IDENT_CPF_CNPJ, IDENT_QUALIF. Regras do registro: REGRA_OBRIGATORIO_ASSIN_CONTADOR, REGRA_OCORRENCIA_0930, REGRA_OCORRENCIA_0930_1, REGRA_OCORRENCIA_0930_2.
 
 | Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -354,7 +355,7 @@ Página 105. Chave: REG. Regras do registro: REGRA_OBRIGATORIO_ASSIN_CONTADOR, R
 | 4 | IDENT_QUALIF | C | 3 | - | - | Sim | tipo, até 3, obrigatório |
 | 5 | IND_CRC | C | - | - | - | Não | tipo, até 255 |
 | 6 | EMAIL | C | 60 | - | - | Sim | tipo, até 60, obrigatório |
-| 7 | FONE | C | 14 | - | - | Sim | tipo, até 14, obrigatório |
+| 7 | FONE | C | 14 | - | - | Sim | tipo, até 15, obrigatório, em observação |
 
 ## 0990: Encerramento do Bloco 0
 
@@ -367,7 +368,7 @@ Página 108. Chave: REG. Regras do registro: —.
 
 ## C001: Abertura do Bloco C
 
-Página 109. Chave: REG. Regras do registro: REGRA_OCORRENCIA_UNITARIA_ARQ.
+Página 109. Chave: REG. Regras do registro: REGRA_OCORRENCIA_UNITARIA_ARQ. Falta do registro em observação (E10).
 
 | Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -391,7 +392,7 @@ Página 110. Chave: HASH_ECD. Regras do registro: —.
 | 9 | NAT_LIVR | C | 80 | - | - | Sim | tipo, até 80, obrigatório |
 | 10 | COD_VER_LC | C | - | - | - | Sim | tipo, até 255, obrigatório |
 | 11 | IND_ESC | C | 1 | - | [G; R; B] | Sim | tipo, até 1, valores, obrigatório |
-| 12 | IDENT_MF | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
+| 12 | IDENT_MF | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório, em observação |
 | 13 | IND_ESC_CONS | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
 | 14 | IND_CENTRALIZADA | N | 1 | - | [0;1] | Sim | tipo, até 1, 0 decimais, valores, obrigatório |
 | 15 | IND_MUDANC_PC | N | 1 | - | [0;1] | Sim | tipo, até 1, 0 decimais, valores, obrigatório |
@@ -406,7 +407,7 @@ Página 112. Chave: DT_ALT, COD_CTA. Regras do registro: —.
 | 1 | REG | C | 4 | - | [C050] | Sim | tipo, até 4, obrigatório |
 | 2 | DT_ALT | N | 8 | - | - | Sim | tipo, data, até 8, 0 decimais, obrigatório |
 | 3 | COD_NAT | C | 2 | - | - | Sim | tipo, até 2, obrigatório |
-| 4 | IND_CTA | C | 1 | - | [S; A] | Sim | tipo, até 1, valores, obrigatório |
+| 4 | IND_CTA | C | 1 | - | [S; A] | Sim | tipo, até 1, valores, obrigatório, em observação |
 | 5 | NÍVEL | N | - | - | - | Sim | tipo, 0 decimais, obrigatório |
 | 6 | COD_CTA | C | - | - | - | Sim | tipo, até 255, obrigatório |
 | 7 | COD_CTA_SUP | C | - | - | - | Não | tipo, até 255 |
@@ -429,9 +430,9 @@ Página 114. Chave: COD_CNT_CORR. Regras do registro: —.
 | Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [C053] | Sim | tipo, até 4, obrigatório |
-| 2 | COD_IDT | C | 6 | - | - | Sim | tipo, até 6, obrigatório |
-| 3 | COD_CNT_CORR | C | - | - | - | Sim | tipo, até 255, obrigatório |
-| 4 | NAT_SUB_CNT | C | 2 | - | - | Sim | tipo, até 2, obrigatório |
+| 2 | COD_IDT | C | 6 | - | - | Sim | tipo, até 6, obrigatório, em observação |
+| 3 | COD_CNT_CORR | C | - | - | - | Sim | tipo, até 255, obrigatório, em observação |
+| 4 | NAT_SUB_CNT | C | 2 | - | - | Sim | tipo, até 2, obrigatório, em observação |
 
 ## C100: Centro de Custos
 
@@ -464,16 +465,16 @@ Página 117. Chave: COD_CTA, COD_CCUS. Regras do registro: —.
 | 2 | COD_CTA | C | - | - | - | Sim | tipo, até 255, obrigatório |
 | 3 | COD_CCUS | C | - | - | - | Não | tipo, até 255 |
 | 4 | VL_SLD_INI | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
-| 5 | IND_VL_SLD_INI | C | 1 | - | [D; C] | Sim | tipo, até 1, valores, obrigatório |
+| 5 | IND_VL_SLD_INI | C | 1 | - | [D; C] | Sim | tipo, até 1, valores, obrigatório, em observação |
 | 6 | VL_DEB | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
 | 7 | VL_CRED | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
 | 8 | VL_SLD_FIN | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
-| 9 | IND_VL_SLD_FIN | C | 1 | - | [D; C] | Sim | tipo, até 1, valores, obrigatório |
+| 9 | IND_VL_SLD_FIN | C | 1 | - | [D; C] | Sim | tipo, até 1, valores, obrigatório, em observação |
 | 10 | LINHA_ECD | N | - | - | - | Sim | tipo, 0 decimais, obrigatório |
 
 ## C157: Transferência de Saldos do Plano de Contas Anterior
 
-Página 118. Chave: COD_CTA, COD_CCUS. Regras do registro: REGRA_C157_OBRIGATORIO, REGRA_CONTA_SUBSTITUTA_SALDO_ZERO.
+Página 118. Chave: —. Regras do registro: REGRA_C157_OBRIGATORIO, REGRA_CONTA_SUBSTITUTA_SALDO_ZERO.
 
 | Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -503,12 +504,12 @@ Página 120. Chave: COD_CTA, COD_CCUS. Regras do registro: —.
 | 2 | COD_CTA | C | - | - | - | Sim | tipo, até 255, obrigatório |
 | 3 | COD_CCUS | C | - | - | - | Não | tipo, até 255 |
 | 4 | VL_CTA | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
-| 5 | IND_VL_CTA | C | 1 | - | [D; C] | Sim | tipo, até 1, valores, obrigatório |
+| 5 | IND_VL_CTA | C | 1 | - | [D; C] | Sim | tipo, até 1, valores, obrigatório, em observação |
 | 6 | LINHA_ECD | N | - | - | - | Sim | tipo, 0 decimais, obrigatório |
 
 ## C990: Encerramento do Bloco C
 
-Página 121. Chave: REG. Regras do registro: —.
+Página 121. Chave: REG. Regras do registro: —. Falta do registro em observação (E10).
 
 | Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -517,7 +518,7 @@ Página 121. Chave: REG. Regras do registro: —.
 
 ## E001: Abertura do Bloco E
 
-Página 122. Chave: REG. Regras do registro: REGRA_OCORRENCIA_UNITARIA_ARQ.
+Página 122. Chave: REG. Regras do registro: REGRA_OCORRENCIA_UNITARIA_ARQ. Falta do registro em observação (E10).
 
 | Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -564,7 +565,7 @@ Página 126. Chave: COD_CTA_B, TRIBUTO. Regras do registro: REGRA_EXISTENCIA_M01
 | 6 | TRIBUTO | C | 1 | - | [I; C; A] | Não | tipo, até 1, valores |
 | 7 | VL_SALDO_FIN | N | 19 | 2 | - | Não | tipo, até 19, 2 decimais |
 | 8 | IND_VL_SALDO_FIN | C | 1 |  | [D; C] | Não | tipo, até 1, valores |
-| 9 | COD_PB_RFB | C | 6 | - | - | Sim | tipo, até 6, obrigatório |
+| 9 | COD_PB_RFB | C | 6 | - | - | Sim | tipo, até 6, obrigatório, em observação |
 
 ## E030: Identificação do Período
 
@@ -587,11 +588,11 @@ Página 129. Chave: COD_CTA, COD_CCUS. Regras do registro: REGRA_CONTA_FORA_ULTI
 | 2 | COD_CTA | C | - | - | - | Sim | tipo, até 255, obrigatório |
 | 3 | COD_CCUS | C | - | - | - | Não | tipo, até 255 |
 | 4 | VL_SLD_INI | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
-| 5 | IND_VL_SLD_INI | C | 1 | - | [D; C] | Sim | tipo, até 1, valores, obrigatório |
+| 5 | IND_VL_SLD_INI | C | 1 | - | [D; C] | Sim | tipo, até 1, valores, obrigatório, em observação |
 | 6 | VL_DEB | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
 | 7 | VL_CRED | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
 | 8 | VL_SLD_FIN | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
-| 9 | IND_VL_SLD_FIN | C | 1 | - | [D; C] | Sim | tipo, até 1, valores, obrigatório |
+| 9 | IND_VL_SLD_FIN | C | 1 | - | [D; C] | Sim | tipo, até 1, valores, obrigatório, em observação |
 
 ## E355: Detalhes dos Saldos das Contas de Resultado Antes do Encerramento
 
@@ -603,7 +604,7 @@ Página 130. Chave: COD_CTA, COD_CCUS. Regras do registro: REGRA_CONTA_FORA_ULTI
 | 2 | COD_CTA | C | - | - | - | Sim | tipo, até 255, obrigatório |
 | 3 | COD_CCUS | C | - | - | - | Não | tipo, até 255 |
 | 4 | VL_SLD_FIN | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
-| 5 | IND_VL_SLD_FIN | C | 1 | - | [D; C] | Sim | tipo, até 1, valores, obrigatório |
+| 5 | IND_VL_SLD_FIN | C | 1 | - | [D; C] | Sim | tipo, até 1, valores, obrigatório, em observação |
 
 ## E990: Encerramento do Bloco E
 
@@ -755,7 +756,7 @@ Página 154. Chave: COD_CTA_REF. Regras do registro: —.
 
 ## K915: Justificativa para Divergência de Saldos Contábeis das Contas Patrimoniais Recuperados da ECD
 
-Página 156. Chave: COD_CTA, COD_CCUS, ID_REGRA. Regras do registro: —.
+Página 156. Chave: COD_CCUS, COD_CTA, ID_REGRA, PER_APUR. Regras do registro: —.
 
 | Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -780,7 +781,7 @@ Página 156. Chave: COD_CTA, COD_CCUS, ID_REGRA. Regras do registro: —.
 
 ## K935: Justificativa para Divergência de Saldos Contábeis das Contas de Resultado Recuperados da ECD
 
-Página 160. Chave: COD_CTA, COD_CCUS, ID_REGRA. Regras do registro: —.
+Página 160. Chave: COD_CCUS, COD_CTA, ID_REGRA, PER_APUR. Regras do registro: —.
 
 | Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -832,10 +833,10 @@ Página 225. Chave: CODIGO. Regras do registro: REGRA_BALANCO_SALDO_FINAL, REGRA
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [L100] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | 50 | - | - | Sim | tipo, até 50, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
-| 4 | TIPO | C | 1 | - | [S; A] | Sim | tipo, até 1, valores, obrigatório |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
+| 4 | TIPO | C | 1 | - | [S; A] | Sim | tipo, até 1, valores, obrigatório, em observação |
 | 5 | NIVEL | N | 3 | - | - | Não | tipo, até 3, 0 decimais |
-| 6 | COD_NAT | C | 2 | - | - | Não | tipo, até 2 |
+| 6 | COD_NAT | C | 2 | - | - | Não | tipo, até 4 |
 | 7 | COD_CTA_SUP | C | - | - | - | Não | tipo, até 255 |
 | 8 | VAL_CTA_REF_INI | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
 | 9 | IND_VAL_CTA_REF_INI | C | 1 | - | [D; C] | Sim | tipo, até 1, valores, obrigatório |
@@ -861,7 +862,7 @@ Página 231. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [L210] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | - | - |  | Sim | tipo, até 255, obrigatório |
-| 3 | DESCRICAO | C | - | - |  | Não | tipo, até 255 |
+| 3 | DESCRICAO | C | - | - |  | Não | tipo, até 512 |
 | 4 | VALOR | C | - | - |  | Não | tipo, até 255 |
 
 ## L300: Demonstração do Resultado Líquido no Período Fiscal
@@ -872,10 +873,10 @@ Página 233. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [L300] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | 50 | - | - | Sim | tipo, até 50, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
-| 4 | TIPO | C | 1 | - | [S; A] | Sim | tipo, até 1, valores, obrigatório |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
+| 4 | TIPO | C | 1 | - | [S; A] | Sim | tipo, até 1, valores, obrigatório, em observação |
 | 5 | NIVEL | N | 3 | - | - | Não | tipo, até 3, 0 decimais |
-| 6 | COD_NAT | C | 2 | - | [04] | Não | tipo, até 2, valores |
+| 6 | COD_NAT | C | 2 | - | [04] | Não | tipo, até 4, valores |
 | 7 | COD_CTA_SUP | C | - | - | - | Não | tipo, até 255 |
 | 8 | VALOR | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
 | 9 | IND_ VALOR | C | 1 | - | [D; C] | Sim | tipo, até 1, valores, obrigatório |
@@ -934,9 +935,9 @@ Página 245. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [M300] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | - | - |  | Sim | tipo, até 255, obrigatório |
-| 3 | DESCRICAO | C | - | - |  | Não | tipo, até 255 |
-| 4 | TIPO_LANCAMENTO | C | 1 | - | [A; E; P; L] | Não | tipo, até 1, valores |
-| 5 | IND_RELACAO | N | 1 | - | [1; 2; 3; 4] | Não | tipo, até 1, 0 decimais, valores |
+| 3 | DESCRICAO | C | - | - |  | Não | tipo, até 512 |
+| 4 | TIPO_LANCAMENTO | C | 1 | - | [A; E; P; L] e, no programa da ECF, R | Não | tipo, até 1, valores |
+| 5 | IND_RELACAO | N | 1 | - | [1; 2; 3; 4] | Não | tipo C do programa, até 1, valores |
 | 6 | VALOR | NS | 19 | 2 | - | Não | tipo, até 19, 2 decimais |
 | 7 | HIST_LAN_LAL | C | 500 | - | - | Não | tipo, até 500 |
 
@@ -990,9 +991,9 @@ Página 257. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [M350] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | - | - |  | Sim | tipo, até 255, obrigatório |
-| 3 | DESCRICAO | C | - | - |  | Não | tipo, até 255 |
-| 4 | TIPO_LANCAMENTO | C | 1 | - | [A; E; P; L] | Não | tipo, até 1, valores |
-| 5 | IND_RELACAO | N | 1 | - | [1; 2; 3; 4] | Não | tipo, até 1, 0 decimais, valores |
+| 3 | DESCRICAO | C | - | - |  | Não | tipo, até 512 |
+| 4 | TIPO_LANCAMENTO | C | 1 | - | [A; E; P; L] e, no programa da ECF, R | Não | tipo, até 1, valores |
+| 5 | IND_RELACAO | N | 1 | - | [1; 2; 3; 4] | Não | tipo C do programa, até 1, valores |
 | 6 | VALOR | NS | 19 | 2 | - | Não | tipo, até 19, 2 decimais |
 | 7 | HIST_LAN_LAL | C | 500 | - | - | Não | tipo, até 500 |
 
@@ -1070,35 +1071,35 @@ Página 272. Chave: COD_CTA_B, COD_TRIBUTO. Regras do registro: —.
 | Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [M500] | Sim | tipo, até 4, obrigatório |
-| 2 | COD_CTA_B | C | - | - | [M010.COD_CTA_B] | Sim | tipo, até 255, obrigatório |
-| 3 | COD_TRIBUTO | C | 1 | - | [I; C] | Sim | tipo, até 1, valores, obrigatório |
-| 4 | SD_INI_LAL | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
-| 5 | IND_ SD_INI_LAL | C | 1 | - | [C; D] | Sim | tipo, até 1, valores, obrigatório |
-| 6 | VL_LCTO_PARTE_A | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
-| 7 | IND_ VL_LCTO_PARTE_A | C | 1 | - | [C; D] | Sim | tipo, até 1, valores, obrigatório |
-| 8 | VL_LCTO_PARTE B | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
-| 9 | IND_ VL_LCTO_PARTE B | C | 1 | - | [C; D] | Sim | tipo, até 1, valores, obrigatório |
-| 10 | SD_FIM_LAL | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
-| 11 | IND_ SD_FIM_LAL | C | 1 | - | [C; D] | Sim | tipo, até 1, valores, obrigatório |
+| 2 | COD_CTA_B | C | - | - | [M010.COD_CTA_B] | Sim | tipo, até 255, obrigatório, em observação |
+| 3 | COD_TRIBUTO | C | 1 | - | [I; C] | Sim | tipo, até 1, valores, obrigatório, em observação |
+| 4 | SD_INI_LAL | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório, em observação |
+| 5 | IND_ SD_INI_LAL | C | 1 | - | [C; D] | Sim | tipo, até 1, valores, obrigatório, em observação |
+| 6 | VL_LCTO_PARTE_A | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório, em observação |
+| 7 | IND_ VL_LCTO_PARTE_A | C | 1 | - | [C; D] | Sim | tipo, até 1, valores, obrigatório, em observação |
+| 8 | VL_LCTO_PARTE B | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório, em observação |
+| 9 | IND_ VL_LCTO_PARTE B | C | 1 | - | [C; D] | Sim | tipo, até 1, valores, obrigatório, em observação |
+| 10 | SD_FIM_LAL | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório, em observação |
+| 11 | IND_ SD_FIM_LAL | C | 1 | - | [C; D] | Sim | tipo, até 1, valores, obrigatório, em observação |
 
 ## M510: Controle de Saldos das Contas Padrão da Parte B do e-Lalur e do e-Lacs
 
-Página 274. Chave: COD_CTA_B, COD_TRIBUTO. Regras do registro: —.
+Página 274. Chave: COD_PB_RFB, COD_TRIBUTO. Regras do registro: —.
 
 | Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [M510] | Sim | tipo, até 4, obrigatório |
 | 2 | COD_PB_RFB | C | - | - | [M010.COD_CTA_B] | Sim | tipo, até 255, obrigatório |
-| 3 | DESCRICAO_PB_RFB | C | - | - | - | Sim | tipo, até 255, obrigatório |
+| 3 | DESCRICAO_PB_RFB | C | - | - | - | Sim | tipo, até 255, obrigatório, em observação |
 | 4 | COD_TRIBUTO | C | 1 | - | [I; C] | Sim | tipo, até 1, valores, obrigatório |
-| 5 | SD_INI_LAL | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
-| 6 | IND_ SD_INI_LAL | C | 1 | - | [C; D] | Sim | tipo, até 1, valores, obrigatório |
-| 7 | VL_LCTO_PARTE_A | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
-| 8 | IND_ VL_LCTO_PARTE_A | C | 1 | - | [C; D] | Sim | tipo, até 1, valores, obrigatório |
-| 9 | VL_LCTO_PARTE B | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
-| 10 | IND_ VL_LCTO_PARTE B | C | 1 | - | [C; D] | Sim | tipo, até 1, valores, obrigatório |
-| 11 | SD_FIM_LAL | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
-| 12 | IND_ SD_FIM_LAL | C | 1 | - | [C; D] | Sim | tipo, até 1, valores, obrigatório |
+| 5 | SD_INI_LAL | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório, em observação |
+| 6 | IND_ SD_INI_LAL | C | 1 | - | [C; D] | Sim | tipo, até 1, valores, obrigatório, em observação |
+| 7 | VL_LCTO_PARTE_A | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório, em observação |
+| 8 | IND_ VL_LCTO_PARTE_A | C | 1 | - | [C; D] | Sim | tipo, até 1, valores, obrigatório, em observação |
+| 9 | VL_LCTO_PARTE B | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório, em observação |
+| 10 | IND_ VL_LCTO_PARTE B | C | 1 | - | [C; D] | Sim | tipo, até 1, valores, obrigatório, em observação |
+| 11 | SD_FIM_LAL | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório, em observação |
+| 12 | IND_ SD_FIM_LAL | C | 1 | - | [C; D] | Sim | tipo, até 1, valores, obrigatório, em observação |
 
 ## M990: Encerramento do Bloco M
 
@@ -1131,13 +1132,13 @@ Página 278. Chave: PER_APUR. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, 
 
 ## N500: Base de Cálculo do IRPJ Sobre o Lucro Real Após as Compensações de Prejuízos
 
-Página 281. Chave: REG. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, REGRA_LINHA_ATUALIZADA, REGRA_LINHA_DESPREZADA.
+Página 281. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, REGRA_LINHA_ATUALIZADA, REGRA_LINHA_DESPREZADA.
 
 | Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [N500] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | - | - | - | Sim | tipo, até 255, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | VALOR | C | - | - | - | Não | tipo, até 255 |
 
 ## N600: Demonstração do Lucro da Exploração
@@ -1148,7 +1149,7 @@ Página 284. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [N600] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | - | - | - | Sim | tipo, até 255, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | VALOR | C | - | - | - | Não | tipo, até 255 |
 
 ## N605: Contas Contábeis Utilizadas na Apuração do Lucro da Exploração
@@ -1171,7 +1172,7 @@ Página 290. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [N610] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | - | - | - | Sim | tipo, até 255, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | VALOR | C | - | - | - | Não | tipo, até 255 |
 
 ## N615: Informações da Base de Cálculo dos Incentivos Fiscais
@@ -1181,7 +1182,7 @@ Página 293. Chave: REG. Regras do registro: —.
 | Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [N615] | Sim | tipo, até 4, obrigatório |
-| 2 | BASE_CALC | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
+| 2 | BASE_CALC | N | 19 | 2 | - | Sim | tipo NS do programa, até 19, 2 decimais, obrigatório |
 | 3 | PER_INCEN_ FINOR | N | 8 | 4 | - | Sim | tipo, até 8, 4 decimais, obrigatório |
 | 4 | VL_LIQ_INCEN_ FINOR | NS | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
 | 5 | PER_INCEN_ FINAM | N | 8 | 4 | - | Sim | tipo, até 8, 4 decimais, obrigatório |
@@ -1196,7 +1197,7 @@ Página 297. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [N620] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | - | - | - | Sim | tipo, até 255, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | VALOR | C | - | - | - | Não | tipo, até 255 |
 
 ## N630: Apuração do IRPJ Com Base no Lucro Real
@@ -1207,18 +1208,18 @@ Página 299. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [N630] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | - | - | - | Sim | tipo, até 255, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | VALOR | C | - | - | - | Não | tipo, até 255 |
 
 ## N650: Base de Cálculo da CSLL Após as Compensações da Base de Cálculo Negativa
 
-Página 302. Chave: REG. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, REGRA_LINHA_ATUALIZADA, REGRA_LINHA_DESPREZADA.
+Página 302. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, REGRA_LINHA_ATUALIZADA, REGRA_LINHA_DESPREZADA.
 
 | Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [N650] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | - | - | - | Sim | tipo, até 255, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | VALOR | NS | 19 | 2 | - | Não | tipo, até 19, 2 decimais |
 
 ## N660: Apuração da CSLL Mensal por Estimativa
@@ -1229,7 +1230,7 @@ Página 306. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [N660] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | - | - | - | Sim | tipo, até 255, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | VALOR | NS | 19 | 2 | - | Não | tipo, até 19, 2 decimais |
 
 ## N670: Apuração da CSLL Com Base no Lucro Real
@@ -1240,7 +1241,7 @@ Página 308. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [N670] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | - | - | - | Sim | tipo, até 255, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | VALOR | NS | 19 | 2 | - | Não | tipo, até 19, 2 decimais |
 
 ## N990: Encerramento do Bloco N
@@ -1280,10 +1281,10 @@ Página 330. Chave: CODIGO. Regras do registro: REGRA_BALANCO_SALDO_FINAL, REGRA
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [P100] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | 50 | - | - | Sim | tipo, até 50, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | TIPO | C | 1 | - | [S; A] | Sim | tipo, até 1, valores, obrigatório |
 | 5 | NIVEL | N | 3 | - | - | Não | tipo, até 3, 0 decimais |
-| 6 | COD_NAT | C | 2 | - | - | Não | tipo, até 2 |
+| 6 | COD_NAT | C | 2 | - | - | Não | tipo, até 4 |
 | 7 | COD_CTA_SUP | C | - | - | - | Não | tipo, até 255 |
 | 8 | VAL_CTA_REF_INI | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
 | 9 | IND_VAL_CTA_REF_INI | C | 1 | - | [D; C] | Sim | tipo, até 1, valores, obrigatório |
@@ -1300,7 +1301,7 @@ Página 334. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [P130] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | - | - | - | Sim | tipo, até 255, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | VALOR | C | - | - | - | Não | tipo, até 255 |
 
 ## P150: Demonstrativo do Resultado Líquido no Período Fiscal
@@ -1311,10 +1312,10 @@ Página 337. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [P150] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | 50 | - | - | Sim | tipo, até 50, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
-| 4 | TIPO | C | 1 | - | [S; A] | Sim | tipo, até 1, valores, obrigatório |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
+| 4 | TIPO | C | 1 | - | [S; A] | Sim | tipo, até 1, valores, obrigatório, em observação |
 | 5 | NIVEL | N | 3 | - | - | Não | tipo, até 3, 0 decimais |
-| 6 | COD_NAT | C | 2 | - | [04] | Não | tipo, até 2, valores |
+| 6 | COD_NAT | C | 2 | - | [04] | Não | tipo, até 4, valores |
 | 7 | COD_CTA_SUP | C | - | - | - | Não | tipo, até 255 |
 | 8 | VALOR | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
 | 9 | IND_ VALOR | C | 1 | - | [D; C] | Sim | tipo, até 1, valores, obrigatório |
@@ -1327,7 +1328,7 @@ Página 340. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [P200] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | - | - | - | Sim | tipo, até 255, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | VALOR | C | - | - | - | Não | tipo, até 255 |
 
 ## P230: Cálculo da Isenção e Redução do Lucro Presumido
@@ -1338,7 +1339,7 @@ Página 342. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [P230] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | - | - | - | Sim | tipo, até 255, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | VALOR | C | - | - | - | Não | tipo, até 255 |
 
 ## P300: Cálculo do IRPJ com Base no Lucro Presumido
@@ -1349,7 +1350,7 @@ Página 344. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [P300] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | - | - | - | Sim | tipo, até 255, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | VALOR | C | - | - | - | Não | tipo, até 255 |
 
 ## P400: Apuração da Base de Cálculo da CSLL com Base no Lucro Presumido
@@ -1360,7 +1361,7 @@ Página 346. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [P400] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | - | - | - | Sim | tipo, até 255, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | VALOR | C | - | - | - | Não | tipo, até 255 |
 
 ## P500: Cálculo da CSLL com Base no Lucro Presumido
@@ -1371,7 +1372,7 @@ Página 348. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [P500] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | - | - | - | Sim | tipo, até 255, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | VALOR | C | - | - | - | Não | tipo, até 255 |
 
 ## P990: Encerramento do Bloco P
@@ -1443,10 +1444,10 @@ Página 359. Chave: CODIGO. Regras do registro: REGRA_BALANCO_SALDO_FINAL, REGRA
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [S100] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | 50 | - | - | Sim | tipo, até 50, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | TIPO | C | 1 | - | [S; A] | Sim | tipo, até 1, valores, obrigatório |
 | 5 | NIVEL | N | 3 | - | - | Não | tipo, até 3, 0 decimais |
-| 6 | COD_NAT | C | 2 | - | - | Não | tipo, até 2 |
+| 6 | COD_NAT | C | 2 | - | - | Não | tipo, até 4 |
 | 7 | COD_CTA_SUP | C | - | - | - | Não | tipo, até 255 |
 | 8 | VAL_CTA_REF_INI | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
 | 9 | IND_VAL_CTA_REF_INI | C | 1 | - | [D; C] | Sim | tipo, até 1, valores, obrigatório |
@@ -1463,10 +1464,10 @@ Página 362. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [S150] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | 50 | - | - | Sim | tipo, até 50, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
-| 4 | TIPO | C | 1 | - | [S; A] | Sim | tipo, até 1, valores, obrigatório |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
+| 4 | TIPO | C | 1 | - | [S; A] | Sim | tipo, até 1, valores, obrigatório, em observação |
 | 5 | NIVEL | N | 3 | - | - | Não | tipo, até 3, 0 decimais |
-| 6 | COD_NAT | C | 2 | - | [04] | Não | tipo, até 2, valores |
+| 6 | COD_NAT | C | 2 | - | [04] | Não | tipo, até 4, valores |
 | 7 | COD_CTA_SUP | C | - | - | - | Não | tipo, até 255 |
 | 8 | VALOR | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
 | 9 | IND_ VALOR | C | 1 | - | [D; C] | Sim | tipo, até 1, valores, obrigatório |
@@ -1479,7 +1480,7 @@ Página 365. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [S200] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | - | - | - | Sim | tipo, até 255, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | VALOR | C | - | - | - | Não | tipo, até 255 |
 
 ## S300: Cálculo do IRPJ
@@ -1490,7 +1491,7 @@ Página 367. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [S300] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | - | - | - | Sim | tipo, até 255, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | VALOR | C | - | - | - | Não | tipo, até 255 |
 
 ## S500: Cálculo da CSLL
@@ -1501,7 +1502,7 @@ Página 369. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [S500] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | - | - | - | Sim | tipo, até 255, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | VALOR | C | - | - | - | Não | tipo, até 255 |
 
 ## S700: Cálculo dos Demais Tributos
@@ -1512,8 +1513,17 @@ Página 371. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [S700] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | - | - | - | Sim | tipo, até 255, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | VALOR | C | - | - | - | Não | tipo, até 255 |
+
+## S990: Encerramento do Bloco S
+
+Só no programa da ECF. Chave: —. Regras do registro: —.
+
+| Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | REG | C | 4 | - | - | Sim | tipo, até 4, obrigatório |
+| 2 | QTD_LIN_S | N | - | - | - | Sim | tipo, 0 decimais, obrigatório |
 
 ## T001: Abertura do Bloco T
 
@@ -1543,7 +1553,7 @@ Página 387. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [T120] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | - | - | - | Sim | tipo, até 255, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | VALOR | C | - | - | - | Não | tipo, até 255 |
 
 ## T150: Cálculo do IRPJ com Base no Lucro Arbitrado
@@ -1554,7 +1564,7 @@ Página 389. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [T150] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | - | - | - | Sim | tipo, até 255, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | VALOR | C | - | - | - | Não | tipo, até 255 |
 
 ## T170: Apuração da Base de Cálculo da CSLL com Base no Lucro Arbitrado
@@ -1565,7 +1575,7 @@ Página 391. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [T170] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | - | - | - | Sim | tipo, até 255, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | VALOR | C | - | - | - | Não | tipo, até 255 |
 
 ## T181: Cálculo da CSLL com Base no Lucro Arbitrado
@@ -1576,7 +1586,7 @@ Página 393. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [T181] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | - | - | - | Sim | tipo, até 255, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | VALOR | C | - | - | - | Não | tipo, até 255 |
 
 ## T990: Encerramento do Bloco T
@@ -1616,10 +1626,10 @@ Página 404. Chave: CODIGO. Regras do registro: REGRA_BALANCO_SALDO_FINAL, REGRA
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [U100] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | 50 | - | - | Sim | tipo, até 50, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | TIPO | C | 1 | - | [S; A] | Sim | tipo, até 1, valores, obrigatório |
 | 5 | NIVEL | N | 3 | - | - | Não | tipo, até 3, 0 decimais |
-| 6 | COD_NAT | C | 2 | - | - | Não | tipo, até 2 |
+| 6 | COD_NAT | C | 2 | - | - | Não | tipo, até 4 |
 | 7 | COD_CTA_SUP | C | - | - | - | Não | tipo, até 255 |
 | 8 | VAL_CTA_REF_INI | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
 | 9 | IND_VAL_CTA_REF_INI | C | 1 | - | [D; C] | Sim | tipo, até 1, valores, obrigatório |
@@ -1636,10 +1646,10 @@ Página 409. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [U150] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | 50 | - | - | Sim | tipo, até 50, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
-| 4 | TIPO | C | 1 | - | [S; A] | Sim | tipo, até 1, valores, obrigatório |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
+| 4 | TIPO | C | 1 | - | [S; A] | Sim | tipo, até 1, valores, obrigatório, em observação |
 | 5 | NIVEL | N | 3 | - | - | Não | tipo, até 3, 0 decimais |
-| 6 | COD_NAT | C | 2 | - | [04] | Não | tipo, até 2, valores |
+| 6 | COD_NAT | C | 2 | - | [04] | Não | tipo, até 4, valores |
 | 7 | COD_CTA_SUP | C | - | - | - | Não | tipo, até 255 |
 | 8 | VALOR | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
 | 9 | IND_ VALOR | C | 1 | - | [D; C] | Sim | tipo, até 1, valores, obrigatório |
@@ -1652,7 +1662,7 @@ Página 413. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [U180] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | - | - | - | Sim | tipo, até 255, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | VALOR | C | - | - | - | Não | tipo, até 255 |
 
 ## U182: Cálculo da Contribuição Social sobre o Lucro Líquido (CSLL) das Empresas Imunes e Isentas
@@ -1663,7 +1673,7 @@ Página 415. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [U182] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | 6 | - | - | Sim | tipo, até 6, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | VALOR | C | - | - | - | Não | tipo, até 255 |
 
 ## U990: Encerramento do Bloco U
@@ -1697,7 +1707,7 @@ Página 421. Chave: REG. Regras do registro: —.
 
 ## V020: Responsável pela Movimentação
 
-Página 422. Chave: REG. Regras do registro: —.
+Página 422. Chave: NI, TIPO_DO_C. Regras do registro: —.
 
 | Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -1710,7 +1720,7 @@ Página 422. Chave: REG. Regras do registro: —.
 
 ## V030: DEREX – Período - Mês
 
-Página 423. Chave: REG. Regras do registro: —.
+Página 423. Chave: MES. Regras do registro: —.
 
 | Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -1719,12 +1729,12 @@ Página 423. Chave: REG. Regras do registro: —.
 
 ## V100: Demonstrativo dos Recursos em Moeda Estrangeira Decorrentes do Recebimento de Exportações
 
-Página 424. Chave: —. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, REGRA_LINHA_ATUALIZADA, REGRA_LINHA_DESPREZADA.
+Página 424. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, REGRA_LINHA_ATUALIZADA, REGRA_LINHA_DESPREZADA.
 
 | Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [V100] | Sim | tipo, até 4, obrigatório |
-| 2 | CODIGO | C | 2 | - | Conforme tabela SPEDECF_V100 | Sim | tipo, até 2, obrigatório |
+| 2 | CODIGO | C | 2 | - | Conforme tabela SPEDECF_V100 | Sim | tipo, até 6, obrigatório |
 | 3 | DESCRICAO | C | 1000 | - | - | - | tipo, até 1000 |
 | 4 | VALOR | C | - | - | - | - | tipo, até 255 |
 
@@ -1754,15 +1764,15 @@ Página 432. Chave: REG. Regras do registro: REGRA_W100_W250, REGRA_W100_Y600.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [W100] | Sim | tipo, até 4, obrigatório |
 | 2 | NOME_MULTINACIONAL | C | - | - | - | Sim | tipo, até 255, obrigatório |
-| 3 | IND_CONTROLADORA | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
-| 4 | NOME_CONTROLADORA | C | - | - | - | Sim | tipo, até 255, obrigatório |
-| 5 | JURISDICAO_CONTROLADORA | C | 2 | - | - | Sim | tipo, até 2, obrigatório |
-| 6 | TIN_CONTROLADORA | C | - | - | - | Sim | tipo, até 255, obrigatório |
-| 7 | IND_ENTREGA | N | 1 | - | [1;2;3;4] | Sim | tipo, até 1, 0 decimais, valores, obrigatório |
-| 8 | IND_MODALIDADE | N | 1 | - | [1;2] | Sim | tipo, até 1, 0 decimais, valores, obrigatório |
+| 3 | IND_CONTROLADORA | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório, em observação |
+| 4 | NOME_CONTROLADORA | C | - | - | - | Sim | tipo, até 255, obrigatório, em observação |
+| 5 | JURISDICAO_CONTROLADORA | C | 2 | - | - | Sim | tipo, até 2, obrigatório, em observação |
+| 6 | TIN_CONTROLADORA | C | - | - | - | Sim | tipo, até 255, obrigatório, em observação |
+| 7 | IND_ENTREGA | N | 1 | - | [1;2;3;4] | Sim | tipo, até 1, 0 decimais, valores, obrigatório, em observação |
+| 8 | IND_MODALIDADE | N | 1 | - | [1;2] | Sim | tipo, até 1, 0 decimais, valores, obrigatório, em observação |
 | 9 | NOME_SUBSTITUTA | C | - | - | - | Não | tipo, até 255 |
 | 10 | JURISDICAO_SUBSTITUTA | C | 2 | - | - | Não | tipo, até 2 |
-| 11 | TIN_SUBSTITUTA | N | 14 | - | - | Não | tipo, até 14, 0 decimais |
+| 11 | TIN_SUBSTITUTA | N | 14 | - | - | Não | tipo C do programa, até 14 |
 | 12 | DT_INI | N | 8 | - | - | Não | tipo, data, até 8, 0 decimais |
 | 13 | DT_FIN | N | 8 | - | - | Não | tipo, data, até 8, 0 decimais |
 | 14 | TIP_MOEDA | C | 3 | - | - | Não | tipo, até 3 |
@@ -1776,24 +1786,24 @@ Página 444. Chave: JURISDICAO. Regras do registro: —.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [W200] | Sim | tipo, até 4, obrigatório |
 | 2 | JURISDICAO | C | 2 | - | - | Sim | tipo, até 2, obrigatório |
-| 3 | VL_REC_NAO_REL_EST | N | 19 | 0 | - | Não | tipo, até 19, 0 decimais |
-| 4 | VL_REC_NAO_REL | N | 19 | 0 | - | Sim | tipo, até 19, 0 decimais, obrigatório |
-| 5 | VL_REC_REL_EST | N | 19 | 0 | - | Não | tipo, até 19, 0 decimais |
-| 6 | VL_REC_REL | N | 19 | 0 | - | Sim | tipo, até 19, 0 decimais, obrigatório |
-| 7 | VL_REC_TOTAL_EST | N | 19 | 0 | - | Não | tipo, até 19, 0 decimais |
-| 8 | VL_REC_TOTAL | N | 19 | 0 | - | Sim | tipo, até 19, 0 decimais, obrigatório |
+| 3 | VL_REC_NAO_REL_EST | N | 19 | 0 | - | Não | tipo NS do programa, até 19, 0 decimais |
+| 4 | VL_REC_NAO_REL | N | 19 | 0 | - | Sim | tipo NS do programa, até 19, 0 decimais, obrigatório |
+| 5 | VL_REC_REL_EST | N | 19 | 0 | - | Não | tipo NS do programa, até 19, 0 decimais |
+| 6 | VL_REC_REL | N | 19 | 0 | - | Sim | tipo NS do programa, até 19, 0 decimais, obrigatório |
+| 7 | VL_REC_TOTAL_EST | N | 19 | 0 | - | Não | tipo NS do programa, até 19, 0 decimais |
+| 8 | VL_REC_TOTAL | N | 19 | 0 | - | Sim | tipo NS do programa, até 19, 0 decimais, obrigatório |
 | 9 | VL_LUC_PREJ_ANTES_IR_EST | NS | 19 | 0 | - | Não | tipo, até 19, 0 decimais |
 | 10 | VL_LUC_PREJ_ANTES_IR | NS | 19 | 0 | - | Sim | tipo, até 19, 0 decimais, obrigatório |
-| 11 | VL_IR_PAGO_EST | N | 19 | 0 | - | Não | tipo, até 19, 0 decimais |
-| 12 | VL_IR_PAGO | N | 19 | 0 | - | Sim | tipo, até 19, 0 decimais, obrigatório |
-| 13 | VL_IR_DEVIDO_EST | N | 19 | 0 | - | Não | tipo, até 19, 0 decimais |
-| 14 | VL_IR_DEVIDO | N | 19 | 0 | - | Sim | tipo, até 19, 0 decimais, obrigatório |
-| 15 | VL_CAP_SOC_EST | N | 19 | 0 | - | Não | tipo, até 19, 0 decimais |
-| 16 | VL_CAP_SOC | N | 19 | 0 | - | Sim | tipo, até 19, 0 decimais, obrigatório |
-| 17 | VL_LUC_ACUM_EST | N | 19 | 0 | - | Não | tipo, até 19, 0 decimais |
-| 18 | VL_LUC_ACUM | N | 19 | 0 | - | Sim | tipo, até 19, 0 decimais, obrigatório |
-| 19 | VL_ATIV_TANG_EST | N | 19 | 0 | - | Não | tipo, até 19, 0 decimais |
-| 20 | VL_ATIV_TANG | N | 19 | 0 | - | Sim | tipo, até 19, 0 decimais, obrigatório |
+| 11 | VL_IR_PAGO_EST | N | 19 | 0 | - | Não | tipo NS do programa, até 19, 0 decimais |
+| 12 | VL_IR_PAGO | N | 19 | 0 | - | Sim | tipo NS do programa, até 19, 0 decimais, obrigatório |
+| 13 | VL_IR_DEVIDO_EST | N | 19 | 0 | - | Não | tipo NS do programa, até 19, 0 decimais |
+| 14 | VL_IR_DEVIDO | N | 19 | 0 | - | Sim | tipo NS do programa, até 19, 0 decimais, obrigatório |
+| 15 | VL_CAP_SOC_EST | N | 19 | 0 | - | Não | tipo NS do programa, até 19, 0 decimais |
+| 16 | VL_CAP_SOC | N | 19 | 0 | - | Sim | tipo NS do programa, até 19, 0 decimais, obrigatório |
+| 17 | VL_LUC_ACUM_EST | N | 19 | 0 | - | Não | tipo NS do programa, até 19, 0 decimais |
+| 18 | VL_LUC_ACUM | N | 19 | 0 | - | Sim | tipo NS do programa, até 19, 0 decimais, obrigatório |
+| 19 | VL_ATIV_TANG_EST | N | 19 | 0 | - | Não | tipo NS do programa, até 19, 0 decimais |
+| 20 | VL_ATIV_TANG | N | 19 | 0 | - | Sim | tipo NS do programa, até 19, 0 decimais, obrigatório |
 | 21 | NUM_EMP | N | 7 | 0 | - | Sim | tipo, até 7, 0 decimais, obrigatório |
 
 ## W250: Declaração País-a-País – Entidades Integrantes
@@ -1806,7 +1816,7 @@ Página 455. Chave: —. Regras do registro: REGRA_DECLARANTE_INTEGRANTE_PAIS_A_
 | 2 | JUR_DIFERENTE | C | 2 | - | - | Não | tipo, até 2 |
 | 3 | NOME | C | - | - | - | Sim | tipo, até 255, obrigatório |
 | 4 | TIN | C | - | - | - | Sim | tipo, até 255, obrigatório |
-| 5 | JURISDICAO_TIN | C | 2 | - | - | Sim | tipo, até 2, obrigatório |
+| 5 | JURISDICAO_TIN | C | 2 | - | - | Sim | tipo, até 2, obrigatório, em observação |
 | 6 | NI | C | - | - | - | Não | tipo, até 255 |
 | 7 | JURISDICAO_NI | C | 2 | - | - | Não | tipo, até 2 |
 | 8 | TIPO_NI | C | - | - | - | Não | tipo, até 255 |
@@ -1883,9 +1893,9 @@ Página 466. Chave: —. Regras do registro: REGRA_ISENCAO_AM_NE_REAL, REGRA_ISE
 | 6 | VIG_INI | D | 8 | - | - | Sim | até 8, obrigatório |
 | 7 | VIG_FIM | D | 8 | - | - | Sim | até 8, obrigatório |
 | 8 | CNPJ_INCENTIVO | C | 14 | - | - | Sim | tipo, até 14, obrigatório |
-| 9 | NCM_INCENTIVO | N | 8 | - | - | Não | tipo, até 8, 0 decimais |
-| 10 | REC_LIQ_INCENTIVO | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
-| 11 | VL_INCENTIVO | N | 19 | 2 | - | Não | tipo, até 19, 2 decimais |
+| 9 | NCM_INCENTIVO | N | 8 | - | - | Não | tipo C do programa, até 8 |
+| 10 | REC_LIQ_INCENTIVO | N | 19 | 2 | - | Sim | tipo NS do programa, até 19, 2 decimais, obrigatório |
+| 11 | VL_INCENTIVO | N | 19 | 2 | - | Não | tipo NS do programa, até 19, 2 decimais |
 
 ## X292: Operações com o Exterior – Pessoa Não Vinculada/Não Interposta/País sem Tributação Favorecida
 
@@ -1895,7 +1905,7 @@ Página 477. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [X292] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | 6 | - | - | Sim | tipo, até 6, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | VALOR | C | - | - | - | Não | tipo, até 255 |
 
 ## X340: Identificação da Participação no Exterior
@@ -1908,7 +1918,7 @@ Página 479. Chave: NIF, CNPJ. Regras do registro: —.
 | 2 | RAZ_SOCIAL | C | - | - | - | Sim | tipo, até 255, obrigatório |
 | 3 | NIF | C | - | - | - | Sim | tipo, até 255, obrigatório |
 | 4 | IND_CONTROLE | N | 2 | - | [1; 2; 3; 4; 5; 6; 7; 8; 9; 10;11] | Sim | tipo, até 2, 0 decimais, valores, obrigatório |
-| 5 | PAIS | N | 3 | - | - | Sim | tipo, até 3, 0 decimais, obrigatório |
+| 5 | PAIS | N | 3 | - | - | Sim | tipo C do programa, até 3, obrigatório |
 | 6 | IND_ISEN_PETR | C | - | - | [S; N] | Sim | tipo, até 255, valores, obrigatório |
 | 7 | IND_CONSOL | C | - | - | [S; N] | Sim | tipo, até 255, valores, obrigatório |
 | 8 | MOT_NAO_CONSOL | N | - | - | - | Não | tipo, 0 decimais |
@@ -1951,7 +1961,7 @@ Página 487. Chave: REG. Regras do registro: REGRA_X351_PREENCHER.
 | 5 | RES_ISEN_PETR_PER_REAL | NS | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
 | 6 | RES_NEG_ACUM | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
 | 7 | RES_NEG_ACUM_REAL | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
-| 8 | RES_POS_TRIB | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
+| 8 | RES_POS_TRIB | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório, em observação |
 | 9 | RES_POS_TRIB_REAL | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
 | 10 | IMP_LUCR | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
 | 11 | IMP_LUCR_REAL | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
@@ -2026,12 +2036,12 @@ Página 498. Chave: REG. Regras do registro: REGRA_X356_PREENCHER.
 
 ## X357: Investidoras Diretas
 
-Página 499. Chave: REG. Regras do registro: REGRA_X357_PREENCHER.
+Página 499. Chave: NIF/CNPJ, PAIS. Regras do registro: REGRA_X357_PREENCHER.
 
 | Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [X357] | Sim | tipo, até 4, obrigatório |
-| 2 | PAIS | N | 3 | - | - | Sim | tipo, até 3, 0 decimais, obrigatório |
+| 2 | PAIS | N | 3 | - | - | Sim | tipo C do programa, até 3, obrigatório |
 | 3 | NIF/CNPJ | C | - | - | - | Sim | tipo, até 255, obrigatório |
 | 4 | RAZAO_SOCIAL | C | - | - | - | Sim | tipo, até 255, obrigatório |
 | 5 | PERCENTUAL | N | 8 | 4 | - | Sim | tipo, até 8, 4 decimais, obrigatório |
@@ -2054,7 +2064,7 @@ Página 503. Chave: IDENTIFICADOR. Regras do registro: —.
 | Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [X365] | Sim | tipo, até 4, obrigatório |
-| 2 | IDENTIFICADOR | C | 6 | - | - | Sim | tipo, até 6, obrigatório |
+| 2 | IDENTIFICADOR | C | 6 | - | - | Sim | tipo, até 10, obrigatório |
 | 3 | NOME_ENT | C | - | - | - | Não | tipo, até 255 |
 
 ## X366: Entidades Com as Quais Realiza Transações Controladas
@@ -2070,30 +2080,30 @@ Página 504. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 
 ## X370: Informações Sobre as Transações Controladas
 
-Página 506. Chave: IDENTIFICADOR, TIPO_TRANSACAO. Regras do registro: —.
+Página 506. Chave: —. Regras do registro: —.
 
 | Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [X370] | Sim | tipo, até 4, obrigatório |
-| 2 | IDENTIFICADOR | C | 6 | - | - | Sim | tipo, até 6, obrigatório |
+| 2 | IDENTIFICADOR | C | 6 | - | - | Sim | tipo, até 10, obrigatório |
 | 3 | TIPO_TRANSACAO | C | 2 | - | [01;02;03;04; 05;06;07; 08;09;10;11;12;13] | Sim | tipo, até 2, valores, obrigatório |
 | 4 | NOME_ENT | C | - | - | - | Sim | tipo, até 255, obrigatório |
 | 5 | PAIS | C | - | - | TABELA: PAIS_SISCOMEX | Sim | tipo, até 255, obrigatório |
 | 6 | COD_NCM | C | - | - | TABELA_NCM | Não | tipo, até 255 |
 | 7 | TIPO_DEMAIS | C | 3 | - | [101 a 113;199 201; 202; 299 301 a 304; 399 401 a 406; 499 501 a 511; 599] | Não | tipo, até 3 |
 | 8 | DESCR_BSDI | C | - | - | - | Sim | tipo, até 255, obrigatório |
-| 9 | VL_TRANSACAO | N | 019 | 002 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
+| 9 | VL_TRANSACAO | N | 019 | 002 | - | Sim | tipo NS do programa, até 19, 2 decimais, obrigatório |
 | 10 | IND_AJUSTES | C | - | - | [S;N] | Sim | tipo, até 255, valores, obrigatório |
-| 11 | VL_ESPONTANEO | N | 019 | 002 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
-| 12 | VL_COMPENSATORIO | N | 019 | 002 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
+| 11 | VL_ESPONTANEO | N | 019 | 002 | - | Sim | tipo, até 19, 2 decimais, obrigatório, em observação |
+| 12 | VL_COMPENSATORIO | N | 019 | 002 | - | Sim | tipo NS do programa, até 19, 2 decimais, obrigatório, em observação |
 | 13 | TIP_AJ_COMPENSATORIO | C | - | - | [01;02;03;99] | Não | tipo, até 255, valores |
 | 14 | METODO | C | 3 | - | [PIC; PRL; MCL; MLT; MDL; OUT] | Sim | tipo, até 3, valores, obrigatório |
 | 15 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
-| 16 | COMP_INTENCIONAL | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
-| 17 | SINERGIA | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
-| 18 | IND_TRANS_COMBINADAS | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
-| 19 | IND_DADOS_MULTIP | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
-| 20 | IND_SIMPLIFIC | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
+| 16 | COMP_INTENCIONAL | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório, em observação |
+| 17 | SINERGIA | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório, em observação |
+| 18 | IND_TRANS_COMBINADAS | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório, em observação |
+| 19 | IND_DADOS_MULTIP | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório, em observação |
+| 20 | IND_SIMPLIFIC | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório, em observação |
 
 ## X371: Informações Sobre Ajustes Compensatórios
 
@@ -2126,7 +2136,7 @@ Página 516. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [X390] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | - | - | - | Sim | tipo, até 255, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | VALOR | C | - | - | - | Não | tipo, até 255 |
 
 ## X400: Comércio Eletrônico e Tecnologia da Informação – Informações das Vendas
@@ -2200,7 +2210,7 @@ Página 538. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [X451] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | 6 | - | - | Sim | tipo, até 6, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | VALOR | C | - | - | - | Não | tipo, até 255 |
 
 ## X460: Inovação Tecnológica e Desenvolvimento Tecnológico
@@ -2211,7 +2221,7 @@ Página 541. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [X460] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | 6 | - | - | Sim | tipo, até 6, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | VALOR | C | - | - | - | Não | tipo, até 255 |
 
 ## X470: Capacitação de Informática e Inclusão Digital
@@ -2222,7 +2232,7 @@ Página 543. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [X470] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | 6 | - | - | Sim | tipo, até 6, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | VALOR | C | - | - | - | Não | tipo, até 255 |
 
 ## X480: Benefícios Fiscais – Parte I
@@ -2233,12 +2243,12 @@ Página 546. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [X480] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | 6 | - | - | Sim | tipo, até 6, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | VALOR | NS | 19 | 2 | - | Não | tipo, até 19, 2 decimais |
 
 ## X485: Benefícios Fiscais – Parte II
 
-Página 548. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, REGRA_LINHA_ATUALIZADA, REGRA_LINHA_DESPREZADA.
+Página 548. Chave: —. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, REGRA_LINHA_ATUALIZADA, REGRA_LINHA_DESPREZADA.
 
 | Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -2262,7 +2272,7 @@ Página 554. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [X490] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | 6 | - | - | Sim | tipo, até 6, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | VALOR | C | - | - | - | Não | tipo, até 255 |
 
 ## X500: Zonas de Processamento de Exportação (ZPE)
@@ -2273,7 +2283,7 @@ Página 556. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [X500] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | - | - | - | Sim | tipo, até 255, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | VALOR | C | - | - | - | Não | tipo, até 255 |
 
 ## X510: Áreas de Livre Comércio (ALC)
@@ -2284,7 +2294,7 @@ Página 558. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [X510] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | - | - | - | Sim | tipo, até 255, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | VALOR | C | - | - | - | Não | tipo, até 255 |
 
 ## X990: Encerramento do Bloco X
@@ -2335,7 +2345,7 @@ Página 565. Chave: CNPJ_FON, COD_REC. Regras do registro: —.
 
 ## Y590: Ativos no Exterior
 
-Página 569. Chave: TIP_ATIVO, DISCRIMINACAO. Regras do registro: REGRA_IND_PART_EXT_Y590.
+Página 569. Chave: DISCRIMINACAO, PAIS, TIP_ATIVO. Regras do registro: REGRA_IND_PART_EXT_Y590.
 
 | Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -2356,14 +2366,14 @@ Página 571. Chave: —. Regras do registro: —.
 | 2 | DT_ALT_SOC | N | 8 | - | - | Sim | tipo, data, até 8, 0 decimais, obrigatório |
 | 3 | DT_FIM_SOC | N | 8 | - | - | Não | tipo, data, até 8, 0 decimais |
 | 4 | PAIS | N | 3 | - | - | Sim | tipo, até 3, 0 decimais, obrigatório |
-| 5 | IND_QUALIF | C | 2 | - | [PF; PJ; FI] | Sim | tipo, até 2, valores, obrigatório |
+| 5 | IND_QUALIF | C | 2 | - | [PF; PJ; FI] | Sim | tipo, até 2, valores, obrigatório, em observação |
 | 6 | CPF_CNPJ | C | 14 | - | - | Não | tipo, até 14 |
 | 7 | NOM_EMP | C | - | - | - | Sim | tipo, até 255, obrigatório |
 | 8 | QUALIF | C | 2 | - | [01; 02; 03; 04; 05; 06; 07; 08; 09; 10; 11; 12; 13; 14; 15; 16; 17; 18] | Sim | tipo, até 2, valores, obrigatório |
 | 9 | PERC_CAP_TOT | N | 8 | 4 | - | Sim | tipo, até 8, 4 decimais, obrigatório |
 | 10 | PERC_CAP_VOT | N | 8 | 4 | - | Sim | tipo, até 8, 4 decimais, obrigatório |
 | 11 | CPF_REP_LEG | N | 11 | - | - | Não | tipo, até 11, 0 decimais |
-| 12 | QUALIF_REP_LEG | N | 2 | - | [01; 02; 03; 04; 05; 06] | Não | tipo, até 2, 0 decimais, valores |
+| 12 | QUALIF_REP_LEG | N | 2 | - | [01; 02; 03; 04; 05; 06] | Não | tipo C do programa, até 2, valores |
 | 13 | VL_REM_TRAB | N | 19 | 2 | - | Não | tipo, até 19, 2 decimais |
 | 14 | VL_LUC_DIV | N | 19 | 2 | - | Não | tipo, até 19, 2 decimais |
 | 15 | VL_JUR_CAP | N | 19 | 2 | - | Não | tipo, até 19, 2 decimais |
@@ -2380,9 +2390,9 @@ Página 577. Chave: CPF, QUALIF. Regras do registro: —.
 | 2 | CPF | N | 11 | - | - | Sim | tipo, até 11, 0 decimais, obrigatório |
 | 3 | NOME | C | - | - | - | Sim | tipo, até 255, obrigatório |
 | 4 | QUALIF | N | 2 | - | [10; 11; 12; 13; 14; 15; 16; 17] | Sim | tipo, até 2, 0 decimais, valores, obrigatório |
-| 5 | VL_REM_TRAB | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
-| 6 | VL_DEM_REND | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
-| 7 | VL_IR_RET | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
+| 5 | VL_REM_TRAB | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório, em observação |
+| 6 | VL_DEM_REND | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório, em observação |
+| 7 | VL_IR_RET | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório, em observação |
 
 ## Y620: Participações Avaliadas Pelo Método de Equivalência Patrimonial
 
@@ -2483,7 +2493,7 @@ Página 590. Chave: REG. Regras do registro: REGRA_Y672_PREENCHIDO.
 
 ## Y680: Mês das Informações de Optantes pelo Refis (Lucro Real, Presumido e Arbitrado)
 
-Página 595. Chave: —. Regras do registro: —.
+Página 595. Chave: MES. Regras do registro: —.
 
 | Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -2498,12 +2508,12 @@ Página 596. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [X681] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | 6 | - | - | Sim | tipo, até 6, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | VALOR | C | - | - | - | Não | tipo, até 255 |
 
 ## Y682: Informações de Optantes pelo Refis – Imunes ou Isentas
 
-Página 598. Chave: —. Regras do registro: —.
+Página 598. Chave: MES. Regras do registro: —.
 
 | Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -2518,15 +2528,15 @@ Página 600. Chave: REG. Regras do registro: —.
 | Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [Y720] | Sim | tipo, até 4, obrigatório |
-| 2 | LUC_LIQ | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
-| 3 | DT_LUC_LIQ | N | 8 | - | - | Sim | tipo, data, até 8, 0 decimais, obrigatório |
-| 4 | REC_BRUT_ANT | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
-| 5 | INTIMACAO | C | 1 | - | [S; N] | Sim | tipo, até 1, valores, obrigatório |
+| 2 | LUC_LIQ | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório, em observação |
+| 3 | DT_LUC_LIQ | N | 8 | - | - | Sim | tipo, data, até 8, 0 decimais, obrigatório, em observação |
+| 4 | REC_BRUT_ANT | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório, em observação |
+| 5 | INTIMACAO | C | 1 | - | [S; N] | Sim | tipo, até 1, valores, obrigatório, em observação |
 | 6 | INT_ATRASO | C | 1 | - | [S; N] | Não | tipo, até 1, valores |
 
 ## Y730: Identificação de donatários/destinatários de deduções do IRPJ/CSLL
 
-Página 603. Chave: DEDUCAO, TIPO_DOACAO, DT_DOACAO, DESTINATARIO. Regras do registro: REGRA_DUPLICIDADE_REGI, REGRA_OBRIGATORIEDADE_REG.
+Página 603. Chave: DATA, DEDUCAO, DESTINATARIO, TIPO. Regras do registro: REGRA_DUPLICIDADE_REGI, REGRA_OBRIGATORIEDADE_REG.
 
 | Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -2541,23 +2551,23 @@ Página 603. Chave: DEDUCAO, TIPO_DOACAO, DT_DOACAO, DESTINATARIO. Regras do reg
 
 ## Y750: Informações da ECF Calculadas pelo PGE
 
-Página 607. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, REGRA_LINHA_ATUALIZADA, REGRA_LINHA_DESPREZADA.
+Página 607. Chave: —. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, REGRA_LINHA_ATUALIZADA, REGRA_LINHA_DESPREZADA.
 
 | Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [Y750] | Sim | tipo, até 4, obrigatório |
 | 2 | CODIGO | C | 6 | - | - | Sim | tipo, até 6, obrigatório |
-| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
+| 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | VALOR | C | - | - | - | Não | tipo, até 255 |
 
 ## Y800: Outras Informações
 
-Página 611. Chave: —. Regras do registro: —.
+Página 611. Chave: HASH. Regras do registro: —.
 
 | Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [Y800] | Sim | tipo, até 4, obrigatório |
-| 2 | TIPO_DOC | N | 3 | - | - | Sim | tipo, até 3, 0 decimais, obrigatório |
+| 2 | TIPO_DOC | N | 3 | - | - | Sim | tipo C do programa, até 3, obrigatório |
 | 3 | DESCRICAO | C | - | - | - | Sim | tipo, até 255, obrigatório |
 | 4 | HASH | C | 41 | - | - | Sim | tipo, até 41, obrigatório |
 | 5 | ARQ_RTF | C | Não há limite | - | - | Sim | tipo, obrigatório |
@@ -2588,12 +2598,12 @@ Página 614. Chave: —. Regras do registro: —.
 | Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [9100] | Sim | tipo, até 4, obrigatório |
-| 2 | NOM_REGRA | N | - | - | - | S | tipo, 0 decimais, obrigatório |
+| 2 | NOM_REGRA | N | - | - | - | S | tipo C do programa, obrigatório |
 | 3 | MSG_REGRA | C | - | - | - | N | tipo, até 255 |
 | 4 | REGISTRO | C | 4 | - | - | S | tipo, até 4, obrigatório |
 | 5 | CAMPO | C | - | - | - | N | tipo, até 255 |
-| 6 | CONTEÚDO | NS | 19 | 2 | - | N | tipo, até 19, 2 decimais |
-| 7 | VALOR_ESPERADO | NS | 19 | 2 | - | N | tipo, até 19, 2 decimais |
+| 6 | CONTEÚDO | NS | 19 | 2 | - | N | tipo C do programa, até 19 |
+| 7 | VALOR_ESPERADO | NS | 19 | 2 | - | N | tipo C do programa, até 19 |
 | 8 | PER_APUR | C | 3 | - | - | N | tipo, até 3 |
 | 9 | COD_CTA | C | - | - | - | N | tipo, até 255 |
 | 10 | COD_CCUS | C | - | - | - | N | tipo, até 255 |
@@ -2601,13 +2611,13 @@ Página 614. Chave: —. Regras do registro: —.
 | 12 | CODIGO | C | - | - | - | N | tipo, até 255 |
 | 13 | NUM_ORDEM | C | - | - | - | N | tipo, até 255 |
 | 14 | CNPJ_ESTAB | C | 14 | - | - | N | tipo, até 14 |
-| 15 | CNAE | N | 7 | - | - | N | tipo, até 7, 0 decimais |
+| 15 | CNAE | N | 7 | - | - | N | tipo C do programa, até 7 |
 | 16 | COD_CTA_B | C | - | - | - | N | tipo, até 255 |
 | 17 | COD_TRIBUTO | C | - | - | - | N | tipo, até 255 |
 
 ## 9900: Registros do Arquivo
 
-Página 616. Chave: —. Regras do registro: —.
+Página 616. Chave: REG_BLC. Regras do registro: —.
 
 | Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |
 | --- | --- | --- | --- | --- | --- | --- | --- |
