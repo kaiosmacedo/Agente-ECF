@@ -7,7 +7,7 @@
 - [x] 1.1 Criar `gerar-catalogo.py` (D1), que baixa a versão em Word do Leiaute 12 do endereço oficial e confere o SHA-256 de `docs/fontes-oficiais.md`; verificar a recusa de arquivo com hash diferente.
 - [x] 1.2 Gerar `ecf-leiaute-12.json` e `docs/catalogo/ecf-leiaute-12.md`, com as decisões de D2 registradas no catálogo; verificar 188 registros, 1.122 campos e página em cada um (REQ-ESTRUT-001).
 - [x] 1.3 Testar o catálogo: registro e campo sem página recusados com "fonte ausente"; tipos conhecidos; pai existente para cada filho (REQ-ESTRUT-001).
-- [ ] 1.4 Kaio Macedo revisa o `.md` gerado no PR (E02). Correções entram no gerador, nunca no JSON à mão.
+- [ ] 1.4 Kaio Macedo revisa o `.md` gerado no PR (E02). Correções entram no gerador, nunca no JSON à mão. Conferência preparatória feita em 2026-11-08: segunda leitura do Word e comparação com o descritor do programa (`docs/catalogo/revisao-ecf-leiaute-12.md`). Ela corrigiu um defeito (PR #33) e deixou a decisão E10 para Kaio Macedo.
 
 ## 2. Validadores
 

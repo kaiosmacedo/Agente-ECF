@@ -213,6 +213,8 @@ Antes da revisão de Kaio Macedo (tarefa 1.4), o assistente conferiu o catálogo
 
 **Defeito corrigido (catálogo `ecf-l12-1.3.0`):** o gerador tomava como valor literal a referência da coluna de valores válidos, como `[M010.COD_CTA_B]`, em 8 campos dos registros M305, M310, M355, M360, M500 e M510. O agente recusava toda linha real desses registros, porque só aceitava o texto `M010.COD_CTA_B`. A referência agora é cruzamento, da mudança 09, e consta de `naoVerificados`.
 
+**Divergências entre o manual e o programa:** onde o agente, por seguir o manual, recusa o que o programa aceita, a decisão é de Kaio Macedo (E10). A lista completa, com os campos, está em `docs/catalogo/revisao-ecf-leiaute-12.md`. O comportamento do programa nesses casos vem do descritor e ainda não foi testado na tela.
+
 ## Dimensionamento
 
 Sem provedor pago. Uma passada linear sobre até 4 MiB de texto. O catálogo do leiaute 12 tem 188 registros e 1.122 campos, algumas dezenas de KB em JSON.
@@ -232,7 +234,7 @@ Sem provedor pago. Uma passada linear sobre até 4 MiB de texto. O catálogo do 
 
 ## Open Questions
 
-- Nenhuma. O gabarito (D10) foi feito em 2026-11-08, e Kaio Macedo decidiu os esclarecimentos E05 a E09. Para arquivar, faltam as tarefas 1.4 e 7.3.
+- E10, pendente com Kaio Macedo: o agente deixa de recusar o que o programa aceita quando o manual diverge dele? O gabarito (D10) foi feito em 2026-11-08, e os esclarecimentos E05 a E09 estão decididos. Para arquivar, faltam E10 e as tarefas 1.4 e 7.3.
 
 ## Skills aplicáveis
 
