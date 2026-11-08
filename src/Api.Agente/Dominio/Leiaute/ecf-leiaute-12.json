@@ -1,5 +1,5 @@
 {
- "versaoDoCatalogo": "ecf-l12-1.2.0",
+ "versaoDoCatalogo": "ecf-l12-1.3.0",
  "fonte": {
   "documento": "Manual de Orientação do Leiaute 12 da ECF",
   "versao": "leiaute-12",
@@ -8593,11 +8593,7 @@
       "tamanhoMaximo": 255,
       "decimaisMaximos": null,
       "data": false,
-      "valores": {
-       "lista": [
-        "M010.COD_CTA_B"
-       ]
-      },
+      "valores": null,
       "obrigatorio": true
      }
     },
@@ -8699,11 +8695,7 @@
       "tamanhoMaximo": 255,
       "decimaisMaximos": null,
       "data": false,
-      "valores": {
-       "lista": [
-        "J050.COD_CTA"
-       ]
-      },
+      "valores": null,
       "obrigatorio": true
      }
     },
@@ -8721,11 +8713,7 @@
       "tamanhoMaximo": 255,
       "decimaisMaximos": null,
       "data": false,
-      "valores": {
-       "lista": [
-        "J100_COD_CCUS"
-       ]
-      },
+      "valores": null,
       "obrigatorio": false
      }
     },
@@ -9136,11 +9124,7 @@
       "tamanhoMaximo": 255,
       "decimaisMaximos": null,
       "data": false,
-      "valores": {
-       "lista": [
-        "M010.COD_CTA_B"
-       ]
-      },
+      "valores": null,
       "obrigatorio": true
      }
     },
@@ -9242,11 +9226,7 @@
       "tamanhoMaximo": 255,
       "decimaisMaximos": null,
       "data": false,
-      "valores": {
-       "lista": [
-        "J050.COD_CTA"
-       ]
-      },
+      "valores": null,
       "obrigatorio": true
      }
     },
@@ -9264,11 +9244,7 @@
       "tamanhoMaximo": 255,
       "decimaisMaximos": null,
       "data": false,
-      "valores": {
-       "lista": [
-        "J100_COD_CCUS"
-       ]
-      },
+      "valores": null,
       "obrigatorio": false
      }
     },
@@ -9776,11 +9752,7 @@
       "tamanhoMaximo": 255,
       "decimaisMaximos": null,
       "data": false,
-      "valores": {
-       "lista": [
-        "M010.COD_CTA_B"
-       ]
-      },
+      "valores": null,
       "obrigatorio": true
      }
     },
@@ -10026,11 +9998,7 @@
       "tamanhoMaximo": 255,
       "decimaisMaximos": null,
       "data": false,
-      "valores": {
-       "lista": [
-        "M010.COD_CTA_B"
-       ]
-      },
+      "valores": null,
       "obrigatorio": true
      }
     },

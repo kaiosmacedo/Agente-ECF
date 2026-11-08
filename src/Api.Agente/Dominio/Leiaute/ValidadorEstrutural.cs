@@ -489,6 +489,7 @@ internal sealed class ValidadorEstrutural(CatalogoDoLeiaute catalogo, Parametros
                 new("Dígito verificador de CNPJ, CPF e recibo (REGRA_VALIDA_CNPJ, REGRA_VALIDA_CPF_CNPJ e outras)", "O algoritmo não está no manual; adotar um sem fonte violaria P01."),
                 new("REGRA_LEIAUTE_VIGENTE e REGRA_SEM_LEIAUTE", "Dependem de tabelas que não estão no manual."),
                 new("Valores de campos que dependem de tabela externa ou dinâmica", "As tabelas ficam fora do manual, como a planilha de tabelas dinâmicas (p. 620)."),
+                new("Valores de campos que remetem a outro registro: M305, M310, M355, M360, M500 e M510", "A coluna de valores válidos cita o campo de outro registro, como [M010.COD_CTA_B] (p. 251). É cruzamento e fica para a mudança 09."),
                 new("Tamanho exato dos campos", "O manual fala em tamanho exato no caso geral (p. 59), e o programa da ECF só o exige em alguns campos, sem lista publicada. Foram conferidos o máximo e o tamanho exato dos campos preenchidos por posição."),
                 new(
                     string.Create(CultureInfo.InvariantCulture, $"Ocorrência mínima e máxima de {divergentes.Count} registros: {string.Join(", ", divergentes)}"),

@@ -1,6 +1,6 @@
 # Catálogo estrutural da ECF, leiaute 12
 
-Gerado por `.github/scripts/catalogo/gerar-catalogo.py` a partir da versão em Word do manual, com as páginas do PDF. Versão `ecf-l12-1.2.0`. É o que Kaio Macedo revisa (mudança 08, E02). Correções vão no gerador, nunca no JSON.
+Gerado por `.github/scripts/catalogo/gerar-catalogo.py` a partir da versão em Word do manual, com as páginas do PDF. Versão `ecf-l12-1.3.0`. É o que Kaio Macedo revisa (mudança 08, E02). Correções vão no gerador, nunca no JSON.
 
 **Ordem dos blocos:** 0, C, E, J, K, L, M, N, P, Q, S, T, U, V, W, X, Y, 9.
 
@@ -947,7 +947,7 @@ Página 251. Chave: COD_CTA_B. Regras do registro: —.
 | Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [M305] | Sim | tipo, até 4, obrigatório |
-| 2 | COD_CTA_B | C | - | - | [M010.COD_CTA_B] | Sim | tipo, até 255, valores, obrigatório |
+| 2 | COD_CTA_B | C | - | - | [M010.COD_CTA_B] | Sim | tipo, até 255, obrigatório |
 | 3 | VL_CTA | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
 | 4 | IND_ VL_CTA | C | 1 | - | [D; C] | Sim | tipo, até 1, valores, obrigatório |
 
@@ -958,8 +958,8 @@ Página 253. Chave: COD_CTA, COD_CCUS. Regras do registro: REGRA_REGISTRO_M312_O
 | Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [M310] | Sim | tipo, até 4, obrigatório |
-| 2 | COD_CTA | C | - | - | [J050.COD_CTA] | Sim | tipo, até 255, valores, obrigatório |
-| 3 | COD_CCUS | C | - | - | [J100_COD_CCUS] | Não | tipo, até 255, valores |
+| 2 | COD_CTA | C | - | - | [J050.COD_CTA] | Sim | tipo, até 255, obrigatório |
+| 3 | COD_CCUS | C | - | - | [J100_COD_CCUS] | Não | tipo, até 255 |
 | 4 | VL_CTA | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
 | 5 | IND_VL_CTA | C | 1 | - | [D; C] | Sim | tipo, até 1, valores, obrigatório |
 
@@ -1003,7 +1003,7 @@ Página 263. Chave: COD_CTA_B. Regras do registro: REGRA_SALDO_DISPONIVEL_PARTE_
 | Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [M355] | Sim | tipo, até 4, obrigatório |
-| 2 | COD_CTA_B | C | - | - | [M010.COD_CTA_B] | Sim | tipo, até 255, valores, obrigatório |
+| 2 | COD_CTA_B | C | - | - | [M010.COD_CTA_B] | Sim | tipo, até 255, obrigatório |
 | 3 | VL_CTA | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
 | 4 | IND_ VL_CTA | C | 1 | - | [D; C] | Sim | tipo, até 1, valores, obrigatório |
 
@@ -1014,8 +1014,8 @@ Página 265. Chave: COD_CTA, COD_CCUS. Regras do registro: REGRA_REGISTRO_M362_O
 | Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [M360] | Sim | tipo, até 4, obrigatório |
-| 2 | COD_CTA | C | - | - | [J050.COD_CTA] | Sim | tipo, até 255, valores, obrigatório |
-| 3 | COD_CCUS | C | - | - | [J100_COD_CCUS] | Não | tipo, até 255, valores |
+| 2 | COD_CTA | C | - | - | [J050.COD_CTA] | Sim | tipo, até 255, obrigatório |
+| 3 | COD_CCUS | C | - | - | [J100_COD_CCUS] | Não | tipo, até 255 |
 | 4 | VL_CTA | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
 | 5 | IND_VL_CTA | C | 1 | - | [D; C] | Sim | tipo, até 1, valores, obrigatório |
 
@@ -1070,7 +1070,7 @@ Página 272. Chave: COD_CTA_B, COD_TRIBUTO. Regras do registro: —.
 | Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [M500] | Sim | tipo, até 4, obrigatório |
-| 2 | COD_CTA_B | C | - | - | [M010.COD_CTA_B] | Sim | tipo, até 255, valores, obrigatório |
+| 2 | COD_CTA_B | C | - | - | [M010.COD_CTA_B] | Sim | tipo, até 255, obrigatório |
 | 3 | COD_TRIBUTO | C | 1 | - | [I; C] | Sim | tipo, até 1, valores, obrigatório |
 | 4 | SD_INI_LAL | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
 | 5 | IND_ SD_INI_LAL | C | 1 | - | [C; D] | Sim | tipo, até 1, valores, obrigatório |
@@ -1088,7 +1088,7 @@ Página 274. Chave: COD_CTA_B, COD_TRIBUTO. Regras do registro: —.
 | Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [M510] | Sim | tipo, até 4, obrigatório |
-| 2 | COD_PB_RFB | C | - | - | [M010.COD_CTA_B] | Sim | tipo, até 255, valores, obrigatório |
+| 2 | COD_PB_RFB | C | - | - | [M010.COD_CTA_B] | Sim | tipo, até 255, obrigatório |
 | 3 | DESCRICAO_PB_RFB | C | - | - | - | Sim | tipo, até 255, obrigatório |
 | 4 | COD_TRIBUTO | C | 1 | - | [I; C] | Sim | tipo, até 1, valores, obrigatório |
 | 5 | SD_INI_LAL | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |

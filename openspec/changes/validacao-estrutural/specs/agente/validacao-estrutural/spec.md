@@ -83,6 +83,12 @@ Fonte: Manual da ECF, leiaute 12 (23/07/2026), p. 33 a 37 e 59, e a tabela de ca
 - **WHEN** a etapa 4 executa
 - **THEN** existe um achado impeditivo de data inválida no campo `DT_FIN`
 
+#### Scenario: Coluna de valores que remete a outro registro
+- **GIVEN** um Registro M305 sintético com `COD_CTA_B` igual a um código da empresa, e a coluna de valores válidos do campo traz `[M010.COD_CTA_B]` (p. 251)
+- **WHEN** a etapa 4 executa
+- **THEN** nenhum achado de valor é produzido para o campo, porque a referência é cruzamento entre registros, da mudança 09
+- **AND** o resultado lista esses campos em `naoVerificados`
+
 ### Requirement: REQ-ESTRUT-009 Hierarquia, ocorrência e ordem dos blocos
 Cada registro filho SHALL ter o registro pai aberto antes dele; os registros obrigatórios na entrada e na saída SHALL estar presentes; as ocorrências SHALL respeitar o máximo do registro; e os blocos SHALL seguir a ordem do manual. A violação SHALL gerar achado de classe `impeditiva`.
 Fonte: Manual da ECF, leiaute 12 (23/07/2026), p. 32, 42, 43, 58, 59 e 70 (`REGRA_OCORRENCIA_UNITARIA_ARQ`).

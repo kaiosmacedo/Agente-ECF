@@ -171,6 +171,10 @@ Resposta (o texto do Artifact foi formatado aqui para leitura; ele chega como st
                     "motivo": "Dependem de tabelas que não estão no manual."
                   },
                   {
+                    "item": "Valores de campos que remetem a outro registro: M305, M310, M355, M360, M500 e M510",
+                    "motivo": "A coluna de valores válidos cita o campo de outro registro, como [M010.COD_CTA_B] (p. 251). É cruzamento e fica para a mudança 09."
+                  },
+                  {
                     "item": "Valores de campos que dependem de tabela externa ou dinâmica",
                     "motivo": "As tabelas ficam fora do manual, como a planilha de tabelas dinâmicas (p. 620)."
                   },

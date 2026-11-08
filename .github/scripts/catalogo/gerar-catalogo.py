@@ -14,12 +14,13 @@ import zipfile
 import xml.etree.ElementTree as ET
 
 W = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
-VERSAO_DO_CATALOGO = "ecf-l12-1.2.0"
+VERSAO_DO_CATALOGO = "ecf-l12-1.3.0"
 TIPOS = ("C", "N", "NS")
 # Campo preenchido posição a posição, como "no formato XXXX onde X é igual a" (p. 73 e 74): a lista vale para cada caractere.
 POR_POSICAO = re.compile(r"formato\s+(X{2,})\s")
 # Tabelas externas ou dinâmicas citadas na coluna de valores válidos: ficam sem verificação (E04).
 EXTERNA = re.compile(r"tabela|Código da Natureza Jurídica|CNAE Fiscal|Sigla da UF|Código do Município|Códigos existentes no registro", re.I)
+REFERENCIA = re.compile(r"[0-9A-Z]\d{3}[._][A-Z_]+")
 REGRA = re.compile(r"REGRA_[A-Z0-9_]+")
 
 
@@ -97,6 +98,9 @@ def valores_validos(bruto):
         return {"intervalo": [intervalo.group(1), intervalo.group(2)]}
     # Só listas de valores literais, separados por ponto e vírgula ou vírgula; o resto fica sem verificação.
     itens = [item.strip().strip("“”\"'").strip() for item in re.split(r"[;,]", dentro.group(1))]
+    # [M010.COD_CTA_B] ou [J100_COD_CCUS] remete ao campo de outro registro (p. 251): é cruzamento, não valor literal.
+    if any(REFERENCIA.fullmatch(item) for item in itens):
+        return None
     return {"lista": itens} if itens and all(re.fullmatch(r"[A-Za-z0-9._/-]+", item) for item in itens) else None
 
 
