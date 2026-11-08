@@ -47,7 +47,9 @@ As contagens são automáticas, sobre o texto extraído, e precisam ser conferid
 | 8 | 408 | 336 | 176 |
 | 7 | 406 | 331 | 182 |
 
-**Catálogo estrutural (mudança 08):** `src/Api.Agente/Dominio/Leiaute/ecf-leiaute-12.json`, com 188 registros e 1.122 campos, cada um com a página do manual, gerado da versão em Word e do PDF acima por `.github/scripts/catalogo/gerar-catalogo.sh`, que confere os dois hashes. A revisão legível fica em `docs/catalogo/ecf-leiaute-12.md`, com as divergências do próprio manual que não viram achado.
+**Catálogo estrutural (mudança 08):** `src/Api.Agente/Dominio/Leiaute/ecf-leiaute-12.json`, com os 188 registros e 1.122 campos do manual, cada um com a página, e o `S990`, que só o programa da ECF tem, gerado da versão em Word e do PDF acima por `.github/scripts/catalogo/gerar-catalogo.sh`, que confere os dois hashes. A revisão legível fica em `docs/catalogo/ecf-leiaute-12.md`, com as divergências do próprio manual que não viram achado.
+
+**Programa da ECF (decisão E10, mudança 08):** onde o manual diverge do programa, o agente não recusa o que o programa aceita. A fonte é o programa 12.2.8, baixado do portal SPED: o descritor `descritor/escrituracao/estrutura12003/v1/descritor.xml`, em `lib/br.gov.serpro.sped.irpjpva/irpjpva-infra.jar`, e as tabelas de `recursos/tabelas/`, só lidos. O que vem deles, com o hash do descritor, está em `.github/scripts/catalogo/ajustes-do-programa-12.json`, e a conferência, em `docs/catalogo/revisao-ecf-leiaute-12.md`.
 
 A medição mais precisa, feita na versão em Word do Leiaute 12, dá 382 códigos e 808 aplicações: 523 `Erro`, 231 `Aviso`, 32 `Habilita`, 19 sem tipo e 3 condicionais (`docs/pesquisa/avaliacao-da-ecf-alem-do-manual.md`). O catálogo de regras deve partir da versão em Word, porque a extração do PDF desalinha a coluna de tipo.
 

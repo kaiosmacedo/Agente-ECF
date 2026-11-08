@@ -27,11 +27,12 @@ public sealed class ValidacaoEstruturalTests
     private static IEnumerable<Achado> Da(ResultadoDaValidacaoEstrutural resultado, string regra) =>
         resultado.Achados.Where(achado => achado.Fundamento.StartsWith(regra + " ", StringComparison.Ordinal));
 
-    [Fact(DisplayName = "REQ-ESTRUT-001 O catálogo do leiaute 12 tem 188 registros e 1.122 campos, todos com página e tipo conhecido")]
+    [Fact(DisplayName = "REQ-ESTRUT-001 O catálogo do leiaute 12 tem os 188 registros e 1.122 campos do manual, com página e tipo conhecido, mais o S990 do programa")]
     public void Catalogo12()
     {
-        Assert.Equal(188, Catalogo.Registros.Count);
-        Assert.Equal(1122, Catalogo.Registros.Sum(registro => registro.Campos.Count));
+        Assert.Equal(188, Catalogo.Registros.Count(registro => !registro.SoNoPrograma));
+        Assert.Equal(["S990"], Catalogo.Registros.Where(registro => registro.SoNoPrograma).Select(registro => registro.Codigo));
+        Assert.Equal(1122, Catalogo.Registros.Where(registro => !registro.SoNoPrograma).Sum(registro => registro.Campos.Count));
         Assert.Empty(Catalogo.Problemas());
         Assert.StartsWith("ecf-l12-", Catalogo.VersaoDoCatalogo, StringComparison.Ordinal);
     }
@@ -336,7 +337,7 @@ public sealed class ValidacaoEstruturalTests
 
         if (v.Tipo)
         {
-            yield return ("EST-CAMPO-002", campo.Tipo == "C" ? "A\u0001" : "1A");
+            yield return ("EST-CAMPO-002", campo.TipoEfetivo == "C" ? "A\u0001" : "1A");
         }
 
         if (v.TamanhoMaximo is { } maximo)

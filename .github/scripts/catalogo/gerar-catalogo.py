@@ -1,10 +1,11 @@
 """Gera o catálogo estrutural do Leiaute 12 da ECF a partir da versão em Word do manual (mudança 08, D1 e D2).
 
-    python -I gerar-catalogo.py --word manual.docx --texto-pdf manual.txt --json catalogo.json --md catalogo.md
+    python -I gerar-catalogo.py --word manual.docx --texto-pdf manual.txt --ajustes ajustes-do-programa-12.json --json catalogo.json --md catalogo.md
 
 O Word dá as tabelas (a extração do PDF desalinha colunas); o texto do PDF, extraído com `pdftotext -layout`, dá as
-páginas. Só a biblioteca padrão. Use `gerar-catalogo.sh`, que baixa os originais e confere os hashes.
-Correções vão neste gerador, nunca no JSON à mão.
+páginas. Os ajustes vêm do programa da ECF, onde o manual diverge dele (decisão E10; `extrair-ajustes-do-programa.py`). Só a
+biblioteca padrão. Use `gerar-catalogo.sh`, que baixa os originais e confere os hashes. Correções vão neste gerador ou nos
+ajustes, nunca no JSON à mão.
 """
 import argparse
 import json
@@ -14,7 +15,7 @@ import zipfile
 import xml.etree.ElementTree as ET
 
 W = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
-VERSAO_DO_CATALOGO = "ecf-l12-1.3.0"
+VERSAO_DO_CATALOGO = "ecf-l12-1.4.0"
 TIPOS = ("C", "N", "NS")
 # Campo preenchido posição a posição, como "no formato XXXX onde X é igual a" (p. 73 e 74): a lista vale para cada caractere.
 POR_POSICAO = re.compile(r"formato\s+(X{2,})\s")
@@ -223,6 +224,58 @@ def gerar(word, texto_pdf):
     }
 
 
+def aplicar_ajustes(catalogo, ajustes):
+    """Onde o manual diverge do programa da ECF, o agente não recusa o que o programa aceita (decisão E10)."""
+    programa = ajustes["programa"]
+    nome_do_programa = f"Programa da ECF {programa['versao']}, descritor {programa['descritor']}"
+    catalogo["fonte"]["programa"] = nome_do_programa
+    registros = catalogo["registros"]
+
+    def campo_do(rotulo):
+        codigo, nome = rotulo.split(".", 1)
+        return next(c for r in registros if r["codigo"] == codigo for c in r["campos"] if c["nome"] == nome)
+
+    for novo in ajustes["registrosSoNoPrograma"]:
+        campos = []
+        for numero, c in enumerate(novo["campos"], 1):
+            tamanho_maximo = int(c["tamanho"]) if c["tamanho"].isdigit() else None
+            campos.append({
+                "numero": numero, "nome": c["nome"], "tipo": c["tipo"], "tamanho": c["tamanho"], "decimal": "-", "valoresValidos": "-", "obrigatorio": "Sim", "pagina": 0,
+                "verificacoes": {"tipo": True, "tamanhoMaximo": tamanho_maximo, "decimaisMaximos": 0 if c["tipo"] == "N" else None, "data": False, "valores": None, "obrigatorio": True},
+            })
+        indice = next(i for i, r in enumerate(registros) if r["codigo"] == novo["depoisDe"])
+        registros.insert(indice + 1, {
+            "codigo": novo["codigo"], "nome": f"Encerramento do Bloco {novo['bloco']}", "bloco": novo["bloco"], "nivel": novo["nivel"], "nivelNaTabela": None,
+            "ocorrencia": "1:1", "ocorrenciaNaTabela": "-", "ocorrenciaMaxima": 1, "ocorrenciaVerificada": True, "entrada": "F", "saida": "O", "chave": [], "regras": [],
+            "pagina": 0, "campos": campos, "hierarquiaVerificada": True, "pai": "0000", "soNoPrograma": True,
+        })
+        catalogo["divergencias"].append(f"Registro {novo['codigo']}: o manual não o cita, e ele existe no programa, que o aceita mesmo com a contagem errada; o agente o reconhece, sem exigi-lo.")
+    for r in registros:
+        if r["codigo"] in ajustes["registrosSemExigencia"]:
+            r["obrigatorioDivergente"] = True
+        if r["codigo"] in ajustes["chaves"]:
+            r["chave"] = ajustes["chaves"][r["codigo"]]
+    for rotulo, tipo in ajustes["tipos"].items():
+        c = campo_do(rotulo)
+        c["tipoDoPrograma"] = tipo
+        if tipo == "C":
+            c["verificacoes"]["decimaisMaximos"] = None
+    for rotulo, tamanho in ajustes["tamanhos"].items():
+        campo_do(rotulo)["verificacoes"]["tamanhoMaximo"] = tamanho
+    for rotulo, valores in ajustes["valores"].items():
+        c = campo_do(rotulo)
+        c["verificacoes"]["valores"]["lista"] += valores
+        c["valoresValidos"] += f" e, no programa da ECF, {', '.join(valores)}"
+    for rotulo in ajustes["obrigatoriedade"]:
+        campo_do(rotulo)["verificacoes"]["obrigatorioDivergente"] = True
+    catalogo["divergencias"].append(
+        f"Decisão E10, com o {nome_do_programa}: {len(ajustes['tipos'])} campos seguem o tipo do programa, {len(ajustes['tamanhos'])} o tamanho e {len(ajustes['valores'])} os valores; "
+        f"{len(ajustes['obrigatoriedade'])} campos obrigatórios só no manual e {len(ajustes['registrosSemExigencia'])} registros ({', '.join(ajustes['registrosSemExigencia'])}) ficam em observação, e {len(ajustes['chaves'])} registros usam a chave do programa. "
+        "Lista em docs/catalogo/revisao-ecf-leiaute-12.md."
+    )
+    return catalogo
+
+
 def markdown(catalogo):
     linhas = [
         "# Catálogo estrutural da ECF, leiaute 12",
@@ -241,13 +294,18 @@ def markdown(catalogo):
     for r in catalogo["registros"]:
         marca = "" if r["ocorrenciaVerificada"] else " (divergente, não verificada)"
         hierarquia = "" if r["hierarquiaVerificada"] else " (nível divergente)"
-        linhas.append(f"| {r['codigo']} | {r['nome']} | {r['nivel']}{hierarquia} | {r['pai'] or '—'} | {r['ocorrencia']} / {r['ocorrenciaNaTabela']}{marca} | {r['entrada']} / {r['saida']} | {r['pagina']} |")
+        pagina = "só no programa" if r.get("soNoPrograma") else r["pagina"]
+        linhas.append(f"| {r['codigo']} | {r['nome']} | {r['nivel']}{hierarquia} | {r['pai'] or '—'} | {r['ocorrencia']} / {r['ocorrenciaNaTabela']}{marca} | {r['entrada']} / {r['saida']} | {pagina} |")
     for r in catalogo["registros"]:
-        linhas += ["", f"## {r['codigo']}: {r['nome']}", "", f"Página {r['pagina']}. Chave: {', '.join(r['chave']) or '—'}. Regras do registro: {', '.join(r['regras']) or '—'}.", "",
+        origem = "Só no programa da ECF" if r.get("soNoPrograma") else f"Página {r['pagina']}"
+        exigencia = " Falta do registro em observação (E10)." if r.get("obrigatorioDivergente") else ""
+        linhas += ["", f"## {r['codigo']}: {r['nome']}", "", f"{origem}. Chave: {', '.join(r['chave']) or '—'}. Regras do registro: {', '.join(r['regras']) or '—'}.{exigencia}", "",
                    "| Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |", "| --- | --- | --- | --- | --- | --- | --- | --- |"]
         for c in r["campos"]:
             v = c["verificacoes"]
             aplicadas = [n for n, ok in (("tipo", v["tipo"]), ("data", v["data"])) if ok]
+            if c.get("tipoDoPrograma"):
+                aplicadas[0] = f"tipo {c['tipoDoPrograma']} do programa"
             por_posicao = (v["valores"] or {}).get("porPosicao")
             if v["tamanhoMaximo"] is not None:
                 aplicadas.append(f"exatamente {v['tamanhoMaximo']}, valores por posição" if por_posicao else f"até {v['tamanhoMaximo']}")
@@ -256,7 +314,7 @@ def markdown(catalogo):
             if v["valores"] and not por_posicao:
                 aplicadas.append("valores")
             if v["obrigatorio"]:
-                aplicadas.append("obrigatório")
+                aplicadas.append("obrigatório, em observação" if v.get("obrigatorioDivergente") else "obrigatório")
             celulas = [str(c["numero"]), c["nome"], c["tipo"], c["tamanho"], c["decimal"], c["valoresValidos"].replace("|", "\\|")[:80], c["obrigatorio"][:20], ", ".join(aplicadas)]
             linhas.append("| " + " | ".join(celulas) + " |")
     return "\n".join(linhas) + "\n"
@@ -266,10 +324,13 @@ def main():
     argumentos = argparse.ArgumentParser()
     argumentos.add_argument("--word", required=True)
     argumentos.add_argument("--texto-pdf", required=True)
+    argumentos.add_argument("--ajustes", help="Sem ele, o catálogo vem só do manual, como `extrair-ajustes-do-programa.py` precisa.")
     argumentos.add_argument("--json", required=True)
     argumentos.add_argument("--md", required=True)
     a = argumentos.parse_args()
     catalogo = gerar(a.word, a.texto_pdf)
+    if a.ajustes:
+        catalogo = aplicar_ajustes(catalogo, json.load(open(a.ajustes, encoding="utf-8")))
     open(a.json, "w", encoding="utf-8", newline="\n").write(json.dumps(catalogo, ensure_ascii=False, indent=1) + "\n")
     open(a.md, "w", encoding="utf-8", newline="\n").write(markdown(catalogo))
     campos = sum(len(r["campos"]) for r in catalogo["registros"])

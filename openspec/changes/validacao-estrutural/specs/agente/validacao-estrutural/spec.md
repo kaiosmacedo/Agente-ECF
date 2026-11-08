@@ -183,3 +183,42 @@ Fonte: Manual da ECF, leiaute 12 (23/07/2026), p. 38 (erro de estrutura impede a
 - **GIVEN** uma ECF sintética com `C990.QTD_LIN` errado
 - **WHEN** a etapa 4 executa
 - **THEN** o achado da regra `EST-TOT-001` tem classe `observacao`, porque o Bloco C não é importado
+
+### Requirement: REQ-ESTRUT-016 Divergência entre o manual e o programa da ECF
+Onde o manual e o programa da ECF divergem, o agente MUST NOT recusar o que o programa aceita: o valor aceito SHALL passar sem achado, e o que só o manual obriga SHALL gerar `observacao`. O catálogo SHALL citar o programa como fonte. A única exceção é a falta do Registro 9999, que MUST continuar `impeditiva` (E05).
+Fonte: decisão E10 (2026-11-08); programa da ECF 12.2.8, descritor 12003 v1; `tests/Api.Agente.Tests/Dados/ecf/programa/resultados.md`.
+
+#### Scenario: Registro que só o programa tem
+- **GIVEN** uma ECF sintética com o Bloco S e o Registro `S990`, que o manual não cita
+- **WHEN** a etapa 4 executa
+- **THEN** nenhum achado de `EST-ARQ-002` é produzido, e a contagem errada do `S990` gera só `observacao`
+
+#### Scenario: Valor aceito pelo programa
+- **GIVEN** uma ECF sintética com `W200.VL_LUC_ACUM` igual a `-1000`, `0000.NUM_REC` com 41 caracteres e `0010.TIP_ENT` igual a `16`
+- **WHEN** a etapa 4 executa
+- **THEN** nenhum achado é produzido para esses campos
+
+#### Scenario: Valor que o programa também recusa
+- **GIVEN** uma ECF sintética com `0010.TIP_ENT` igual a `17`, ou `W200.VL_LUC_ACUM` com letras
+- **WHEN** a etapa 4 executa
+- **THEN** existe um achado impeditivo no campo
+
+#### Scenario: Campo obrigatório só no manual
+- **GIVEN** um Registro 0930 sintético com `FONE` vazio
+- **WHEN** a etapa 4 executa
+- **THEN** existe um achado de classe `observacao` que cita o manual e o programa, e o arquivo não é recusado por ele
+
+#### Scenario: Registro que o programa preenche sozinho
+- **GIVEN** uma ECF sintética sem `C001`, `C990` e `E001`
+- **WHEN** a etapa 4 executa
+- **THEN** existem achados de classe `observacao`, e o veredito não é `recusado` por causa deles
+
+#### Scenario: Registro obrigatório nos dois
+- **GIVEN** uma ECF sintética sem o Registro `0030`
+- **WHEN** a etapa 4 executa
+- **THEN** existe um achado impeditivo de `EST-OCOR-001`
+
+#### Scenario: Falta do Registro 9999
+- **GIVEN** uma ECF sintética sem o Registro `9999`, que o programa importa sem apontamento
+- **WHEN** a etapa 4 executa
+- **THEN** existe um achado impeditivo de `EST-OCOR-001`, pela decisão E05
