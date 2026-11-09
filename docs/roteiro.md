@@ -16,7 +16,7 @@ Cada mudança segue o fluxo da constitution (6.1): especificação → esclareci
 
 | Etapa | Situação |
 | --- | --- |
-| Constitution | v2.0.3 vigente (ratificada na v1.1.0; emendas aprovadas por Kaio Macedo). |
+| Constitution | v2.0.4 vigente (ratificada na v1.1.0; emendas aprovadas por Kaio Macedo). |
 | CI/CD | CI com checks obrigatórios `OpenSpec` e `.NET`; CD publica no Vercel a cada merge na `main`. |
 | Vercel | Em produção: https://agente-ecf-agente.vercel.app e https://agente-ecf-rag.vercel.app (time `agent-ecf`). |
 | Mudança 01 | Concluída: mesclada (PR #2), em produção e arquivada em 2026-10-29; specs vigentes em `openspec/specs/plataforma/`. |
@@ -37,7 +37,7 @@ Cada mudança segue o fluxo da constitution (6.1): especificação → esclareci
 | 05 | `base-conhecimento-ingestao` | `rag/ingestao-documentos`, `rag/administracao-base` | 04 | 02, 03, 04, 24 | `rag-pgvector`, `controle-custos-llm`, `testes-agentes-ia` | Em produção, com os seis manuais carregados e a recuperação avaliada (`docs/avaliacao/recuperacao.md`); falta o Release com os originais |
 | 06 | `recuperacao-conhecimento-mcp` | `rag/recuperacao-conhecimento`, `agente/consulta-conhecimento` | 03, 05 | 03, 14 | `mcp-client-server`, `rag-pgvector`, `vercel-dotnet-pgvector-atlas` | Implementada; a busca fica desligada em produção até a decisão da chave |
 | 07 | `recepcao-identificacao-leiaute` | `agente/recepcao-arquivos`, `agente/identificacao-leiaute` | 03 | 04, 05, 11, 22, 25 | `testes-agentes-ia` | Concluída: em produção e arquivada em 2026-11-07 |
-| 08 | `validacao-estrutural` | `agente/validacao-estrutural` | 07 | 04 | `testes-agentes-ia` | Em produção desde 2026-11-07 (PR #27 e PR #28): estrutura do leiaute 12. Gabarito rodado no programa da ECF 12.2.8 em 2026-11-08, com os 12 arquivos, o que corrigiu dois falsos positivos. Kaio Macedo decidiu os esclarecimentos E05 a E09. Revisão do catálogo feita em 2026-11-08 (`docs/catalogo/revisao-ecf-leiaute-12.md`, PR #33), e Kaio Macedo aprovou a E10: o agente não recusa o que o programa aceita. Para arquivar, falta a tarefa 7.3 |
+| 08 | `validacao-estrutural` | `agente/validacao-estrutural` | 07 | 04 | `testes-agentes-ia` | Concluída: em produção desde 2026-11-07 e arquivada em 2026-11-08. Estrutura do leiaute 12, com o catálogo `ecf-l12-1.5.0`, conferido no programa da ECF 12.2.8 pelo gabarito e pela decisão E10; o que segue declarado está em `docs/catalogo/revisao-ecf-leiaute-12.md` |
 | 09 | `regras-negocio-irpj-csll` | `agente/regras-negocio` | 08 | 04, 06 | `testes-agentes-ia` | Especificação aprovada |
 | 10 | `analise-llm` | `agente/analise-llm` | 04, 06, 08 | 02, 12, 14 | `semantic-kernel-tools`, `controle-custos-llm`, `testes-agentes-ia` | Especificação aprovada |
 | 11 | `ferramentas-agente` | `agente/ferramentas` | 10 | 10 | `semantic-kernel-tools`, `testes-agentes-ia` | Especificação aprovada |
