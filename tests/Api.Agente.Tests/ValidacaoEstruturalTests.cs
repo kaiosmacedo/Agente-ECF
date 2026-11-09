@@ -64,6 +64,7 @@ public sealed class ValidacaoEstruturalTests
 
         Assert.Null(Catalogo.Registro(registro)!.Campos[campo].Verificacoes.Valores);
         Assert.Empty(Da(resultado, "EST-CAMPO-006"));
+        Assert.Contains(resultado.NaoRealizadas, item => item.Item.StartsWith("Valores de campos que remetem a outro registro", StringComparison.Ordinal));
     }
 
     [Fact(DisplayName = "REQ-ESTRUT-008 Nenhuma lista de valores do catálogo tem referência ao campo de outro registro")]

@@ -76,7 +76,8 @@ internal sealed record RegistroDoCatalogo(
     bool HierarquiaVerificada,
     string? Pai,
     bool SoNoPrograma = false,
-    bool ObrigatorioDivergente = false)
+    bool ObrigatorioDivergente = false,
+    bool LidoNaImportacao = false)
 {
     /// <summary>Obrigatório na importação e na geração para transmissão (Tabela de Registros, p. 43 a 58).</summary>
     public bool ObrigatorioNaEntradaENaSaida => Entrada == "O" && Saida == "O";
@@ -98,7 +99,8 @@ internal sealed record CampoDoCatalogo(
     string Obrigatorio,
     int Pagina,
     VerificacoesDoCampo Verificacoes,
-    string? TipoDoPrograma = null)
+    string? TipoDoPrograma = null,
+    bool AjustadoPeloPrograma = false)
 {
     public string TipoEfetivo => TipoDoPrograma ?? Tipo;
 }
@@ -106,9 +108,11 @@ internal sealed record CampoDoCatalogo(
 /// <summary>
 /// Verificações do campo (mudança 08, D2). Nulo é sem verificação: tamanho sem limite, decimais não indicados, valores que
 /// dependem de tabela externa ou obrigatoriedade condicional. <see cref="ObrigatorioDivergente"/> marca o campo obrigatório no
-/// manual e opcional no programa da ECF: vazio, ele gera observação, e não recusa o arquivo (E10).
+/// manual e opcional no programa da ECF: vazio, ele gera observação, e não recusa o arquivo (E10). O mesmo vale para
+/// <see cref="ValoresDivergentes"/>, a lista que só o manual tem.
 /// </summary>
-internal sealed record VerificacoesDoCampo(bool Tipo, int? TamanhoMaximo, int? DecimaisMaximos, bool Data, ValoresDoCampo? Valores, bool? Obrigatorio, bool ObrigatorioDivergente = false);
+internal sealed record VerificacoesDoCampo(
+    bool Tipo, int? TamanhoMaximo, int? DecimaisMaximos, bool Data, ValoresDoCampo? Valores, bool? Obrigatorio, bool ObrigatorioDivergente = false, bool ValoresDivergentes = false);
 
 /// <summary>
 /// Valores válidos da coluna do manual: uma lista de valores literais ou um intervalo numérico (p. 37). <see cref="PorPosicao"/>

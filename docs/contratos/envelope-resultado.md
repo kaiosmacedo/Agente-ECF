@@ -145,8 +145,8 @@ Saída real do serviço para a solicitação de `tests/Api.Agente.Tests/Fixtures
       "motivo": "O manual fala em tamanho exato no caso geral (p. 59), e o programa da ECF só o exige em alguns campos, sem lista publicada. Foram conferidos o máximo e o tamanho exato dos campos preenchidos por posição."
     },
     {
-      "item": "Ocorrência mínima e máxima de 43 registros: C051, C150, C155, C157, E155, J051, K156, K356, K915, K935, L200, M300, M350, N500, N610, N615, N650, N660, P030, P200, P300, P400, P500, S100, S150, S200, S300, S500, S700, U030, U182, V010, W250, X350, X351, X352, X353, X354, X355, X356, Y681, 9100, 9900",
-      "motivo": "O cabeçalho de cada registro (página em docs/catalogo/ecf-leiaute-12.md) e a Tabela de Registros (p. 43 a 58) divergem (REQ-ESTRUT-011)."
+      "item": "Ocorrência mínima e máxima de 43 registros: C051 (p. 113), C150 (p. 116), C155 (p. 117), C157 (p. 118), E155 (p. 129), J051 (p. 136), K156 (p. 150), K356 (p. 154), K915 (p. 156), K935 (p. 160), L200 (p. 230), M300 (p. 245), M350 (p. 257), N500 (p. 281), N610 (p. 290), N615 (p. 293), N650 (p. 302), N660 (p. 306), P030 (p. 328), P200 (p. 340), P300 (p. 344), P400 (p. 346), P500 (p. 348), S100 (p. 359), S150 (p. 362), S200 (p. 365), S300 (p. 367), S500 (p. 369), S700 (p. 371), U030 (p. 402), U182 (p. 415), V010 (p. 421), W250 (p. 455), X350 (p. 483), X351 (p. 487), X352 (p. 491), X353 (p. 492), X354 (p. 494), X355 (p. 496), X356 (p. 498), Y681 (p. 596), 9100 (p. 614), 9900 (p. 616)",
+      "motivo": "O cabeçalho de cada registro, na página indicada, e a Tabela de Registros (p. 43 a 58) divergem (REQ-ESTRUT-011)."
     },
     {
       "item": "Hierarquia dos registros X451 e Y650",
@@ -165,8 +165,16 @@ Saída real do serviço para a solicitação de `tests/Api.Agente.Tests/Fixtures
       "motivo": "O tipo não está definido no manual (p. 33)."
     },
     {
-      "item": "Duplicidade no Registro V100",
-      "motivo": "A chave do registro está vazia no cabeçalho (p. 424)."
+      "item": "Duplicidade nos registros X485, Y750",
+      "motivo": "O programa da ECF não define chave para eles (decisão E10)."
+    },
+    {
+      "item": "Data nos campos Q100.DATA, Y620.DATA_AQUIS, Y630.DAT_ABERT, Y630.DAT_ENCER e Y730.DATA",
+      "motivo": "O manual não os nomeia como os campos DT_, cuja data é conferida; o programa da ECF os trata como data. Ficam para a mudança 09."
+    },
+    {
+      "item": "Ocorrência mínima dos registros fora dos 13 obrigatórios, como 0930 e V020",
+      "motivo": "Depende do perfil da empresa, e o programa da ECF a confere na validação. Fica para a mudança 09."
     }
   ],
   "documentos": [
@@ -189,7 +197,7 @@ Saída real do serviço para a solicitação de `tests/Api.Agente.Tests/Fixtures
   "versoes": {
     "contrato": "1.2",
     "servico": "0.1.0+local",
-    "validadores": "ecf-l12-1.4.0"
+    "validadores": "ecf-l12-1.5.0"
   },
   "criadaEm": "2026-11-08T00:16:04.0492467+00:00",
   "concluidaEm": "2026-11-08T00:16:04.0913863+00:00",

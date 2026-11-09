@@ -21,6 +21,12 @@ DESCRITOR = "descritor/escrituracao/estrutura12003/v1/descritor.xml"
 VERSAO_DO_PROGRAMA = "12.2.8"
 # Registros que o manual obriga e o programa preenche sozinho: testado em 2026-11-08, com arquivo sem eles (E10, D8).
 REGISTROS_SEM_EXIGENCIA = ["C001", "C990", "E001"]
+# A Tabela de Registros dá "N" na entrada, mas o programa lê o registro na importação, e a contagem dele recusa o arquivo (E06).
+REGISTROS_LIDOS_NA_IMPORTACAO = ["M990"]
+# O manual diz "deve ser informado vazio" na importação (p. 611), e a coluna diz "Sim"; o programa importa vazio (teste de 2026-11-08).
+VAZIOS_NA_IMPORTACAO = ["Y800.HASH"]
+# "Caso o campo em moeda estrangeira seja informado, este campo será calculado pelo sistema" (p. 445 a 449).
+CALCULADOS_PELO_SISTEMA = [f"W200.{c}" for c in ("VL_REC_NAO_REL", "VL_REC_REL", "VL_REC_TOTAL", "VL_LUC_PREJ_ANTES_IR", "VL_IR_PAGO", "VL_IR_DEVIDO", "VL_CAP_SOC", "VL_LUC_ACUM", "VL_ATIV_TANG")]
 # Tabelas do programa com a mesma lista do campo no manual. A do Y612 fica de fora: o programa filtra uma tabela geral.
 TABELAS = {
     "0010.TIP_ENT": "SPEDECF_TIPO_ENTIDADE",
@@ -55,7 +61,7 @@ def ler_descritor(xml):
                 for c in filho.findall("campo"):
                     v = c.find("valores-validos")
                     campos.append({"id": c.get("id"), "tipo": c.get("tipo"), "tamanho": c.get("tamanho"), "obrigatorio": c.get("obrigatorio"),
-                                   "valores": v.get("valores") if v is not None else None})
+                                   "valores": v.get("valores") if v is not None else None, "tabela": v.get("datasource") if v is not None else None})
                 registros[filho.get("id")] = {"id": filho.get("id"), "nivel": int(filho.get("nivel")), "bloco": bloco, "chave": filho.get("chave"), "campos": campos}
                 andar(filho, bloco)
 
@@ -91,7 +97,7 @@ def extrair(pasta, catalogo):
         xml = jar.read(DESCRITOR)
     desc = ler_descritor(xml)
     cat = {r["codigo"]: r for r in catalogo["registros"]}
-    tipos, tamanhos, valores, obrigatoriedade, chaves = {}, {}, {}, [], {}
+    tipos, tamanhos, valores, obrigatoriedade, chaves, listas_so_no_manual = {}, {}, {}, [], {}, []
     for codigo, r in cat.items():
         d = desc[codigo]
         if len(d["campos"]) != len(r["campos"]):
@@ -103,11 +109,17 @@ def extrair(pasta, catalogo):
             if c["tipo"] in ("N", "NS") and tipo_do_programa in ("NS", "C") and tipo_do_programa != c["tipo"]:
                 tipos[rotulo] = tipo_do_programa
             tamanho = re.sub(r"\D", "", o["tamanho"] or "")
-            if tamanho and v["tamanhoMaximo"] is not None and int(tamanho) > v["tamanhoMaximo"]:
+            if tipos.get(rotulo) == "C":
+                # O limite de N e NS conta só os algarismos. Como texto, vale o limite do programa ou, sem ele no descritor,
+                # o máximo de 255 do manual (p. 33), que o programa aplica: 0000.NOME com 300 caracteres é recusado.
+                tamanhos[rotulo] = max(int(tamanho), v["tamanhoMaximo"] or 0) if tamanho else 255
+            elif tamanho and v["tamanhoMaximo"] is not None and int(tamanho) > v["tamanhoMaximo"]:
                 tamanhos[rotulo] = int(tamanho)
-            if v["obrigatorio"] is True and o["obrigatorio"] == "0":
+            if v["obrigatorio"] is True and (o["obrigatorio"] == "0" or rotulo in CALCULADOS_PELO_SISTEMA):
                 obrigatoriedade.append(rotulo)
             lista = (v["valores"] or {}).get("lista")
+            if lista and not o["valores"] and not o["tabela"] and c["numero"] != 1:
+                listas_so_no_manual.append(rotulo)
             if lista and o["valores"]:
                 a_mais = [p.split("=", 1)[0].strip() for p in o["valores"].split(";") if p.strip() and p.split("=", 1)[0].strip() not in lista]
                 if a_mais and c["numero"] != 1:
@@ -135,6 +147,9 @@ def extrair(pasta, catalogo):
         "programa": {"versao": VERSAO_DO_PROGRAMA, "descritor": "12003 v1", "sha256DoDescritor": hashlib.sha256(xml).hexdigest()},
         "registrosSoNoPrograma": so_no_programa,
         "registrosSemExigencia": REGISTROS_SEM_EXIGENCIA,
+        "registrosLidosNaImportacao": REGISTROS_LIDOS_NA_IMPORTACAO,
+        "vaziosNaImportacao": VAZIOS_NA_IMPORTACAO,
+        "listasSoNoManual": listas_so_no_manual,
         "tipos": tipos,
         "tamanhos": tamanhos,
         "valores": valores,

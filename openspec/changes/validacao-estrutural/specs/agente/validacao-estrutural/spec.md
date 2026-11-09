@@ -5,7 +5,7 @@ Validar de forma determinística a estrutura, os registros e os campos do arquiv
 ## ADDED Requirements
 
 ### Requirement: REQ-ESTRUT-001 Regra com fonte e validador
-Cada regra estrutural SHALL ter identificador, fonte (documento, versão e localização no manual) e um validador determinístico com testes de caso válido e inválido. Regra sem localização no manual MUST NOT ser implementada.
+Cada regra estrutural SHALL ter identificador, fonte (documento, versão e localização no manual ou, nos ajustes da decisão E10, no programa da ECF) e um validador determinístico com testes de caso válido e inválido. Regra sem localização nessas fontes MUST NOT ser implementada.
 Fonte: Manual da ECF, leiaute 12 (23/07/2026); localização registrada por regra no catálogo (E02).
 
 #### Scenario: Regra sem localização
@@ -134,11 +134,16 @@ Fonte: Manual da ECF, leiaute 12 (23/07/2026), p. 17, 41, 43 a 58, 607 e 614.
 #### Scenario: ECF com o Bloco C recuperado
 - **GIVEN** uma ECF sintética com o Registro C040
 - **WHEN** a etapa 4 executa
-- **THEN** o resultado registra o indício "registro C040, que não deve existir na importação (p. 44)"
+- **THEN** o resultado registra o indício de que o Registro C040 não deve existir no arquivo de importação, com a página
 - **AND** nenhum achado é produzido pela presença do C040
 
 ### Requirement: REQ-ESTRUT-013 Lista de achados limitada e declarada
-A lista de achados SHALL respeitar os máximos configurados por regra e no total, e a contagem dos achados não listados MUST constar das limitações, por regra.
+A lista de achados SHALL respeitar os máximos configurados por regra e no total, e a contagem dos achados não listados MUST constar das limitações, por regra. O limite MUST NOT mudar o veredito: um achado impeditivo SHALL entrar na lista antes dos demais.
+
+#### Scenario: Observações antes de um erro impeditivo
+- **GIVEN** uma ECF sintética com 25 achados de classe `observacao` e, depois deles, um impeditivo da mesma regra
+- **WHEN** a etapa 4 executa
+- **THEN** o veredito é `recusado`, e a limitação informa os achados não listados
 
 #### Scenario: Muitos achados da mesma regra
 - **GIVEN** o máximo de 20 achados por regra e uma ECF sintética com 50 linhas que violam a mesma regra
@@ -166,7 +171,7 @@ Fonte: Manual da ECF, leiaute 12 (23/07/2026), p. 73 (`0010.FORMA_TRIB_PER`) e 7
 - **THEN** existe um achado impeditivo de valor no campo `FORMA_TRIB_PER`
 
 ### Requirement: REQ-ESTRUT-015 Contagem de bloco que a importação lê
-A divergência no x990 de um bloco que a importação lê SHALL gerar achado de classe `impeditiva`, porque o programa da ECF recusa o arquivo. A importação lê o Bloco 0 e os blocos com `IND_DAD` igual a 0, exceto C e E.
+A divergência no x990 de um bloco que a importação lê SHALL gerar achado de classe `impeditiva`, porque o programa da ECF recusa o arquivo. A importação lê o Bloco 0 e os blocos com `IND_DAD` igual a 0, exceto C e E, e o programa não confere o S990 nem o 9990.
 Fonte: Manual da ECF, leiaute 12 (23/07/2026), p. 38 (erro de estrutura impede a importação) e 41 (os blocos C e E não são importados); programa da ECF 12.2.8; decisão E06, de Kaio Macedo.
 
 #### Scenario: Contagem errada no Bloco 0

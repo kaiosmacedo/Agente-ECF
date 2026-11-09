@@ -54,7 +54,10 @@ internal sealed class ValidadorEstrutural(CatalogoDoLeiaute catalogo, Parametros
     private sealed class Passada(CatalogoDoLeiaute catalogo, ParametrosDaValidacao parametros, string idDocumento, Action<string>? antesDaRegra)
     {
         private const int NiveisMaximos = 16;
-        private readonly List<(int Linha, string Regra, Func<Achado> Criar)> pendentes = [];
+
+        // Registros que podem ocupar várias linhas até o campo de fim (Y800, p. 610 e 611; W300, p. 462; programa da ECF).
+        private static readonly string[] RegistrosEmVariasLinhas = ["Y800", "W300"];
+        private readonly List<(int Linha, string Regra, SeveridadeDoAchado Severidade, Func<Achado> Criar)> pendentes = [];
         private readonly Dictionary<string, int> porRegra = new(StringComparer.Ordinal);
         private readonly Dictionary<string, int> contagem = new(StringComparer.Ordinal);
 
@@ -83,6 +86,11 @@ internal sealed class ValidadorEstrutural(CatalogoDoLeiaute catalogo, Parametros
             {
                 if (contagem.ContainsKey("9999"))
                 {
+                    if (string.IsNullOrWhiteSpace(conteudo))
+                    {
+                        continue;
+                    }
+
                     // A assinatura fica depois do 9999 (p. 17): não é validada, só registrada como indício.
                     indicios.Add("Há conteúdo depois do Registro 9999, como a assinatura digital (manual, p. 17): indício de arquivo gerado pelo programa da ECF. Esse conteúdo não foi validado.");
                     break;
@@ -99,23 +107,34 @@ internal sealed class ValidadorEstrutural(CatalogoDoLeiaute catalogo, Parametros
             return Montar();
         }
 
-        /// <summary>Registros lógicos: o Y800 pode ocupar várias linhas até o campo <c>Y800FIM</c> (D2; p. 610 e 611).</summary>
+        /// <summary>
+        /// Registros lógicos: o Y800 e o W300 podem ocupar várias linhas até o campo de fim (D2). Sem esse campo adiante, a
+        /// linha fica sozinha, para não engolir o resto do arquivo. O fim de linha pode ser CR LF, LF ou CR (D2).
+        /// </summary>
         private IEnumerable<(int Linha, string Conteudo)> Linhas(string texto)
         {
-            var fisicas = texto.Split('\n');
+            var fisicas = texto.Split(["\r\n", "\n", "\r"], StringSplitOptions.None);
             var total = fisicas.Length > 0 && fisicas[^1].Length == 0 ? fisicas.Length - 1 : fisicas.Length;
             linhasFisicas = total;
+            var ultimoFim = RegistrosEmVariasLinhas.ToDictionary(
+                codigo => codigo,
+                codigo => Array.FindLastIndex(fisicas, linha => linha.EndsWith($"|{codigo}FIM|", StringComparison.Ordinal)),
+                StringComparer.Ordinal);
             for (var i = 0; i < total; i++)
             {
                 var inicio = i;
-                var conteudo = fisicas[i].TrimEnd('\r');
-                if (conteudo.StartsWith("|Y800|", StringComparison.Ordinal))
+                var conteudo = fisicas[i];
+                var codigo = Array.Find(RegistrosEmVariasLinhas, item => conteudo.StartsWith($"|{item}|", StringComparison.Ordinal));
+                if (codigo is not null && ultimoFim[codigo] > i && !conteudo.EndsWith($"|{codigo}FIM|", StringComparison.Ordinal))
                 {
-                    while (!conteudo.EndsWith("|Y800FIM|", StringComparison.Ordinal) && i + 1 < total)
+                    var fim = i + 1;
+                    while (!fisicas[fim].EndsWith($"|{codigo}FIM|", StringComparison.Ordinal))
                     {
-                        i++;
-                        conteudo = string.Concat(conteudo, "\n", fisicas[i].TrimEnd('\r'));
+                        fim++;
                     }
+
+                    conteudo = string.Join('\n', fisicas, i, fim - i + 1);
+                    i = fim;
                 }
 
                 yield return (inicio + 1, conteudo);
@@ -147,12 +166,12 @@ internal sealed class ValidadorEstrutural(CatalogoDoLeiaute catalogo, Parametros
             contagemPorBloco[bloco] = contagemPorBloco.GetValueOrDefault(bloco) + 1;
             Proteger(RegrasEstruturais.OrdemDosBlocos, () => VerificarOrdem(linha, registro));
             Proteger(RegrasEstruturais.Hierarquia, () => VerificarHierarquia(linha, registro));
+            AbrirRegistro(registro);
+            VerificarOcorrencia(linha, registro);
             Proteger(RegrasEstruturais.QuantidadeDeCampos, () => VerificarQuantidadeDeCampos(linha, registro, campos));
             for (var i = 0; i < registro.Campos.Count; i++)
             {
-                var campo = registro.Campos[i];
-                var valor = i < campos.Length ? campos[i] : null;
-                Proteger(RegrasEstruturais.Tipo, () => VerificarCampo(linha, registro, campo, valor));
+                VerificarCampo(linha, registro, registro.Campos[i], i < campos.Length ? campos[i] : null);
             }
 
             Proteger(RegrasEstruturais.Duplicidade, () => VerificarDuplicidade(linha, registro, campos));
@@ -200,11 +219,20 @@ internal sealed class ValidadorEstrutural(CatalogoDoLeiaute catalogo, Parametros
                     $"O Registro {registro.Codigo}, na linha {linha}, precisa do Registro {pai} antes dele, e ele não está aberto.",
                     $"Informe o Registro {pai} antes do {registro.Codigo}, ou retire o {registro.Codigo} (manual, p. 59: todo filho precisa do pai).", SeveridadeDoAchado.Critica);
             }
+        }
 
+        /// <summary>O estado da hierarquia, fora das regras: a falha de uma regra não pode desarrumar as seguintes (D8).</summary>
+        private void AbrirRegistro(RegistroDoCatalogo registro)
+        {
+            var nivel = Math.Min(registro.Nivel, NiveisMaximos - 1);
             abertos[nivel] = registro.Codigo;
             instancias[nivel] = ++proximaInstancia;
             Array.Clear(abertos, nivel + 1, NiveisMaximos - nivel - 1);
+        }
 
+        private void VerificarOcorrencia(int linha, RegistroDoCatalogo registro)
+        {
+            var nivel = Math.Min(registro.Nivel, NiveisMaximos - 1);
             var chave = (nivel > 0 ? instancias[nivel - 1] : 0, registro.Codigo);
             var vezes = ocorrencias[chave] = ocorrencias.GetValueOrDefault(chave) + 1;
             Executar(RegrasEstruturais.OcorrenciaUnitaria, () =>
@@ -249,7 +277,7 @@ internal sealed class ValidadorEstrutural(CatalogoDoLeiaute catalogo, Parametros
                     {
                         // O manual obriga, e o programa da ECF aceita vazio: não recusa o arquivo (REQ-ESTRUT-016, decisão E10).
                         AcharNoCampo(RegrasEstruturais.Obrigatorio, registro, campo, linha, valor,
-                            $"O campo {campo.Nome} do Registro {registro.Codigo} está vazio na linha {linha}: o manual o dá como obrigatório, e o programa da ECF o aceita vazio.",
+                            $"O campo {campo.Nome} do Registro {registro.Codigo} está vazio na linha {linha}: o manual o dá como obrigatório, e o programa da ECF não o exige.",
                             $"Confira se {campo.Nome} deve ser preenchido neste caso.",
                             SeveridadeDoAchado.Media);
                     }
@@ -263,16 +291,24 @@ internal sealed class ValidadorEstrutural(CatalogoDoLeiaute catalogo, Parametros
                 return;
             }
 
-            if (v.Tipo && !TipoValido(campo.TipoEfetivo, valor))
+            var tipoInvalido = false;
+            Executar(RegrasEstruturais.Tipo, () =>
             {
-                AcharNoCampo(RegrasEstruturais.Tipo, registro, campo, linha, valor,
-                    $"O campo {campo.Nome} do Registro {registro.Codigo} tem caracteres fora do tipo {campo.TipoEfetivo} na linha {linha}.",
-                    campo.TipoEfetivo switch
-                    {
-                        "N" => $"Preencha {campo.Nome} só com algarismos e vírgula decimal, sem separador de milhar (manual, p. 33 e 34).",
-                        "NS" => $"Preencha {campo.Nome} com sinal opcional (+ ou -) e algarismos (manual, p. 33).",
-                        _ => $"Tire de {campo.Nome} os caracteres de controle (manual, p. 33).",
-                    });
+                if (v.Tipo && !TipoValido(campo.TipoEfetivo, valor, RegistrosEmVariasLinhas.Contains(registro.Codigo, StringComparer.Ordinal)))
+                {
+                    tipoInvalido = true;
+                    AcharNoCampo(RegrasEstruturais.Tipo, registro, campo, linha, valor,
+                        $"O campo {campo.Nome} do Registro {registro.Codigo} tem caracteres fora do tipo {campo.TipoEfetivo} na linha {linha}.",
+                        campo.TipoEfetivo switch
+                        {
+                            "N" => $"Preencha {campo.Nome} só com algarismos e vírgula decimal, sem separador de milhar (manual, p. 33 e 34).",
+                            "NS" => $"Preencha {campo.Nome} com sinal opcional (+ ou -) e algarismos (manual, p. 33).",
+                            _ => $"Tire de {campo.Nome} os caracteres de controle (manual, p. 33).",
+                        });
+                }
+            });
+            if (tipoInvalido)
+            {
                 return;
             }
 
@@ -315,7 +351,15 @@ internal sealed class ValidadorEstrutural(CatalogoDoLeiaute catalogo, Parametros
             });
             Executar(RegrasEstruturais.Valores, () =>
             {
-                if (v.Valores is { } valores && !ValorValido(valores, valor))
+                if (v.ValoresDivergentes && v.Valores is { } soNoManual && !ValorValido(soNoManual, valor))
+                {
+                    // O manual lista os valores, e o programa da ECF não os confere: não recusa o arquivo (REQ-ESTRUT-016, decisão E10).
+                    AcharNoCampo(RegrasEstruturais.Valores, registro, campo, linha, valor,
+                        $"O campo {campo.Nome} do Registro {registro.Codigo} tem um valor fora da lista do manual, na linha {linha}; o programa da ECF não confere essa lista.",
+                        $"Confira {campo.Nome}: o manual lista {campo.ValoresValidos}.",
+                        SeveridadeDoAchado.Media);
+                }
+                else if (v.Valores is { } valores && !ValorValido(valores, valor))
                 {
                     AcharNoCampo(RegrasEstruturais.Valores, registro, campo, linha, valor,
                         $"O campo {campo.Nome} do Registro {registro.Codigo} tem um valor fora dos valores válidos, na linha {linha}.",
@@ -400,7 +444,8 @@ internal sealed class ValidadorEstrutural(CatalogoDoLeiaute catalogo, Parametros
                     AcharContagem(codigo == "9990" ? RegrasEstruturais.ContagemDoArquivo : RegrasEstruturais.ContagemDoBloco, codigo, linha, valor,
                         string.Create(CultureInfo.InvariantCulture, $"O Registro {codigo} declara {declarado} registros no Bloco {codigo[0]}, e o bloco tem {real}, contando a abertura e o encerramento."),
                         string.Create(CultureInfo.InvariantCulture, $"Informe {real} no campo 2 do Registro {codigo}."),
-                        BlocoImportado(codigo[0]) ? SeveridadeDoAchado.Critica : SeveridadeDoAchado.Media);
+                        BlocoImportado(codigo[0]) ? SeveridadeDoAchado.Critica : SeveridadeDoAchado.Media,
+                        1);
                 }
             }
         }
@@ -427,7 +472,8 @@ internal sealed class ValidadorEstrutural(CatalogoDoLeiaute catalogo, Parametros
                 {
                     AcharContagem(RegrasEstruturais.ContagemDoRegistro, "9900", linha, valor,
                         string.Create(CultureInfo.InvariantCulture, $"O Registro 9900 declara {declarado} ocorrência(s) do Registro {Recortar(registro)}, e o arquivo tem {real}."),
-                        string.Create(CultureInfo.InvariantCulture, $"Informe {real} em QTD_REG_BLC para o Registro {Recortar(registro)}."));
+                        string.Create(CultureInfo.InvariantCulture, $"Informe {real} em QTD_REG_BLC nessa linha do Registro 9900."),
+                        indiceDoCampo: 2);
                 }
             }
 
@@ -457,14 +503,15 @@ internal sealed class ValidadorEstrutural(CatalogoDoLeiaute catalogo, Parametros
 
             AcharContagem(RegrasEstruturais.ContagemDoArquivo, "9999", linha, valor,
                 string.Create(CultureInfo.InvariantCulture, $"O Registro 9999 declara {declarado} linhas, e o arquivo tem {registrosLidos} registros até o 9999, inclusive."),
-                string.Create(CultureInfo.InvariantCulture, $"Informe {registrosLidos} em QTD_LIN do Registro 9999."));
+                string.Create(CultureInfo.InvariantCulture, $"Informe {registrosLidos} em QTD_LIN do Registro 9999."),
+                indiceDoCampo: 1);
         }
 
         private void RegistrarIndicios()
         {
             foreach (var registro in catalogo.Registros.Where(registro => contagem.ContainsKey(registro.Codigo)))
             {
-                if (registro.Entrada == "N")
+                if (registro.Entrada == "N" && !registro.LidoNaImportacao)
                 {
                     indicios.Add($"O Registro {registro.Codigo} não deve existir no arquivo de importação (Tabela de Registros, p. 43 a 58; p. {registro.Pagina}): indício de arquivo gerado pelo programa da ECF.");
                 }
@@ -477,30 +524,38 @@ internal sealed class ValidadorEstrutural(CatalogoDoLeiaute catalogo, Parametros
 
         private ResultadoDaValidacaoEstrutural Montar()
         {
-            var ordenados = pendentes.OrderBy(item => item.Linha).ThenBy(item => item.Regra, StringComparer.Ordinal).ToList();
-            var achados = new List<Achado>();
+            // O limite resume a lista, e não pode mudar o veredito (D4): o impeditivo entra primeiro, e cada regra conta por severidade.
             var naoListados = new Dictionary<string, int>(StringComparer.Ordinal);
-            var listadosPorRegra = new Dictionary<string, int>(StringComparer.Ordinal);
-            foreach (var (_, regra, criar) in ordenados)
+            var listadosPorRegra = new Dictionary<(string Regra, SeveridadeDoAchado Severidade), int>();
+            var selecionados = new List<(int Linha, string Regra, SeveridadeDoAchado Severidade, Func<Achado> Criar)>();
+            var ordenados = pendentes.OrderBy(item => item.Linha).ThenBy(item => item.Regra, StringComparer.Ordinal).ToList();
+            foreach (var item in ordenados.OrderBy(item => item.Severidade == SeveridadeDoAchado.Critica ? 0 : 1))
             {
-                var listados = listadosPorRegra.GetValueOrDefault(regra);
-                if (listados >= parametros.MaximoDeAchadosPorRegra || achados.Count >= parametros.MaximoDeAchados)
+                var chave = (item.Regra, item.Severidade);
+                var listados = listadosPorRegra.GetValueOrDefault(chave);
+                if (listados >= parametros.MaximoDeAchadosPorRegra || selecionados.Count >= parametros.MaximoDeAchados)
                 {
-                    naoListados[regra] = naoListados.GetValueOrDefault(regra) + 1;
+                    naoListados[item.Regra] = naoListados.GetValueOrDefault(item.Regra) + 1;
                     continue;
                 }
 
-                listadosPorRegra[regra] = listados + 1;
-                achados.Add(criar());
+                listadosPorRegra[chave] = listados + 1;
+                selecionados.Add(item);
             }
 
-            var numerados = achados.Select((achado, indice) => achado with { IdAchado = string.Create(CultureInfo.InvariantCulture, $"est-{indice + 1:0000}") }).ToList();
+            var numerados = selecionados
+                .OrderBy(item => item.Linha)
+                .ThenBy(item => item.Regra, StringComparer.Ordinal)
+                .Select((item, indice) => item.Criar() with { IdAchado = string.Create(CultureInfo.InvariantCulture, $"est-{indice + 1:0000}") })
+                .ToList();
             return new ResultadoDaValidacaoEstrutural(numerados, naoListados, indicios, NaoRealizadas(), [.. regrasComFalha.Order(StringComparer.Ordinal)]);
         }
 
         private List<ValidacaoNaoRealizada> NaoRealizadas()
         {
-            var divergentes = catalogo.Registros.Where(registro => !registro.OcorrenciaVerificada).Select(registro => registro.Codigo).ToList();
+            var divergentes = catalogo.Registros.Where(registro => !registro.OcorrenciaVerificada)
+                .Select(registro => string.Create(CultureInfo.InvariantCulture, $"{registro.Codigo} (p. {registro.Pagina})")).ToList();
+            var semChave = catalogo.Registros.Where(registro => registro.TemRegra(RegrasEstruturais.Duplicidade) && registro.Chave.Count == 0).Select(registro => registro.Codigo).ToList();
             return
             [
                 new("Regras REGRA_ de conteúdo do manual: valores, cruzamentos entre registros, cálculos, preenchimento e existência condicionados", "Ficam para a mudança 09, de regras de negócio."),
@@ -511,12 +566,14 @@ internal sealed class ValidadorEstrutural(CatalogoDoLeiaute catalogo, Parametros
                 new("Tamanho exato dos campos", "O manual fala em tamanho exato no caso geral (p. 59), e o programa da ECF só o exige em alguns campos, sem lista publicada. Foram conferidos o máximo e o tamanho exato dos campos preenchidos por posição."),
                 new(
                     string.Create(CultureInfo.InvariantCulture, $"Ocorrência mínima e máxima de {divergentes.Count} registros: {string.Join(", ", divergentes)}"),
-                    "O cabeçalho de cada registro (página em docs/catalogo/ecf-leiaute-12.md) e a Tabela de Registros (p. 43 a 58) divergem (REQ-ESTRUT-011)."),
+                    "O cabeçalho de cada registro, na página indicada, e a Tabela de Registros (p. 43 a 58) divergem (REQ-ESTRUT-011)."),
                 new("Hierarquia dos registros X451 e Y650", "O nível do cabeçalho e o da Tabela de Registros divergem (REQ-ESTRUT-011)."),
                 new("Ordem entre registros irmãos", "O manual só diz que a ordem é sequencial (p. 58); foram conferidas a ordem dos blocos e a hierarquia."),
                 new("Fim de linha CR LF", "O texto que chega pela Sofia pode ter as quebras de linha trocadas."),
                 new("Campos do tipo D (X280.VIG_INI e X280.VIG_FIM)", "O tipo não está definido no manual (p. 33)."),
-                new("Duplicidade no Registro V100", "A chave do registro está vazia no cabeçalho (p. 424)."),
+                new($"Duplicidade nos registros {string.Join(", ", semChave)}", "O programa da ECF não define chave para eles (decisão E10)."),
+                new("Data nos campos Q100.DATA, Y620.DATA_AQUIS, Y630.DAT_ABERT, Y630.DAT_ENCER e Y730.DATA", "O manual não os nomeia como os campos DT_, cuja data é conferida; o programa da ECF os trata como data. Ficam para a mudança 09."),
+                new("Ocorrência mínima dos registros fora dos 13 obrigatórios, como 0930 e V020", "Depende do perfil da empresa, e o programa da ECF a confere na validação. Fica para a mudança 09."),
             ];
         }
 
@@ -524,8 +581,13 @@ internal sealed class ValidadorEstrutural(CatalogoDoLeiaute catalogo, Parametros
             string regra, RegistroDoCatalogo registro, CampoDoCatalogo campo, int linha, string? valor, string descricao, string orientacao, SeveridadeDoAchado severidade = SeveridadeDoAchado.Critica) =>
             Achar(regra, registro, registro.Codigo, linha, campo, valor, descricao, orientacao, severidade);
 
-        private void AcharContagem(string regra, string codigo, int? linha, string valor, string descricao, string orientacao, SeveridadeDoAchado severidade = SeveridadeDoAchado.Media) =>
-            Achar(regra, catalogo.Registro(codigo), codigo, linha, null, valor, descricao, orientacao, severidade);
+        private void AcharContagem(
+            string regra, string codigo, int? linha, string valor, string descricao, string orientacao, SeveridadeDoAchado severidade = SeveridadeDoAchado.Media, int? indiceDoCampo = null)
+        {
+            var registro = catalogo.Registro(codigo);
+            var campo = indiceDoCampo is { } indice && registro is not null && indice < registro.Campos.Count ? registro.Campos[indice] : null;
+            Achar(regra, registro, codigo, linha, campo, valor, descricao, orientacao, severidade);
+        }
 
         private void Achar(
             string regra, RegistroDoCatalogo? registro, string codigo, int? linha, CampoDoCatalogo? campo, string? valor,
@@ -537,10 +599,12 @@ internal sealed class ValidadorEstrutural(CatalogoDoLeiaute catalogo, Parametros
             {
                 null => "seção 2.2, p. 32",
                 _ when registro is { SoNoPrograma: true } => $"{catalogo.Fonte.Programa}, {localNoRegistro}",
+                _ when campo is { AjustadoPeloPrograma: true } => string.Create(CultureInfo.InvariantCulture, $"p. {pagina}, {localNoRegistro}; ajustado pelo {catalogo.Fonte.Programa} (decisão E10)"),
                 _ => string.Create(CultureInfo.InvariantCulture, $"p. {pagina}, {localNoRegistro}"),
             };
+            var documento = registro is { SoNoPrograma: true } ? catalogo.Fonte.Programa! : catalogo.Fonte.Documento;
             var fundamento = campo is null ? $"{regra} {codigo}" : $"{regra} {codigo}.{campo.Nome}";
-            pendentes.Add((linha ?? int.MaxValue, regra, () => Achado.Criar(
+            pendentes.Add((linha ?? int.MaxValue, regra, severidade, () => Achado.Criar(
                 "est",
                 CategoriaDoAchado.ErroEstrutural,
                 OrigemDoAchado.Validador,
@@ -550,7 +614,7 @@ internal sealed class ValidadorEstrutural(CatalogoDoLeiaute catalogo, Parametros
                 [new RegistroEnvolvido(idDocumento, codigo, linha, campo?.Nome, valor)],
                 linha is null ? [] : [string.Create(CultureInfo.InvariantCulture, $"Linha {linha}")],
                 doManual,
-                new FonteDoAchado(catalogo.Fonte.Documento, catalogo.Fonte.Versao, local),
+                new FonteDoAchado(documento, catalogo.Fonte.Versao, local),
                 orientacao)));
             porRegra[regra] = porRegra.GetValueOrDefault(regra) + 1;
         }
@@ -600,11 +664,12 @@ internal sealed class ValidadorEstrutural(CatalogoDoLeiaute catalogo, Parametros
             return int.MaxValue;
         }
 
-        private static bool TipoValido(string tipo, string valor) => tipo switch
+        /// <summary>No tipo C, só os caracteres 0 a 31 são proibidos (p. 33); a quebra de linha só vale nos registros em várias linhas.</summary>
+        private static bool TipoValido(string tipo, string valor, bool emVariasLinhas) => tipo switch
         {
             "N" => Numero(valor),
             "NS" => Numero(valor is ['+' or '-', .. var resto] ? resto : valor),
-            _ => !valor.Any(char.IsControl),
+            _ => !valor.Any(caractere => caractere < ' ' && !(emVariasLinhas && caractere == '\n')),
         };
 
         private static bool Numero(string valor) =>
