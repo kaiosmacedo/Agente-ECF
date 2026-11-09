@@ -1,10 +1,10 @@
 # Catálogo estrutural da ECF, leiaute 12
 
-Gerado por `.github/scripts/catalogo/gerar-catalogo.py` a partir da versão em Word do manual, com as páginas do PDF. Versão `ecf-l12-1.4.0`. É o que Kaio Macedo revisa (mudança 08, E02). Correções vão no gerador, nunca no JSON.
+Gerado por `.github/scripts/catalogo/gerar-catalogo.py` a partir da versão em Word do manual, com as páginas do PDF. Versão `ecf-l12-1.5.0`. É o que Kaio Macedo revisa (mudança 08, E02). Correções vão no gerador, nunca no JSON.
 
 **Ordem dos blocos:** 0, C, E, J, K, L, M, N, P, Q, S, T, U, V, W, X, Y, 9.
 
-**Divergências do próprio manual, sem achado (REQ-ESTRUT-011):** Registro 0010, p. 71: o campo FORMA_TRIB tem tamanho 1 na coluna, e os valores válidos [1;2;3;4;5;6;7;8;9;10] vão até 2 caracteres; vale a lista, que o programa da ECF aceita. Registro Y681, p. 596: o campo REG traz [X681] nos valores válidos, e não [Y681]. Registro S990: o manual não o cita, e ele existe no programa, que o aceita mesmo com a contagem errada; o agente o reconhece, sem exigi-lo. Decisão E10, com o Programa da ECF 12.2.8, descritor 12003 v1: 37 campos seguem o tipo do programa, 60 o tamanho e 3 os valores; 63 campos obrigatórios só no manual e 3 registros (C001, C990, E001) ficam em observação, e 21 registros usam a chave do programa. Lista em docs/catalogo/revisao-ecf-leiaute-12.md. Ocorrência e nível divergentes entre o cabeçalho do registro e a Tabela de Registros (p. 43 a 58) ficam sem verificação.
+**Divergências do próprio manual, sem achado (REQ-ESTRUT-011):** Registro 0010, p. 71: o campo FORMA_TRIB tem tamanho 1 na coluna, e os valores válidos [1;2;3;4;5;6;7;8;9;10] vão até 2 caracteres; vale a lista, que o programa da ECF aceita. Registro Y681, p. 596: o campo REG traz [X681] nos valores válidos, e não [Y681]. Registro S990: o manual não o cita, e ele existe no programa, que o aceita mesmo com a contagem errada; o agente o reconhece, sem exigi-lo. Decisão E10, com o Programa da ECF 12.2.8, descritor 12003 v1: 37 campos seguem o tipo do programa, 76 o tamanho e 3 os valores; 72 campos obrigatórios só no manual, 89 listas que só o manual tem e 3 registros (C001, C990, E001) ficam em observação, e 21 registros usam a chave do programa. Lista em docs/catalogo/revisao-ecf-leiaute-12.md. Ocorrência e nível divergentes entre o cabeçalho do registro e a Tabela de Registros (p. 43 a 58) ficam sem verificação.
 
 | Registro | Nome | Nível | Pai | Ocorrência (cabeçalho / tabela) | Entrada / saída | Página |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -259,34 +259,34 @@ Página 81. Chave: REG. Regras do registro: —.
 | 1 | REG | C | 4 | - | [0020] | Sim | tipo, até 4, obrigatório |
 | 2 | IND_ALIQ_CSLL | N | 1 | - | [1;3;4] | Sim | tipo C do programa, até 1, valores, obrigatório, em observação |
 | 3 | IND_QTE_SCP | N | 3 | - | - | Sim | tipo, até 3, 0 decimais, obrigatório, em observação |
-| 4 | IND_ADM_FUN_CLU | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
-| 5 | IND_PART_CONS | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
-| 6 | IND_OP_EXT | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
-| 7 | IND_OP_VINC | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
-| 8 | IND_PJ_ENQUAD | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
-| 9 | IND_PART_EXT | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
-| 10 | IND_ATIV_RURAL | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
-| 11 | IND_LUC_EXP | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
-| 12 | IND_RED_ISEN | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
-| 13 | IND_FIN | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
-| 14 | IND_PART_COLIG | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
-| 15 | IND_ REC_EXT | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
-| 16 | IND_ATIV_EXT | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
-| 17 | IND_PGTO_EXT | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
-| 18 | IND_E-COM_TI | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
-| 19 | IND_ROY_REC | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
-| 20 | IND_ROY_PAG | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
-| 21 | IND_REND_SERV | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
-| 22 | IND_PGTO_REM | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
-| 23 | IND_INOV_TEC | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
-| 24 | IND_CAP_INF | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
-| 25 | IND_PJ_HAB | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
-| 26 | IND_POLO_AM | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
-| 27 | IND_ZON_EXP | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
-| 28 | IND_AREA_COM | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
-| 29 | IND_PAIS_A_PAIS | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
-| 30 | IND_DEREX | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
-| 31 | POSSUI_CEBRAS | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório, em observação |
+| 4 | IND_ADM_FUN_CLU | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, em observação, obrigatório |
+| 5 | IND_PART_CONS | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, em observação, obrigatório |
+| 6 | IND_OP_EXT | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, em observação, obrigatório |
+| 7 | IND_OP_VINC | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, em observação, obrigatório |
+| 8 | IND_PJ_ENQUAD | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, em observação, obrigatório |
+| 9 | IND_PART_EXT | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, em observação, obrigatório |
+| 10 | IND_ATIV_RURAL | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, em observação, obrigatório |
+| 11 | IND_LUC_EXP | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, em observação, obrigatório |
+| 12 | IND_RED_ISEN | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, em observação, obrigatório |
+| 13 | IND_FIN | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, em observação, obrigatório |
+| 14 | IND_PART_COLIG | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, em observação, obrigatório |
+| 15 | IND_ REC_EXT | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, em observação, obrigatório |
+| 16 | IND_ATIV_EXT | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, em observação, obrigatório |
+| 17 | IND_PGTO_EXT | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, em observação, obrigatório |
+| 18 | IND_E-COM_TI | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, em observação, obrigatório |
+| 19 | IND_ROY_REC | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, em observação, obrigatório |
+| 20 | IND_ROY_PAG | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, em observação, obrigatório |
+| 21 | IND_REND_SERV | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, em observação, obrigatório |
+| 22 | IND_PGTO_REM | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, em observação, obrigatório |
+| 23 | IND_INOV_TEC | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, em observação, obrigatório |
+| 24 | IND_CAP_INF | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, em observação, obrigatório |
+| 25 | IND_PJ_HAB | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, em observação, obrigatório |
+| 26 | IND_POLO_AM | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, em observação, obrigatório |
+| 27 | IND_ZON_EXP | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, em observação, obrigatório |
+| 28 | IND_AREA_COM | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, em observação, obrigatório |
+| 29 | IND_PAIS_A_PAIS | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, em observação, obrigatório |
+| 30 | IND_DEREX | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, em observação, obrigatório |
+| 31 | POSSUI_CEBRAS | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, em observação, obrigatório, em observação |
 | 32 | CEBAS | C | 255 | - |  | OC Deve ser preenchi | tipo, até 255 |
 
 ## 0021: Parâmetros de Identificação dos Tipos de Programa
@@ -296,23 +296,23 @@ Página 97. Chave: REG. Regras do registro: REGRA_0021_PREENCHIDO.
 | Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [0021] | Sim | tipo, até 4, obrigatório |
-| 2 | IND_REPES | C | 1 | - | [S;N] | Não | tipo, até 1, valores |
-| 3 | IND_RECAP | C | 1 | - | [S;N] | Não | tipo, até 1, valores |
-| 4 | IND_PADIS | C | 1 | - | [S;N] | Não | tipo, até 1, valores |
-| 5 | IND_REIDI | C | 1 | - | [S;N] | Não | tipo, até 1, valores |
-| 6 | IND_RECINE | C | 1 | - | [S;N] | Não | tipo, até 1, valores |
-| 7 | IND_RETID | C | 1 | - | [S;N] | Não | tipo, até 1, valores |
-| 8 | IND_OLEO_BUNKER | C | 1 | - | [S;N] | Não | tipo, até 1, valores |
-| 9 | IND_REPORTO | C | 1 | - | [S;N] | Não | tipo, até 1, valores |
-| 10 | IND_RET_II | C | 1 | - | [S;N] | Não | tipo, até 1, valores |
-| 11 | IND_RET_PMCMV | C | 1 | - | [S;N] | Não | tipo, até 1, valores |
-| 12 | IND_RET_EEI | C | 1 | - | [S;N] | Não | tipo, até 1, valores |
-| 13 | IND_EBAS | C | 1 | - | [S;N] | Não | tipo, até 1, valores |
-| 14 | IND_REPETRO_ INDUSTRIALIZACAO | C | 1 | - | [S;N] | Não | tipo, até 1, valores |
-| 15 | IND_REPETRO_ NACIONAL | C | 1 | - | [S;N] | Não | tipo, até 1, valores |
-| 16 | IND_REPETRO_ PERMANENTE | C | 1 | - | [S;N] | Não | tipo, até 1, valores |
-| 17 | IND_REPETRO_ TEMPORARIO | C | 1 | - | [S;N] | Não | tipo, até 1, valores |
-| 18 | IND_REDATA | C | 1 | - | [S;N] | Não | tipo, até 1, valores |
+| 2 | IND_REPES | C | 1 | - | [S;N] | Não | tipo, até 1, valores, em observação |
+| 3 | IND_RECAP | C | 1 | - | [S;N] | Não | tipo, até 1, valores, em observação |
+| 4 | IND_PADIS | C | 1 | - | [S;N] | Não | tipo, até 1, valores, em observação |
+| 5 | IND_REIDI | C | 1 | - | [S;N] | Não | tipo, até 1, valores, em observação |
+| 6 | IND_RECINE | C | 1 | - | [S;N] | Não | tipo, até 1, valores, em observação |
+| 7 | IND_RETID | C | 1 | - | [S;N] | Não | tipo, até 1, valores, em observação |
+| 8 | IND_OLEO_BUNKER | C | 1 | - | [S;N] | Não | tipo, até 1, valores, em observação |
+| 9 | IND_REPORTO | C | 1 | - | [S;N] | Não | tipo, até 1, valores, em observação |
+| 10 | IND_RET_II | C | 1 | - | [S;N] | Não | tipo, até 1, valores, em observação |
+| 11 | IND_RET_PMCMV | C | 1 | - | [S;N] | Não | tipo, até 1, valores, em observação |
+| 12 | IND_RET_EEI | C | 1 | - | [S;N] | Não | tipo, até 1, valores, em observação |
+| 13 | IND_EBAS | C | 1 | - | [S;N] | Não | tipo, até 1, valores, em observação |
+| 14 | IND_REPETRO_ INDUSTRIALIZACAO | C | 1 | - | [S;N] | Não | tipo, até 1, valores, em observação |
+| 15 | IND_REPETRO_ NACIONAL | C | 1 | - | [S;N] | Não | tipo, até 1, valores, em observação |
+| 16 | IND_REPETRO_ PERMANENTE | C | 1 | - | [S;N] | Não | tipo, até 1, valores, em observação |
+| 17 | IND_REPETRO_ TEMPORARIO | C | 1 | - | [S;N] | Não | tipo, até 1, valores, em observação |
+| 18 | IND_REDATA | C | 1 | - | [S;N] | Não | tipo, até 1, valores, em observação |
 
 ## 0030: Dados Cadastrais
 
@@ -391,7 +391,7 @@ Página 110. Chave: HASH_ECD. Regras do registro: —.
 | 8 | NIRE | N | 11 | - | - | Não | tipo, até 11, 0 decimais |
 | 9 | NAT_LIVR | C | 80 | - | - | Sim | tipo, até 80, obrigatório |
 | 10 | COD_VER_LC | C | - | - | - | Sim | tipo, até 255, obrigatório |
-| 11 | IND_ESC | C | 1 | - | [G; R; B] | Sim | tipo, até 1, valores, obrigatório |
+| 11 | IND_ESC | C | 1 | - | [G; R; B] | Sim | tipo, até 1, valores, em observação, obrigatório |
 | 12 | IDENT_MF | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório, em observação |
 | 13 | IND_ESC_CONS | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório |
 | 14 | IND_CENTRALIZADA | N | 1 | - | [0;1] | Sim | tipo, até 1, 0 decimais, valores, obrigatório |
@@ -407,7 +407,7 @@ Página 112. Chave: DT_ALT, COD_CTA. Regras do registro: —.
 | 1 | REG | C | 4 | - | [C050] | Sim | tipo, até 4, obrigatório |
 | 2 | DT_ALT | N | 8 | - | - | Sim | tipo, data, até 8, 0 decimais, obrigatório |
 | 3 | COD_NAT | C | 2 | - | - | Sim | tipo, até 2, obrigatório |
-| 4 | IND_CTA | C | 1 | - | [S; A] | Sim | tipo, até 1, valores, obrigatório, em observação |
+| 4 | IND_CTA | C | 1 | - | [S; A] | Sim | tipo, até 1, valores, em observação, obrigatório, em observação |
 | 5 | NÍVEL | N | - | - | - | Sim | tipo, 0 decimais, obrigatório |
 | 6 | COD_CTA | C | - | - | - | Sim | tipo, até 255, obrigatório |
 | 7 | COD_CTA_SUP | C | - | - | - | Não | tipo, até 255 |
@@ -465,11 +465,11 @@ Página 117. Chave: COD_CTA, COD_CCUS. Regras do registro: —.
 | 2 | COD_CTA | C | - | - | - | Sim | tipo, até 255, obrigatório |
 | 3 | COD_CCUS | C | - | - | - | Não | tipo, até 255 |
 | 4 | VL_SLD_INI | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
-| 5 | IND_VL_SLD_INI | C | 1 | - | [D; C] | Sim | tipo, até 1, valores, obrigatório, em observação |
+| 5 | IND_VL_SLD_INI | C | 1 | - | [D; C] | Sim | tipo, até 1, valores, em observação, obrigatório, em observação |
 | 6 | VL_DEB | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
 | 7 | VL_CRED | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
 | 8 | VL_SLD_FIN | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
-| 9 | IND_VL_SLD_FIN | C | 1 | - | [D; C] | Sim | tipo, até 1, valores, obrigatório, em observação |
+| 9 | IND_VL_SLD_FIN | C | 1 | - | [D; C] | Sim | tipo, até 1, valores, em observação, obrigatório, em observação |
 | 10 | LINHA_ECD | N | - | - | - | Sim | tipo, 0 decimais, obrigatório |
 
 ## C157: Transferência de Saldos do Plano de Contas Anterior
@@ -482,7 +482,7 @@ Página 118. Chave: —. Regras do registro: REGRA_C157_OBRIGATORIO, REGRA_CONTA
 | 2 | COD_CTA | C | - | - | - | Sim | tipo, até 255, obrigatório |
 | 3 | COD_CCUS | C | - | - | - | Não | tipo, até 255 |
 | 4 | VL_SLD_FIN | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
-| 5 | IND_VL_SLD_FIN | C | 1 | - | [D; C] | Não | tipo, até 1, valores |
+| 5 | IND_VL_SLD_FIN | C | 1 | - | [D; C] | Não | tipo, até 1, valores, em observação |
 | 6 | LINHA_ECD | N | - | - | - | Sim | tipo, 0 decimais, obrigatório |
 
 ## C350: Identificação da Data dos Saldos das Contas de Resultado Antes do Encerramento
@@ -504,7 +504,7 @@ Página 120. Chave: COD_CTA, COD_CCUS. Regras do registro: —.
 | 2 | COD_CTA | C | - | - | - | Sim | tipo, até 255, obrigatório |
 | 3 | COD_CCUS | C | - | - | - | Não | tipo, até 255 |
 | 4 | VL_CTA | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
-| 5 | IND_VL_CTA | C | 1 | - | [D; C] | Sim | tipo, até 1, valores, obrigatório, em observação |
+| 5 | IND_VL_CTA | C | 1 | - | [D; C] | Sim | tipo, até 1, valores, em observação, obrigatório, em observação |
 | 6 | LINHA_ECD | N | - | - | - | Sim | tipo, 0 decimais, obrigatório |
 
 ## C990: Encerramento do Bloco C
@@ -562,7 +562,7 @@ Página 126. Chave: COD_CTA_B, TRIBUTO. Regras do registro: REGRA_EXISTENCIA_M01
 | 3 | DESC_CTA_LAL | C | - | - | - | Não | tipo, até 255 |
 | 4 | DT_AP_LAL | C | 8 | - | - | Não | tipo, data, até 8 |
 | 5 | DT_LIM_LAL | C | 8 | - | - | Não | tipo, data, até 8 |
-| 6 | TRIBUTO | C | 1 | - | [I; C; A] | Não | tipo, até 1, valores |
+| 6 | TRIBUTO | C | 1 | - | [I; C; A] | Não | tipo, até 1, valores, em observação |
 | 7 | VL_SALDO_FIN | N | 19 | 2 | - | Não | tipo, até 19, 2 decimais |
 | 8 | IND_VL_SALDO_FIN | C | 1 |  | [D; C] | Não | tipo, até 1, valores |
 | 9 | COD_PB_RFB | C | 6 | - | - | Sim | tipo, até 6, obrigatório, em observação |
@@ -588,11 +588,11 @@ Página 129. Chave: COD_CTA, COD_CCUS. Regras do registro: REGRA_CONTA_FORA_ULTI
 | 2 | COD_CTA | C | - | - | - | Sim | tipo, até 255, obrigatório |
 | 3 | COD_CCUS | C | - | - | - | Não | tipo, até 255 |
 | 4 | VL_SLD_INI | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
-| 5 | IND_VL_SLD_INI | C | 1 | - | [D; C] | Sim | tipo, até 1, valores, obrigatório, em observação |
+| 5 | IND_VL_SLD_INI | C | 1 | - | [D; C] | Sim | tipo, até 1, valores, em observação, obrigatório, em observação |
 | 6 | VL_DEB | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
 | 7 | VL_CRED | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
 | 8 | VL_SLD_FIN | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
-| 9 | IND_VL_SLD_FIN | C | 1 | - | [D; C] | Sim | tipo, até 1, valores, obrigatório, em observação |
+| 9 | IND_VL_SLD_FIN | C | 1 | - | [D; C] | Sim | tipo, até 1, valores, em observação, obrigatório, em observação |
 
 ## E355: Detalhes dos Saldos das Contas de Resultado Antes do Encerramento
 
@@ -604,7 +604,7 @@ Página 130. Chave: COD_CTA, COD_CCUS. Regras do registro: REGRA_CONTA_FORA_ULTI
 | 2 | COD_CTA | C | - | - | - | Sim | tipo, até 255, obrigatório |
 | 3 | COD_CCUS | C | - | - | - | Não | tipo, até 255 |
 | 4 | VL_SLD_FIN | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
-| 5 | IND_VL_SLD_FIN | C | 1 | - | [D; C] | Sim | tipo, até 1, valores, obrigatório, em observação |
+| 5 | IND_VL_SLD_FIN | C | 1 | - | [D; C] | Sim | tipo, até 1, valores, em observação, obrigatório, em observação |
 
 ## E990: Encerramento do Bloco E
 
@@ -876,7 +876,7 @@ Página 233. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | TIPO | C | 1 | - | [S; A] | Sim | tipo, até 1, valores, obrigatório, em observação |
 | 5 | NIVEL | N | 3 | - | - | Não | tipo, até 3, 0 decimais |
-| 6 | COD_NAT | C | 2 | - | [04] | Não | tipo, até 4, valores |
+| 6 | COD_NAT | C | 2 | - | [04] | Não | tipo, até 4, valores, em observação |
 | 7 | COD_CTA_SUP | C | - | - | - | Não | tipo, até 255 |
 | 8 | VALOR | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
 | 9 | IND_ VALOR | C | 1 | - | [D; C] | Sim | tipo, até 1, valores, obrigatório |
@@ -1315,7 +1315,7 @@ Página 337. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | TIPO | C | 1 | - | [S; A] | Sim | tipo, até 1, valores, obrigatório, em observação |
 | 5 | NIVEL | N | 3 | - | - | Não | tipo, até 3, 0 decimais |
-| 6 | COD_NAT | C | 2 | - | [04] | Não | tipo, até 4, valores |
+| 6 | COD_NAT | C | 2 | - | [04] | Não | tipo, até 4, valores, em observação |
 | 7 | COD_CTA_SUP | C | - | - | - | Não | tipo, até 255 |
 | 8 | VALOR | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
 | 9 | IND_ VALOR | C | 1 | - | [D; C] | Sim | tipo, até 1, valores, obrigatório |
@@ -1467,7 +1467,7 @@ Página 362. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | TIPO | C | 1 | - | [S; A] | Sim | tipo, até 1, valores, obrigatório, em observação |
 | 5 | NIVEL | N | 3 | - | - | Não | tipo, até 3, 0 decimais |
-| 6 | COD_NAT | C | 2 | - | [04] | Não | tipo, até 4, valores |
+| 6 | COD_NAT | C | 2 | - | [04] | Não | tipo, até 4, valores, em observação |
 | 7 | COD_CTA_SUP | C | - | - | - | Não | tipo, até 255 |
 | 8 | VALOR | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
 | 9 | IND_ VALOR | C | 1 | - | [D; C] | Sim | tipo, até 1, valores, obrigatório |
@@ -1649,7 +1649,7 @@ Página 409. Chave: CODIGO. Regras do registro: REGRA_DUPLICIDADE_DESPREZADA, RE
 | 3 | DESCRICAO | C | - | - | - | Não | tipo, até 512 |
 | 4 | TIPO | C | 1 | - | [S; A] | Sim | tipo, até 1, valores, obrigatório, em observação |
 | 5 | NIVEL | N | 3 | - | - | Não | tipo, até 3, 0 decimais |
-| 6 | COD_NAT | C | 2 | - | [04] | Não | tipo, até 4, valores |
+| 6 | COD_NAT | C | 2 | - | [04] | Não | tipo, até 4, valores, em observação |
 | 7 | COD_CTA_SUP | C | - | - | - | Não | tipo, até 255 |
 | 8 | VALOR | N | 19 | 2 | - | Sim | tipo, até 19, 2 decimais, obrigatório |
 | 9 | IND_ VALOR | C | 1 | - | [D; C] | Sim | tipo, até 1, valores, obrigatório |
@@ -1764,7 +1764,7 @@ Página 432. Chave: REG. Regras do registro: REGRA_W100_W250, REGRA_W100_Y600.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [W100] | Sim | tipo, até 4, obrigatório |
 | 2 | NOME_MULTINACIONAL | C | - | - | - | Sim | tipo, até 255, obrigatório |
-| 3 | IND_CONTROLADORA | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório, em observação |
+| 3 | IND_CONTROLADORA | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, em observação, obrigatório, em observação |
 | 4 | NOME_CONTROLADORA | C | - | - | - | Sim | tipo, até 255, obrigatório, em observação |
 | 5 | JURISDICAO_CONTROLADORA | C | 2 | - | - | Sim | tipo, até 2, obrigatório, em observação |
 | 6 | TIN_CONTROLADORA | C | - | - | - | Sim | tipo, até 255, obrigatório, em observação |
@@ -1772,7 +1772,7 @@ Página 432. Chave: REG. Regras do registro: REGRA_W100_W250, REGRA_W100_Y600.
 | 8 | IND_MODALIDADE | N | 1 | - | [1;2] | Sim | tipo, até 1, 0 decimais, valores, obrigatório, em observação |
 | 9 | NOME_SUBSTITUTA | C | - | - | - | Não | tipo, até 255 |
 | 10 | JURISDICAO_SUBSTITUTA | C | 2 | - | - | Não | tipo, até 2 |
-| 11 | TIN_SUBSTITUTA | N | 14 | - | - | Não | tipo C do programa, até 14 |
+| 11 | TIN_SUBSTITUTA | N | 14 | - | - | Não | tipo C do programa, até 255 |
 | 12 | DT_INI | N | 8 | - | - | Não | tipo, data, até 8, 0 decimais |
 | 13 | DT_FIN | N | 8 | - | - | Não | tipo, data, até 8, 0 decimais |
 | 14 | TIP_MOEDA | C | 3 | - | - | Não | tipo, até 3 |
@@ -1787,23 +1787,23 @@ Página 444. Chave: JURISDICAO. Regras do registro: —.
 | 1 | REG | C | 4 | - | [W200] | Sim | tipo, até 4, obrigatório |
 | 2 | JURISDICAO | C | 2 | - | - | Sim | tipo, até 2, obrigatório |
 | 3 | VL_REC_NAO_REL_EST | N | 19 | 0 | - | Não | tipo NS do programa, até 19, 0 decimais |
-| 4 | VL_REC_NAO_REL | N | 19 | 0 | - | Sim | tipo NS do programa, até 19, 0 decimais, obrigatório |
+| 4 | VL_REC_NAO_REL | N | 19 | 0 | - | Sim | tipo NS do programa, até 19, 0 decimais, obrigatório, em observação |
 | 5 | VL_REC_REL_EST | N | 19 | 0 | - | Não | tipo NS do programa, até 19, 0 decimais |
-| 6 | VL_REC_REL | N | 19 | 0 | - | Sim | tipo NS do programa, até 19, 0 decimais, obrigatório |
+| 6 | VL_REC_REL | N | 19 | 0 | - | Sim | tipo NS do programa, até 19, 0 decimais, obrigatório, em observação |
 | 7 | VL_REC_TOTAL_EST | N | 19 | 0 | - | Não | tipo NS do programa, até 19, 0 decimais |
-| 8 | VL_REC_TOTAL | N | 19 | 0 | - | Sim | tipo NS do programa, até 19, 0 decimais, obrigatório |
+| 8 | VL_REC_TOTAL | N | 19 | 0 | - | Sim | tipo NS do programa, até 19, 0 decimais, obrigatório, em observação |
 | 9 | VL_LUC_PREJ_ANTES_IR_EST | NS | 19 | 0 | - | Não | tipo, até 19, 0 decimais |
-| 10 | VL_LUC_PREJ_ANTES_IR | NS | 19 | 0 | - | Sim | tipo, até 19, 0 decimais, obrigatório |
+| 10 | VL_LUC_PREJ_ANTES_IR | NS | 19 | 0 | - | Sim | tipo, até 19, 0 decimais, obrigatório, em observação |
 | 11 | VL_IR_PAGO_EST | N | 19 | 0 | - | Não | tipo NS do programa, até 19, 0 decimais |
-| 12 | VL_IR_PAGO | N | 19 | 0 | - | Sim | tipo NS do programa, até 19, 0 decimais, obrigatório |
+| 12 | VL_IR_PAGO | N | 19 | 0 | - | Sim | tipo NS do programa, até 19, 0 decimais, obrigatório, em observação |
 | 13 | VL_IR_DEVIDO_EST | N | 19 | 0 | - | Não | tipo NS do programa, até 19, 0 decimais |
-| 14 | VL_IR_DEVIDO | N | 19 | 0 | - | Sim | tipo NS do programa, até 19, 0 decimais, obrigatório |
+| 14 | VL_IR_DEVIDO | N | 19 | 0 | - | Sim | tipo NS do programa, até 19, 0 decimais, obrigatório, em observação |
 | 15 | VL_CAP_SOC_EST | N | 19 | 0 | - | Não | tipo NS do programa, até 19, 0 decimais |
-| 16 | VL_CAP_SOC | N | 19 | 0 | - | Sim | tipo NS do programa, até 19, 0 decimais, obrigatório |
+| 16 | VL_CAP_SOC | N | 19 | 0 | - | Sim | tipo NS do programa, até 19, 0 decimais, obrigatório, em observação |
 | 17 | VL_LUC_ACUM_EST | N | 19 | 0 | - | Não | tipo NS do programa, até 19, 0 decimais |
-| 18 | VL_LUC_ACUM | N | 19 | 0 | - | Sim | tipo NS do programa, até 19, 0 decimais, obrigatório |
+| 18 | VL_LUC_ACUM | N | 19 | 0 | - | Sim | tipo NS do programa, até 19, 0 decimais, obrigatório, em observação |
 | 19 | VL_ATIV_TANG_EST | N | 19 | 0 | - | Não | tipo NS do programa, até 19, 0 decimais |
-| 20 | VL_ATIV_TANG | N | 19 | 0 | - | Sim | tipo NS do programa, até 19, 0 decimais, obrigatório |
+| 20 | VL_ATIV_TANG | N | 19 | 0 | - | Sim | tipo NS do programa, até 19, 0 decimais, obrigatório, em observação |
 | 21 | NUM_EMP | N | 7 | 0 | - | Sim | tipo, até 7, 0 decimais, obrigatório |
 
 ## W250: Declaração País-a-País – Entidades Integrantes
@@ -1824,19 +1824,19 @@ Página 455. Chave: —. Regras do registro: REGRA_DECLARANTE_INTEGRANTE_PAIS_A_
 | 10 | ENDEREÇO | C | 150 | - | - | Sim | tipo, até 150, obrigatório |
 | 11 | NUM_TEL | C | 15 | - | - | Não | tipo, até 15 |
 | 12 | EMAIL | C | 115 | - | - | Não | tipo, até 115 |
-| 13 | ATIV_1 | C | 1 | - | [S; N] | Sim | tipo, até 1, valores, obrigatório |
-| 14 | ATIV_2 | C | 1 | - | [S; N] | Sim | tipo, até 1, valores, obrigatório |
-| 15 | ATIV_3 | C | 1 | - | [S; N] | Sim | tipo, até 1, valores, obrigatório |
-| 16 | ATIV_4 | C | 1 | - | [S; N] | Sim | tipo, até 1, valores, obrigatório |
-| 17 | ATIV_5 | C | 1 | - | [S; N] | Sim | tipo, até 1, valores, obrigatório |
-| 18 | ATIV_6 | C | 1 | - | [S; N] | Sim | tipo, até 1, valores, obrigatório |
-| 19 | ATIV_7 | C | 1 | - | [S; N] | Sim | tipo, até 1, valores, obrigatório |
-| 20 | ATIV_8 | C | 1 | - | [S; N] | Sim | tipo, até 1, valores, obrigatório |
-| 21 | ATIV_9 | C | 1 | - | [S; N] | Sim | tipo, até 1, valores, obrigatório |
-| 22 | ATIV_10 | C | 1 | - | [S; N] | Sim | tipo, até 1, valores, obrigatório |
-| 23 | ATIV_11 | C | 1 | - | [S; N] | Sim | tipo, até 1, valores, obrigatório |
-| 24 | ATIV_12 | C | 1 | - | [S; N] | Sim | tipo, até 1, valores, obrigatório |
-| 25 | ATIV_13 | C | 1 | - | [S; N] | Sim | tipo, até 1, valores, obrigatório |
+| 13 | ATIV_1 | C | 1 | - | [S; N] | Sim | tipo, até 1, valores, em observação, obrigatório |
+| 14 | ATIV_2 | C | 1 | - | [S; N] | Sim | tipo, até 1, valores, em observação, obrigatório |
+| 15 | ATIV_3 | C | 1 | - | [S; N] | Sim | tipo, até 1, valores, em observação, obrigatório |
+| 16 | ATIV_4 | C | 1 | - | [S; N] | Sim | tipo, até 1, valores, em observação, obrigatório |
+| 17 | ATIV_5 | C | 1 | - | [S; N] | Sim | tipo, até 1, valores, em observação, obrigatório |
+| 18 | ATIV_6 | C | 1 | - | [S; N] | Sim | tipo, até 1, valores, em observação, obrigatório |
+| 19 | ATIV_7 | C | 1 | - | [S; N] | Sim | tipo, até 1, valores, em observação, obrigatório |
+| 20 | ATIV_8 | C | 1 | - | [S; N] | Sim | tipo, até 1, valores, em observação, obrigatório |
+| 21 | ATIV_9 | C | 1 | - | [S; N] | Sim | tipo, até 1, valores, em observação, obrigatório |
+| 22 | ATIV_10 | C | 1 | - | [S; N] | Sim | tipo, até 1, valores, em observação, obrigatório |
+| 23 | ATIV_11 | C | 1 | - | [S; N] | Sim | tipo, até 1, valores, em observação, obrigatório |
+| 24 | ATIV_12 | C | 1 | - | [S; N] | Sim | tipo, até 1, valores, em observação, obrigatório |
+| 25 | ATIV_13 | C | 1 | - | [S; N] | Sim | tipo, até 1, valores, em observação, obrigatório |
 | 26 | DESC_OUTROS | C | 255 | - | - | Não | tipo, até 255 |
 | 27 | OBSERVAÇÃO | C | 1000 | - | - | Não | tipo, até 1000 |
 
@@ -1848,16 +1848,16 @@ Página 461. Chave: —. Regras do registro: —.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [W300] | Sim | tipo, até 4, obrigatório |
 | 2 | JURISDICAO | C | - | - | - | Não | tipo, até 255 |
-| 3 | IND_REC_NAO_REL | C | 1 | - | [S; N] | Não | tipo, até 1, valores |
-| 4 | IND_REC_REL | C | 1 | - | [S; N] | Não | tipo, até 1, valores |
-| 5 | IND_REC_TOTAL | C | 1 | - | [S; N] | Não | tipo, até 1, valores |
-| 6 | IND_LUC_PREJ_ANTES_IR | C | 1 | - | [S; N] | Não | tipo, até 1, valores |
-| 7 | IND_IR_PAGO | C | 1 | - | [S; N] | Não | tipo, até 1, valores |
-| 8 | IND_IR_DEVIDO | C | 1 | - | [S; N] | Não | tipo, até 1, valores |
-| 9 | IND_CAP_SOC | C | 1 | - | [S; N] | Não | tipo, até 1, valores |
-| 10 | IND_LUC_ACUM | C | 1 | - | [S; N] | Não | tipo, até 1, valores |
-| 11 | IND_ATIV_TANG | C | 1 | - | [S; N] | Não | tipo, até 1, valores |
-| 12 | IND_NUM_EMP | C | 1 | - | [S; N] | Não | tipo, até 1, valores |
+| 3 | IND_REC_NAO_REL | C | 1 | - | [S; N] | Não | tipo, até 1, valores, em observação |
+| 4 | IND_REC_REL | C | 1 | - | [S; N] | Não | tipo, até 1, valores, em observação |
+| 5 | IND_REC_TOTAL | C | 1 | - | [S; N] | Não | tipo, até 1, valores, em observação |
+| 6 | IND_LUC_PREJ_ANTES_IR | C | 1 | - | [S; N] | Não | tipo, até 1, valores, em observação |
+| 7 | IND_IR_PAGO | C | 1 | - | [S; N] | Não | tipo, até 1, valores, em observação |
+| 8 | IND_IR_DEVIDO | C | 1 | - | [S; N] | Não | tipo, até 1, valores, em observação |
+| 9 | IND_CAP_SOC | C | 1 | - | [S; N] | Não | tipo, até 1, valores, em observação |
+| 10 | IND_LUC_ACUM | C | 1 | - | [S; N] | Não | tipo, até 1, valores, em observação |
+| 11 | IND_ATIV_TANG | C | 1 | - | [S; N] | Não | tipo, até 1, valores, em observação |
+| 12 | IND_NUM_EMP | C | 1 | - | [S; N] | Não | tipo, até 1, valores, em observação |
 | 13 | OBSERVAÇÃO | C | 4000 | - | - | Sim | tipo, até 4000, obrigatório |
 | 14 | FIM_OBSERVACAO | C | 7 | - | [W300FIM] | sim | tipo, até 7, valores, obrigatório |
 
@@ -1918,7 +1918,7 @@ Página 479. Chave: NIF, CNPJ. Regras do registro: —.
 | 2 | RAZ_SOCIAL | C | - | - | - | Sim | tipo, até 255, obrigatório |
 | 3 | NIF | C | - | - | - | Sim | tipo, até 255, obrigatório |
 | 4 | IND_CONTROLE | N | 2 | - | [1; 2; 3; 4; 5; 6; 7; 8; 9; 10;11] | Sim | tipo, até 2, 0 decimais, valores, obrigatório |
-| 5 | PAIS | N | 3 | - | - | Sim | tipo C do programa, até 3, obrigatório |
+| 5 | PAIS | N | 3 | - | - | Sim | tipo C do programa, até 255, obrigatório |
 | 6 | IND_ISEN_PETR | C | - | - | [S; N] | Sim | tipo, até 255, valores, obrigatório |
 | 7 | IND_CONSOL | C | - | - | [S; N] | Sim | tipo, até 255, valores, obrigatório |
 | 8 | MOT_NAO_CONSOL | N | - | - | - | Não | tipo, 0 decimais |
@@ -2041,7 +2041,7 @@ Página 499. Chave: NIF/CNPJ, PAIS. Regras do registro: REGRA_X357_PREENCHER.
 | Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [X357] | Sim | tipo, até 4, obrigatório |
-| 2 | PAIS | N | 3 | - | - | Sim | tipo C do programa, até 3, obrigatório |
+| 2 | PAIS | N | 3 | - | - | Sim | tipo C do programa, até 255, obrigatório |
 | 3 | NIF/CNPJ | C | - | - | - | Sim | tipo, até 255, obrigatório |
 | 4 | RAZAO_SOCIAL | C | - | - | - | Sim | tipo, até 255, obrigatório |
 | 5 | PERCENTUAL | N | 8 | 4 | - | Sim | tipo, até 8, 4 decimais, obrigatório |
@@ -2093,17 +2093,17 @@ Página 506. Chave: —. Regras do registro: —.
 | 7 | TIPO_DEMAIS | C | 3 | - | [101 a 113;199 201; 202; 299 301 a 304; 399 401 a 406; 499 501 a 511; 599] | Não | tipo, até 3 |
 | 8 | DESCR_BSDI | C | - | - | - | Sim | tipo, até 255, obrigatório |
 | 9 | VL_TRANSACAO | N | 019 | 002 | - | Sim | tipo NS do programa, até 19, 2 decimais, obrigatório |
-| 10 | IND_AJUSTES | C | - | - | [S;N] | Sim | tipo, até 255, valores, obrigatório |
+| 10 | IND_AJUSTES | C | - | - | [S;N] | Sim | tipo, até 255, valores, em observação, obrigatório |
 | 11 | VL_ESPONTANEO | N | 019 | 002 | - | Sim | tipo, até 19, 2 decimais, obrigatório, em observação |
 | 12 | VL_COMPENSATORIO | N | 019 | 002 | - | Sim | tipo NS do programa, até 19, 2 decimais, obrigatório, em observação |
 | 13 | TIP_AJ_COMPENSATORIO | C | - | - | [01;02;03;99] | Não | tipo, até 255, valores |
 | 14 | METODO | C | 3 | - | [PIC; PRL; MCL; MLT; MDL; OUT] | Sim | tipo, até 3, valores, obrigatório |
 | 15 | DESCRICAO | C | - | - | - | Não | tipo, até 255 |
-| 16 | COMP_INTENCIONAL | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório, em observação |
-| 17 | SINERGIA | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório, em observação |
-| 18 | IND_TRANS_COMBINADAS | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório, em observação |
-| 19 | IND_DADOS_MULTIP | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório, em observação |
-| 20 | IND_SIMPLIFIC | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, obrigatório, em observação |
+| 16 | COMP_INTENCIONAL | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, em observação, obrigatório, em observação |
+| 17 | SINERGIA | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, em observação, obrigatório, em observação |
+| 18 | IND_TRANS_COMBINADAS | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, em observação, obrigatório, em observação |
+| 19 | IND_DADOS_MULTIP | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, em observação, obrigatório, em observação |
+| 20 | IND_SIMPLIFIC | C | 1 | - | [S;N] | Sim | tipo, até 1, valores, em observação, obrigatório, em observação |
 
 ## X371: Informações Sobre Ajustes Compensatórios
 
@@ -2569,7 +2569,7 @@ Página 611. Chave: HASH. Regras do registro: —.
 | 1 | REG | C | 4 | - | [Y800] | Sim | tipo, até 4, obrigatório |
 | 2 | TIPO_DOC | N | 3 | - | - | Sim | tipo C do programa, até 3, obrigatório |
 | 3 | DESCRICAO | C | - | - | - | Sim | tipo, até 255, obrigatório |
-| 4 | HASH | C | 41 | - | - | Sim | tipo, até 41, obrigatório |
+| 4 | HASH | C | 41 | - | - | Sim | tipo, até 41 |
 | 5 | ARQ_RTF | C | Não há limite | - | - | Sim | tipo, obrigatório |
 | 6 | IND_FIM_RTF | C | 7 | - | [Y800FIM] | Sim | tipo, até 7, valores, obrigatório |
 
@@ -2598,12 +2598,12 @@ Página 614. Chave: —. Regras do registro: —.
 | Nº | Campo | Tipo | Tamanho | Dec. | Valores válidos | Obrigatório | Verificações |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | REG | C | 4 | - | [9100] | Sim | tipo, até 4, obrigatório |
-| 2 | NOM_REGRA | N | - | - | - | S | tipo C do programa, obrigatório |
+| 2 | NOM_REGRA | N | - | - | - | S | tipo C do programa, até 255, obrigatório |
 | 3 | MSG_REGRA | C | - | - | - | N | tipo, até 255 |
 | 4 | REGISTRO | C | 4 | - | - | S | tipo, até 4, obrigatório |
 | 5 | CAMPO | C | - | - | - | N | tipo, até 255 |
-| 6 | CONTEÚDO | NS | 19 | 2 | - | N | tipo C do programa, até 19 |
-| 7 | VALOR_ESPERADO | NS | 19 | 2 | - | N | tipo C do programa, até 19 |
+| 6 | CONTEÚDO | NS | 19 | 2 | - | N | tipo C do programa, até 255 |
+| 7 | VALOR_ESPERADO | NS | 19 | 2 | - | N | tipo C do programa, até 255 |
 | 8 | PER_APUR | C | 3 | - | - | N | tipo, até 3 |
 | 9 | COD_CTA | C | - | - | - | N | tipo, até 255 |
 | 10 | COD_CCUS | C | - | - | - | N | tipo, até 255 |

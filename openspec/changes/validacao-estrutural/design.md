@@ -30,7 +30,7 @@ O catálogo parte da versão em Word do Manual do Leiaute 12, porque a extraçã
 ### D1. Catálogo como dado versionado (REQ-ESTRUT-001, 002; E02)
 
 - **Gerador:** `.github/scripts/catalogo/gerar-catalogo.py`, em Python só com a biblioteca padrão (`zipfile` e `xml.etree`), sem pacote novo. Ele baixa a versão em Word do endereço oficial, confere o SHA-256 registrado em `docs/fontes-oficiais.md` e lê as tabelas de cada registro.
-- **Saída:** `src/Api.Agente/Dominio/Leiautes/ecf-leiaute-12.json`, embutido no assembly, com a versão do catálogo, o hash da fonte e, para cada registro: código, nome, bloco, nível, ocorrência, registro pai e página; para cada campo: número, nome, tipo, tamanho, decimais, valores válidos, obrigatoriedade e página.
+- **Saída:** `src/Api.Agente/Dominio/Leiaute/ecf-leiaute-12.json`, embutido no assembly, com a versão do catálogo e, para cada registro: código, nome, bloco, nível, ocorrência, registro pai e página; para cada campo: número, nome, tipo, tamanho, decimais, valores válidos, obrigatoriedade e página.
 - **Revisão:** o gerador também escreve `docs/catalogo/ecf-leiaute-12.md`, uma tabela legível por registro, que é o que Kaio Macedo revisa no PR (E02). Diferença entre o JSON e o Word é defeito do gerador, corrigido nele, nunca no JSON à mão.
 - **Teste do catálogo:** cada registro e cada campo tem página; cada campo tem tipo conhecido; cada registro filho tem pai existente. Regra sem página é recusada com "fonte ausente" (REQ-ESTRUT-001).
 - **Versão:** `ecf-l12-<versão do catálogo>`, gravada no envelope em `versoes.validadores`, hoje `nenhum` (P19).
@@ -57,10 +57,10 @@ Medido na versão em Word do Leiaute 12: 188 registros em 18 blocos e 1.122 camp
 | `EST-OCOR-002` | Ocorrência máxima por registro pai, onde cabeçalho e Tabela de Registros concordam | p. 43 e 59 | `impeditiva` |
 | `REGRA_OCORRENCIA_UNITARIA_ARQ` | Cada abertura de bloco (x001) aparece uma vez no arquivo | p. 70 e seguintes, tipo `Erro` | `impeditiva` |
 | `EST-ORDEM-001` | Os blocos seguem a ordem da Relação de Blocos e da Tabela de Registros | p. 42 e 58 | `impeditiva` |
-| `EST-TOT-001` | Quantidade de cada x990 igual aos registros do bloco, abertura e encerramento incluídos | p. 38, 41, 42 e 108; decisão E06 | `impeditiva` no Bloco 0 e nos blocos com `IND_DAD` igual a 0, exceto C e E; `observacao` nos demais |
+| `EST-TOT-001` | Quantidade de cada x990 igual aos registros do bloco, abertura e encerramento incluídos | p. 38, 41, 42 e 108; decisão E06 | `impeditiva` no Bloco 0 e nos blocos com `IND_DAD` igual a 0, exceto C, E e S; `observacao` nos demais |
 | `EST-TOT-002` | Cada registro presente aparece no 9900 com a quantidade certa, o próprio 9900 incluído | p. 616 | `observacao` |
 | `EST-TOT-003` | Quantidades do 9990 e do 9999, este com o total de linhas do arquivo | p. 41, 618 e 619 | `observacao` |
-| `REGRA_DUPLICIDADE_DESPREZADA` | Registro repetido com a mesma chave sob o mesmo pai, nos 59 dos 60 registros com a regra que têm chave no cabeçalho | p. 607 e demais, tipo `Aviso` | `observacao` (`baixa`) |
+| `REGRA_DUPLICIDADE_DESPREZADA` | Registro repetido com a mesma chave sob o mesmo pai, nos 58 dos 60 registros com a regra que têm chave, a do programa (decisão E10) | p. 607 e demais, tipo `Aviso` | `observacao` (`baixa`) |
 
 **Classes:** violação de leiaute é `impeditiva`, pelo critério aprovado na mudança 15 (`docs/classificacao-das-regras.md`, linha `impeditiva`, que cita as p. 33 a 36 e 43): o manual diz que erros de estrutura impedem a importação (p. 38). As contagens não têm tipo declarado no manual e, salvo a decisão E06, ficam em `observacao`. Pela E06, tomada depois do gabarito, o x990 errado de um bloco que a importação lê é `impeditiva`, porque o programa da ECF recusa o arquivo. `REGRA_DUPLICIDADE_DESPREZADA` é `Aviso` de comportamento de importação, por isso `baixa`.
 
@@ -72,7 +72,7 @@ Medido na versão em Word do Leiaute 12: 188 registros em 18 blocos e 1.122 camp
 - **Vírgula em `NS`:** a definição da p. 33 não cita a vírgula, mas há campos `NS` com decimais, como `9100.CONTEÚDO`. Vírgula aceita quando o campo tem decimais.
 - **Pai de cada registro:** o registro anterior de nível imediatamente superior na Tabela de Registros (p. 43 a 58), pela ordem sequencial (p. 58).
 - **Erros do próprio manual:** o encerramento do Bloco 9 é `9990`, como no Capítulo 4 (p. 618), e não `9099`, como na Tabela de Registros (p. 58). O Bloco S não tem registro de encerramento no manual, então nenhuma regra o exige.
-- **Y800 em várias linhas:** o conteúdo RTF colado no `ARQ_RTF` pode ter quebras de linha (p. 610), e o registro termina com o campo `IND_FIM_RTF`, igual a `Y800FIM` (p. 611). As linhas entre o início do Y800 e o `Y800FIM` são lidas como um único registro. É decisão de leitura sobre uma lacuna, conferida no gabarito.
+- **Y800 e W300 em várias linhas:** o conteúdo RTF colado no `ARQ_RTF` pode ter quebras de linha (p. 610), e o registro termina com `Y800FIM` (p. 611); o W300 termina com `W300FIM` (p. 462), e o programa o marca como multilinha. As linhas entre o início e o campo de fim são lidas como um único registro, e as contagens são por registro lógico. Sem o campo de fim adiante, a linha fica sozinha. Conferido na tela do programa: ele aceita os dois e recusa o `Y990` que conta as linhas físicas. O fim de linha pode ser CR LF, LF ou CR.
 
 ### D3. Achado (REQ-ESTRUT-003; mudança 15)
 
@@ -101,11 +101,13 @@ Cada item entra em `naoVerificados`, com o motivo, e a etapa 4 fica concluída c
 | Valores que remetem ao campo de outro registro, como `[M010.COD_CTA_B]` | 8 campos (M305, M310, M355, M360, M500 e M510) | É cruzamento entre registros: mudança 09 |
 | Valores que dependem de tabela externa ou dinâmica | 141 campos | Tabelas fora do manual, como a planilha de tabelas dinâmicas (p. 620) e as do programa (E04) |
 | Tamanho exato | — | Divergência entre as p. 34 e 59 |
-| Ocorrência mínima e máxima onde cabeçalho e Tabela de Registros divergem | 47 registros | Divergência do manual (REQ-ESTRUT-011) |
+| Ocorrência mínima e máxima onde cabeçalho e Tabela de Registros divergem | 43 registros | Divergência do manual (REQ-ESTRUT-011) |
 | Ordem entre registros irmãos | — | O manual só diz que a ordem é sequencial (p. 58); a primeira entrega confere a ordem dos blocos e a hierarquia |
 | Fim de linha CR LF | — | O texto que chega pela Sofia pode ter as quebras de linha trocadas; conferir geraria achado falso |
 | Campos do tipo `D` | 2 (X280) | O tipo não está definido na p. 33 |
-| Duplicidade no V100 | 1 | A chave do registro está vazia no cabeçalho (p. 424) |
+| Duplicidade no X485 e no Y750 | 2 | O programa não define chave para eles (decisão E10) |
+| Data em `Q100.DATA`, `Y620.DATA_AQUIS`, `Y630.DAT_ABERT`, `Y630.DAT_ENCER` e `Y730.DATA` | 5 | O manual não os nomeia como os campos `DT_`; o programa os trata como data. Mudança 09 |
+| Ocorrência mínima dos registros fora dos 13 obrigatórios | 33 registros | Depende do perfil da empresa. Mudança 09 |
 
 **Indícios de arquivo gerado (REQ-ESTRUT-012; E08 da mudança 07):** a etapa registra, em `observacoes`, os registros com obrigatoriedade de entrada "N" encontrados (18 no leiaute 12, como C040 e E010; p. 43 a 58), o 9100 e o Y750 (p. 607 e 614) e o conteúdo depois do 9999 (p. 17). Por isso a regra `EST-OCOR-001` só exige os registros obrigatórios na entrada e na saída: um arquivo gerado pelo programa tem registros que a importação não aceita, e o agente não pode saber qual dos dois recebeu. O uso desses indícios no veredito, conforme a decisão 5, fica para a mudança 09.
 
@@ -217,7 +219,15 @@ Antes da revisão de Kaio Macedo (tarefa 1.4), o assistente conferiu o catálogo
 
 - **Fonte:** o que vem do programa fica em `.github/scripts/catalogo/ajustes-do-programa-12.json`, gerado por `extrair-ajustes-do-programa.py` do descritor e das tabelas, com o hash do descritor. `gerar-catalogo.py` aplica os ajustes, e as colunas do manual continuam no catálogo como estão.
 - **Classes:** `EST-CAMPO-001` e `EST-OCOR-001` viram `observacao` só nos 63 campos e nos 3 registros marcados. `EST-TOT-001` não recusa o arquivo no `S990`, porque o programa não confere essa contagem. Os demais casos seguem `impeditiva`.
-- **Testes na tela:** 15 arquivos, em `tests/Api.Agente.Tests/Dados/ecf/programa/`, com o que o programa fez em `resultados.md`. Os testes mudaram a proposta em um ponto: o `S990` errado não recusa o arquivo, ao contrário dos blocos J a Y da E06. A lista completa, com os campos, está em `docs/catalogo/revisao-ecf-leiaute-12.md`.
+- **Testes na tela:** 26 arquivos, em `tests/Api.Agente.Tests/Dados/ecf/programa/`, com o que o programa fez em `resultados.md`. Os testes mudaram a proposta em um ponto: o `S990` errado não recusa o arquivo, ao contrário dos blocos J a Y da E06. A lista completa, com os campos, está em `docs/catalogo/revisao-ecf-leiaute-12.md`.
+
+**Verificação independente (2026-11-08):** antes do arquivamento, um agente que não escreveu o código revisou a mudança, e os casos foram reproduzidos e, quando possível, testados na tela. Corrigido no catálogo `ecf-l12-1.5.0`:
+
+- **Veredito errado:** o limite de achados por regra escondia um impeditivo depois de 20 observações da mesma regra, e o veredito saía `parcial`. Agora o impeditivo entra primeiro, e o limite conta por regra e severidade (D4).
+- **Recusas falsas:** Y800 e W300 em várias linhas; `Y800.HASH` vazio, como manda a p. 611; caracteres acima de 31 no tipo `C`, como 0x96; campos que viraram texto e herdavam o limite numérico do manual, e agora têm o limite do programa ou o máximo de 255; fim de linha só com CR. Os controles na tela confirmaram o que continua recusando: `0000.NOME` com 300 caracteres e `0020.IND_ALIQ_CSLL` igual a 2.
+- **Regras isoladas (D8):** a falha de `EST-CAMPO-002` desligava as outras regras de campo, e a de `EST-HIER-001`, as de ocorrência.
+- **E10 estendida:** as 89 listas que só o manual tem, em que o programa aceitou um valor fora delas, e os 9 campos do W200 calculados pelo sistema (p. 445 a 449) ficam em `observacao`.
+- **Resultado:** os achados de contagem citam o campo, a fonte diz o que veio do programa, o M990 não é mais indício de arquivo gerado, e `naoVerificados` ficou fiel ao código.
 
 ## Dimensionamento
 
@@ -250,7 +260,7 @@ Sem provedor pago. Uma passada linear sobre até 4 MiB de texto. O catálogo do 
 
 | Princípio | Situação | Evidência ou justificativa |
 | --- | --- | --- |
-| P01 | Atende | Cada regra e cada campo do catálogo com a página do manual, gerados da versão em Word com hash conferido (D1). Tabelas externas fora, até terem fonte registrada (D5). |
+| P01 | Atende | Cada regra e cada campo do catálogo com a página do manual, gerados da versão em Word com hash conferido (D1), e os ajustes da E10 com o programa como fonte, com versão, descritor e hash. Tabelas externas fora, até terem fonte registrada (D5). |
 | P02 | Atende | Validadores determinísticos com casos válido e inválido; nada em prompt (D2, D12). |
 | P03 | Atende | Etapa 4 com estado registrado; não executada para leiautes sem catálogo (D7). |
 | P04 | Atende | Violação é erro estrutural; exceção do validador é falha técnica (D3, D8). |
@@ -268,5 +278,5 @@ Sem provedor pago. Uma passada linear sobre até 4 MiB de texto. O catálogo do 
 | P16 | Atende | Regras no domínio; gerador sem pacote novo (D1). |
 | P17 | Não se aplica | Sem provedor pago. |
 | P18 | Não se aplica | Sem memória. |
-| P19 | Atende | Versão do catálogo e hash da fonte no envelope (D1). |
+| P19 | Atende | Versão do catálogo no envelope (D1); os hashes das fontes ficam em `docs/fontes-oficiais.md` e nos ajustes. |
 | P20 | Atende | Esclarecimentos e tarefas ligadas a requisitos antes do código. |

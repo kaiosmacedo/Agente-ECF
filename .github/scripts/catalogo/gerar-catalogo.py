@@ -15,7 +15,7 @@ import zipfile
 import xml.etree.ElementTree as ET
 
 W = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
-VERSAO_DO_CATALOGO = "ecf-l12-1.4.0"
+VERSAO_DO_CATALOGO = "ecf-l12-1.5.0"
 TIPOS = ("C", "N", "NS")
 # Campo preenchido posição a posição, como "no formato XXXX onde X é igual a" (p. 73 e 74): a lista vale para cada caractere.
 POR_POSICAO = re.compile(r"formato\s+(X{2,})\s")
@@ -255,22 +255,32 @@ def aplicar_ajustes(catalogo, ajustes):
             r["obrigatorioDivergente"] = True
         if r["codigo"] in ajustes["chaves"]:
             r["chave"] = ajustes["chaves"][r["codigo"]]
+        if r["codigo"] in ajustes["registrosLidosNaImportacao"]:
+            r["lidoNaImportacao"] = True
     for rotulo, tipo in ajustes["tipos"].items():
         c = campo_do(rotulo)
         c["tipoDoPrograma"] = tipo
+        c["ajustadoPeloPrograma"] = True
         if tipo == "C":
             c["verificacoes"]["decimaisMaximos"] = None
     for rotulo, tamanho in ajustes["tamanhos"].items():
-        campo_do(rotulo)["verificacoes"]["tamanhoMaximo"] = tamanho
+        c = campo_do(rotulo)
+        c["verificacoes"]["tamanhoMaximo"] = tamanho
+        c["ajustadoPeloPrograma"] = True
     for rotulo, valores in ajustes["valores"].items():
         c = campo_do(rotulo)
         c["verificacoes"]["valores"]["lista"] += valores
         c["valoresValidos"] += f" e, no programa da ECF, {', '.join(valores)}"
+        c["ajustadoPeloPrograma"] = True
     for rotulo in ajustes["obrigatoriedade"]:
         campo_do(rotulo)["verificacoes"]["obrigatorioDivergente"] = True
+    for rotulo in ajustes["listasSoNoManual"]:
+        campo_do(rotulo)["verificacoes"]["valoresDivergentes"] = True
+    for rotulo in ajustes["vaziosNaImportacao"]:
+        campo_do(rotulo)["verificacoes"]["obrigatorio"] = False
     catalogo["divergencias"].append(
         f"Decisão E10, com o {nome_do_programa}: {len(ajustes['tipos'])} campos seguem o tipo do programa, {len(ajustes['tamanhos'])} o tamanho e {len(ajustes['valores'])} os valores; "
-        f"{len(ajustes['obrigatoriedade'])} campos obrigatórios só no manual e {len(ajustes['registrosSemExigencia'])} registros ({', '.join(ajustes['registrosSemExigencia'])}) ficam em observação, e {len(ajustes['chaves'])} registros usam a chave do programa. "
+        f"{len(ajustes['obrigatoriedade'])} campos obrigatórios só no manual, {len(ajustes['listasSoNoManual'])} listas que só o manual tem e {len(ajustes['registrosSemExigencia'])} registros ({', '.join(ajustes['registrosSemExigencia'])}) ficam em observação, e {len(ajustes['chaves'])} registros usam a chave do programa. "
         "Lista em docs/catalogo/revisao-ecf-leiaute-12.md."
     )
     return catalogo
@@ -312,7 +322,7 @@ def markdown(catalogo):
             if v["decimaisMaximos"] is not None:
                 aplicadas.append(f"{v['decimaisMaximos']} decimais")
             if v["valores"] and not por_posicao:
-                aplicadas.append("valores")
+                aplicadas.append("valores, em observação" if v.get("valoresDivergentes") else "valores")
             if v["obrigatorio"]:
                 aplicadas.append("obrigatório, em observação" if v.get("obrigatorioDivergente") else "obrigatório")
             celulas = [str(c["numero"]), c["nome"], c["tipo"], c["tamanho"], c["decimal"], c["valoresValidos"].replace("|", "\\|")[:80], c["obrigatorio"][:20], ", ".join(aplicadas)]

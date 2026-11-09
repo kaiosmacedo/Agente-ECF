@@ -44,7 +44,7 @@ A etapa 4 do fluxo (P03) valida estrutura, registros e campos do arquivo segundo
 | Manual da ECF, leiaute 12, versão em Word | Receita Federal do Brasil, portal SPED | Publicado em 23/07/2026; SHA-256 em `docs/fontes-oficiais.md` | Capítulo 2, p. 32 a 38 (arquivo, campos, tipos de inconsistência); Seções 4.1 a 4.3, p. 41 a 59 (blocos, Tabela de Registros, tabela de campos); Capítulo 4, p. 61 a 619 (cada registro); a página de cada regra e campo fica no catálogo (E02) |
 | Programa da ECF, descritor do leiaute e tabelas de valores | Receita Federal do Brasil, portal SPED | Programa 12.2.8, descritor 12003 versão 1; SHA-256 do descritor em `.github/scripts/catalogo/ajustes-do-programa-12.json` | Só para os ajustes da decisão E10, em `docs/catalogo/revisao-ecf-leiaute-12.md` |
 
-Nenhuma regra estrutural é aprovada sem localização no manual.
+Nenhuma regra estrutural é aprovada sem localização no manual ou, nos ajustes da decisão E10, no programa da ECF.
 
 ## Princípios, decisões e dependências
 
