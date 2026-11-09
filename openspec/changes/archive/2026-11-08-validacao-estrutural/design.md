@@ -99,7 +99,7 @@ Cada item entra em `naoVerificados`, com o motivo, e a etapa 4 fica concluída c
 | Dígito verificador: `REGRA_VALIDA_CNPJ`, `REGRA_VALIDA_CPF_CNPJ` e outras | 13 aplicações | O algoritmo não está no manual (P01) |
 | `REGRA_LEIAUTE_VIGENTE` e `REGRA_SEM_LEIAUTE` | 2 | Dependem de tabelas fora do manual (mudança 07, D5) |
 | Valores que remetem ao campo de outro registro, como `[M010.COD_CTA_B]` | 8 campos (M305, M310, M355, M360, M500 e M510) | É cruzamento entre registros: mudança 09 |
-| Valores que dependem de tabela externa ou dinâmica | 141 campos | Tabelas fora do manual, como a planilha de tabelas dinâmicas (p. 620) e as do programa (E04) |
+| Valores que dependem de tabela externa ou dinâmica | 150 campos que citam tabela: 12 na coluna de valores e 143 na descrição, 5 deles nas duas (contagem refeita no Word em 2026-11-08; o plano dizia 141) | Tabelas fora do manual, como a planilha de tabelas dinâmicas (p. 620) e as do programa (E04) |
 | Tamanho exato | — | Divergência entre as p. 34 e 59 |
 | Ocorrência mínima e máxima onde cabeçalho e Tabela de Registros divergem | 43 registros | Divergência do manual (REQ-ESTRUT-011) |
 | Ordem entre registros irmãos | — | O manual só diz que a ordem é sequencial (p. 58); a primeira entrega confere a ordem dos blocos e a hierarquia |

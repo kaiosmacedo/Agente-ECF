@@ -76,7 +76,7 @@ As tabelas de regras trazem número, código, descrição, "como obter" e tipo. 
 ## Divergências registradas
 
 - **Regras com tipo conflitante no manual:** há regras que dizem `Erro` em uma página e `Aviso` em outra, como K155 e K355 (páginas 148 e 153 contra 156, 159, 160 e 162). A precedência está em `docs/classificacao-das-regras.md`, decisão 3, com Kaio Macedo como responsável (P01).
-- **Versão do manual do Leiaute 12:** DP-04 e as propostas de 07 e 08 citam a publicação de 20/05/2026. O endereço ainda tem `20_05_2026` no nome, mas hoje entrega a atualização de 23/07/2026. Vale a mais recente; DP-04 será atualizada ao ser resolvida.
+- **Versão do manual do Leiaute 12:** as propostas de 07 e 08 citam a publicação de 20/05/2026. O endereço ainda tem `20_05_2026` no nome, mas hoje entrega a atualização de 23/07/2026. Vale a mais recente, como registra DP-04 desde a constitution v2.0.4.
 - **Mesmo endereço, conteúdo novo:** o portal troca o arquivo sem mudar o endereço. Por isso o hash identifica a versão, e o endereço sozinho não basta para auditoria.
 - **Data da página e do documento:** a página cita a atualização de 29/09/2025 para o Leiaute 11, e a capa diz "Janeiro/2025". Para o Leiaute 10, a página cita 01/04/2024, e a capa, "Dezembro/2023". Vale o hash registrado acima.
 - **Duas versões das tabelas do Leiaute 12:** a página ainda lista a de 29/01/2026, além da de 24/09/2026. Vale a mais recente.

@@ -2,10 +2,10 @@
 
 | Campo | Valor |
 | --- | --- |
-| Versão | 2.0.3 |
-| Estado | Vigente (ratificada na v1.1.0; emendas v1.2.0, v1.3.0, v2.0.0, v2.0.1, v2.0.2 e v2.0.3 aprovadas) |
+| Versão | 2.0.4 |
+| Estado | Vigente (ratificada na v1.1.0; emendas v1.2.0, v1.3.0, v2.0.0, v2.0.1, v2.0.2, v2.0.3 e v2.0.4 aprovadas) |
 | Criada em | 2026-10-29 |
-| Última alteração | 2026-11-07 |
+| Última alteração | 2026-11-08 |
 | Ratificada em | 2026-10-29, por Kaio Macedo (versão 1.1.0) |
 | Responsáveis pela aprovação | Kaio Macedo, responsável pelo projeto, com aprovação única (DP-19) |
 | Fonte normativa | `openspec/constitution.md` neste repositório |
@@ -826,6 +826,7 @@ Sínteses desta constitution, como a nota do cofre Obsidian, MUST indicar a vers
 | 2.0.1 | 2026-11-05 | PATCH: DP-07, DP-08 e DP-25 movidas para as decisões resolvidas, conforme a mudança `execucao-e-resultado` arquivada. Sem efeito normativo. | Registro de decisões aprovado por Kaio Macedo em 2026-11-05. |
 | 2.0.2 | 2026-11-07 | PATCH: DP-13 e DP-26 movidas para as decisões resolvidas, e DP-07 e DP-08 complementadas com classes e veredito, conforme as mudanças `registro-consumo-ia` e `classificacao-e-veredito` arquivadas. Sem efeito normativo. | Decisões aprovadas por Kaio Macedo em 2026-11-05 e 2026-11-06. |
 | 2.0.3 | 2026-11-07 | PATCH: DP-05 e DP-22 movidas para as decisões resolvidas, conforme a mudança `recepcao-identificacao-leiaute` arquivada. Sem efeito normativo. | Decisões aprovadas por Kaio Macedo em 2026-11-07, com o plano da mudança (PR #23). |
+| 2.0.4 | 2026-11-08 | PATCH: DP-04 atualizada com a publicação vigente do manual, o catálogo do leiaute 12, a relação com o programa da ECF e o que segue pendente; a etapa e o bloqueio passam a valer para as fontes ainda não registradas, conforme a mudança `validacao-estrutural` arquivada. Sem efeito normativo: P01 continua exigindo fonte para cada regra. | Decisão E10 aprovada por Kaio Macedo em 2026-11-08. |
 
 ---
 
@@ -838,7 +839,7 @@ As decisões abaixo não estão definidas. Elas MUST NOT ser tratadas como requi
 | DP-01 | Armazenamento da memória conversacional: MongoDB ou Redis. Referência a avaliar: o projeto AgenteAnaliseDIMP usa MongoDB Atlas. | Plano técnico da primeira mudança de memória. | ADR | Implementação da memória. |
 | DP-02 | Modelos OpenAI de geração e de embeddings, parâmetros de execução e dimensão dos vetores. | Plano técnico das mudanças de análise e de RAG. | ADR (embeddings) e design | Implementação da análise e da ingestão. |
 | DP-03 | Estratégia de segmentação, sobreposição, deduplicação, reprocessamento, busca (vetorial, híbrida, reordenação), topK e limiares. | Especificação e plano técnico da ingestão e recuperação, com avaliação (GD-08). | Especificação e design | Ingestão em uso real. |
-| DP-04 | Fontes oficiais da ECF a ingerir. **Fonte inicial definida em 2026-10-29:** Manual da ECF, leiaute 12, publicado em 20/05/2026, para o ano-calendário 2025 e situações especiais de 2026 (dados conforme o nome do arquivo, a confirmar na ingestão), disponível na [página da ECF no portal SPED](https://www.gov.br/sped/pt-br/assuntos/escrituracoes-digitais/ecf) e no [arquivo do manual](https://www.gov.br/sped/pt-br/assuntos/escrituracoes-digitais/ecf/manuais-e-documentos-tecnicos/manual_ecf_leiaute_12_20_05_2026_ac_2025_sit_esp_2026.pdf/@@display-file/file). **Pendentes:** demais documentos (tabelas, regras de validação, schemas), se a cobertura inicial se limita ao leiaute 12, versões anteriores para comparação entre períodos e relação com as regras do programa validador oficial da ECF. | Esclarecimentos da primeira mudança de validação. | Especificação | Qualquer regra de domínio. |
+| DP-04 | Fontes oficiais da ECF a ingerir. **Fonte inicial definida em 2026-10-29:** Manual da ECF, leiaute 12, para o ano-calendário 2025 e situações especiais de 2026, disponível na [página da ECF no portal SPED](https://www.gov.br/sped/pt-br/assuntos/escrituracoes-digitais/ecf) e no [arquivo do manual](https://www.gov.br/sped/pt-br/assuntos/escrituracoes-digitais/ecf/manuais-e-documentos-tecnicos/manual_ecf_leiaute_12_20_05_2026_ac_2025_sit_esp_2026.pdf/@@display-file/file), cujo endereço ainda traz `20_05_2026`, mas entrega a publicação de 23/07/2026. **Catálogo da mudança 08 (2026-11-08):** `ecf-l12-1.5.0`, gerado da versão em Word e do PDF do manual, com hash conferido (`docs/fontes-oficiais.md`). **Relação com o programa validador oficial, decidida na E10:** onde o manual diverge do programa da ECF (12.2.8, descritor 12003 v1), o agente não recusa o que o programa aceita (REQ-ESTRUT-016). **Pendentes:** demais documentos (tabelas externas e dinâmicas fora do manual, como a planilha da p. 620; regras de validação; schemas), catálogos dos leiautes 7 a 11 e versões anteriores para comparação entre períodos. | Esclarecimentos da mudança que usar cada fonte. | Especificação | Regra de domínio sem fonte registrada. |
 | DP-06 | Escopo das validações de IRPJ e CSLL, dos cruzamentos entre registros e da comparação com períodos anteriores e com outras escriturações, incluindo a origem desses dados. | Esclarecimentos das mudanças de regras de negócio. | Especificação | Regras de negócio correspondentes. |
 | DP-09 | Mecanismo de autenticação e autorização (provedor de identidade, autenticação entre serviços, MCP e A2A) e modelo de organizações. | Antes de encerrar a regra SQ-12, quando o responsável decidir adotar autenticação (diretriz na skill `sofia-cors-rest-a2a`). | ADR | Uso com dados reais e encerramento da SQ-12. |
 | DP-10 | Ferramentas externas necessárias, suas fontes e suas políticas de autorização. | Especificação de cada ferramenta. | Especificação | Etapa 6 do fluxo. |
