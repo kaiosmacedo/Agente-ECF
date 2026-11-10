@@ -1,3 +1,4 @@
+using Api.Agente.Infraestrutura.Integracao;
 using Microsoft.OpenApi;
 
 namespace Api.Agente.Infraestrutura.Hospedagem;
@@ -19,8 +20,39 @@ internal static class DocumentacaoDaApi
         servicos.AddOpenApi(opcoes => opcoes.AddDocumentTransformer((documento, _, _) =>
         {
             documento.Servers = [new OpenApiServer { Url = "/" }];
+            DeclararBearerDaSofia(documento);
             return Task.CompletedTask;
         }));
+
+    /// <summary>
+    /// As rotas do A2A pedem o Bearer da Sofia, e a página do Swagger ganha o botão de autorizar; o documento só declara o
+    /// esquema, nunca o valor da chave (REQ-A2A-010; REQ-DOCAPI-003).
+    /// </summary>
+    private static void DeclararBearerDaSofia(OpenApiDocument documento)
+    {
+        documento.Components ??= new OpenApiComponents();
+        documento.Components.SecuritySchemes ??= new Dictionary<string, IOpenApiSecurityScheme>();
+        documento.Components.SecuritySchemes[AgenteA2A.EsquemaDeSeguranca] = new OpenApiSecurityScheme
+        {
+            Type = SecuritySchemeType.Http,
+            Scheme = "bearer",
+            Description = $"Chave compartilhada da Sofia, configurada no servidor em {AutenticacaoDaSofia.VariavelDaChave}.",
+        };
+
+        foreach (var (caminho, item) in documento.Paths ?? [])
+        {
+            if (!AutenticacaoDaSofia.Protegido(new PathString(caminho)) || item.Operations is null)
+            {
+                continue;
+            }
+
+            foreach (var operacao in item.Operations.Values)
+            {
+                operacao.Security ??= [];
+                operacao.Security.Add(new OpenApiSecurityRequirement { [new OpenApiSecuritySchemeReference(AgenteA2A.EsquemaDeSeguranca, documento)] = [] });
+            }
+        }
+    }
 
     /// <summary>
     /// Os arquivos da interface vêm do próprio serviço, e o validador on-line fica desligado, para que a página não

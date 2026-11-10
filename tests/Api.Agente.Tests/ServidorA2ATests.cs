@@ -10,9 +10,12 @@ namespace Api.Agente.Tests;
 
 public sealed class ServidorA2ATests
 {
+    /// <summary>O cartão v1.0, pedido como um cliente v1.0 pede; sem o cabeçalho, ele sai no formato 0.3.0 (REQ-A2A-009).</summary>
     private static async Task<JsonDocument> LerCartao(FabricaApi fabrica)
     {
-        using var resposta = await fabrica.CreateClient().GetAsync(new Uri("/.well-known/agent-card.json", UriKind.Relative), TestContext.Current.CancellationToken);
+        using var requisicao = new HttpRequestMessage(HttpMethod.Get, new Uri("/.well-known/agent-card.json", UriKind.Relative));
+        requisicao.Headers.Add("A2A-Version", "1.0");
+        using var resposta = await fabrica.CreateClient().SendAsync(requisicao, TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.OK, resposta.StatusCode);
         return JsonDocument.Parse(await resposta.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
     }

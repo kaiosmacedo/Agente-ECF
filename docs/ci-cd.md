@@ -140,6 +140,8 @@ O script baixa os PDFs do Release privado `fontes-ecf-2026-11`, ou dos endereço
 | Api.Agente | `Conhecimento:TimeoutEmSegundos` | `10` | Timeout de cada tentativa. |
 | Api.Agente | `Conhecimento:MaximoDeConsultasPorExecucao` | `10` | Regras consultadas por execução. |
 
+**Chave da Sofia central (`SOFIA_A2A_TOKEN`):** desde 2026-11-10, o cartão e o RPC do A2A exigem a chave Bearer compartilhada do treinamento. Kaio Macedo a cadastra como variável sensível `SOFIA_A2A_TOKEN` no projeto `agente-ecf-agente` (`vercel env add SOFIA_A2A_TOKEN production --sensitive`, com o valor digitado por ele). Sem ela, o A2A responde 503 e o resto do serviço segue no ar. A conferência com a chave é `bash .github/scripts/verificar-sofia-a2a.sh`.
+
 **Chave da OpenAI de produção:** decidida por Kaio Macedo em 2026-11-10: a que o projeto já usa. Ele a cadastra como variável sensível `OpenAI__ApiKey` no projeto `agente-ecf-rag`, e depois a busca é ligada com `Busca__Habilitada=true` e um novo deploy. Até lá, a busca segue desligada, e a etapa 5 registra a limitação "consulta ao manual desativada".
 
 ## Telemetria

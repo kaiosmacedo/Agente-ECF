@@ -2,7 +2,7 @@
 
 Agente de IA que analisa arquivos da Escrituração Contábil Fiscal (ECF), valida sua estrutura e a consistência das informações e gera um relatório de inconsistências com evidências e referências aos manuais oficiais.
 
-**Situação:** fundação concluída e em produção (https://agente-ecf-agente.vercel.app e https://agente-ecf-rag.vercel.app); as próximas mudanças estão em `docs/roteiro.md`. A primeira versão não tem autenticação (regra SQ-12), então os serviços só podem receber dados sintéticos ou anonimizados. A [constitution](openspec/constitution.md) v2.0.4 está vigente; a v1.1.0 foi ratificada por Kaio Macedo em 2026-10-29.
+**Situação:** fundação concluída e em produção (https://agente-ecf-agente.vercel.app e https://agente-ecf-rag.vercel.app); as próximas mudanças estão em `docs/roteiro.md`. A primeira versão não tem autenticação de usuário (regra SQ-12), então os serviços só podem receber dados sintéticos ou anonimizados; o A2A exige a chave Bearer compartilhada da Sofia central do treinamento (`SOFIA_A2A_TOKEN`). A [constitution](openspec/constitution.md) v2.1.0 está vigente; a v1.1.0 foi ratificada por Kaio Macedo em 2026-10-29.
 
 ## Estrutura
 

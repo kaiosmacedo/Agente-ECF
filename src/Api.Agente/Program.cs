@@ -32,6 +32,7 @@ if (args.Contains("--migrar"))
 
 app.UseMiddleware<CorrelacaoMiddleware>();
 app.UsarCorsSofia();
+app.UsarAutenticacaoDaSofia();
 app.MapearSaude();
 app.MapearA2A();
 app.MapearAnalises();

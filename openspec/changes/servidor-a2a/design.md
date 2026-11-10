@@ -86,7 +86,47 @@ Política `SofiaBrowser`, com `Cors:AllowedOrigins` opcional e validada: o agent
 
 `compose.yaml` na raiz: serviço `agente-ecf`, porta `8085:8080`, rede externa `sofia_network` (nome real `sofia-infis_sofia_network`, criada pelo compose da Sofia) e `A2A__UrlPublica` com o nome do serviço. Como a API da Sofia hoje roda fora do compose, o endereço pode ser trocado por `A2A_URL_PUBLICA`.
 
+## Perfil 0.3.0 e chave da Sofia central (2026-11-10)
+
+Kaio Macedo pediu para seguir a skill `sofia-a2a-autenticacao`, do professor: "Agora preciso que você faça o que está na skill anexada para o professor conseguir alcançar nosso agente corretamente através da sofia". A Sofia central (`https://sofia-infis.onrender.com/`) fala A2A 0.3.0 e autentica com uma chave Bearer compartilhada. O código dela foi lido em 2026-11-10 (`AgentDiscoveryService`, `JsonRpc03AgentClient`, `A2A03JsonCodec`), e os testes repetem as checagens dele.
+
+### D10. Pacote de compatibilidade oficial (REQ-A2A-009)
+
+`A2A.V0_3Compat` 1.0.0-preview4, do mesmo SDK oficial e com licença Apache-2.0, troca `MapA2A` por `MapA2AWithV03Compat` e o cartão por `MapAgentCardGetWithV03Compat`. O mesmo endpoint `/a2a` atende `message/send`, `tasks/get` e `tasks/cancel` (0.3.0) e `SendMessage`, `GetTask` e `CancelTask` (v1.0). O `AgenteA2A` não muda.
+
+- **Por que:** mantém a v1.0 de RA-07 e acrescenta o 0.3.0 sem reescrever o servidor. A D1 tinha descartado o pacote por falta de cliente 0.3.0; a Sofia central é esse cliente.
+- **Alternativas descartadas:** voltar ao SDK 0.3.4-preview, que tira a v1.0; escrever o JSON-RPC 0.3.0 à mão, que duplica o que o SDK já faz.
+- **Verificado:** `message/send` sem `configuration`, como a Sofia central envia, devolve a Task já `completed`, porque o `AgenteA2A` emite a tarefa terminada no primeiro evento. O aviso do SDK sobre `blocking` vale para respostas iniciais, não para este caso.
+- **Efeito colateral:** o endpoint de compatibilidade não emite a fonte de trace `A2A.AspNetCore`; o trace da requisição e o da fonte `A2A` continuam (REQ-OBSERV-004).
+
+### D11. Cartão (REQ-A2A-001, 008, 009)
+
+Sem `A2A-Version: 1.0`, o cartão sai no formato 0.3.0 com os campos da v1.0 juntos, como o SDK faz por padrão; a Sofia central lê só os campos dela. Com o cabeçalho, sai a v1.0. O cartão passa a 1.3.0 e declara o esquema `sofiaService`, `http` `bearer`, sem o valor da chave. O pacote serve o cartão também em `/`. As cópias ficam em `docs/contratos/agent-card.json` (v1.0) e `docs/contratos/agent-card-v0.3.json` (0.3.0).
+
+### D12. Chave Bearer (REQ-A2A-003, 010; SQ-03)
+
+O middleware `AutenticacaoDaSofia` vale só para `/`, `/a2a` e o cartão, depois do CORS, para o preflight passar:
+
+- lê `SOFIA_A2A_TOKEN` da configuração; sem valor, responde 503, e o serviço continua no ar para o REST e a saúde, em vez de não subir;
+- aceita só um cabeçalho `Bearer` com a chave exata, sem normalizar a caixa; compara os SHA-256 das duas chaves com `CryptographicOperations.FixedTimeEquals`, que não revela nem o tamanho;
+- responde 401 com `WWW-Authenticate: Bearer` antes de qualquer processamento; 403 não se aplica, porque a chave dá acesso a tudo o que o A2A oferece;
+- loga só o caminho recusado, nunca o cabeçalho.
+
+O documento OpenAPI declara o esquema nas rotas do A2A, e o Swagger ganha o botão de autorizar.
+
+### D13. Cadastro na Sofia central (E12)
+
+A chave não registra o agente. O professor inclui o objeto de `docs/contratos/sofia-a2a.md` em `A2A:Agents`, com `IdAgente` `agente-ecf`, `ExpectedName` `Agente ECF`, `CardUri` e `AllowedDestinations` de produção e os IPs públicos do Vercel. O DNS deu dois endereços em 2026-11-10, que podem mudar; a política de destino da Sofia é com o professor.
+
+### D14. Testes (SQ-09)
+
+`AutenticacaoSofiaTests`: 401 sem chave, com chave errada, com caixa trocada e com outro esquema; 503 sem chave configurada; cartão nas checagens de descoberta da Sofia central; `message/send`, `tasks/get` e `tasks/cancel` como ela chama; erros JSON-RPC sem stack trace; chave fora de logs, respostas e documento OpenAPI; preflight de CORS sem chave. A fábrica de testes envia uma chave sintética por padrão.
+
 ## Risks / Trade-offs
+
+- [Chave compartilhada por todos os agentes do treinamento, sem identificar o cliente] → serve ao treinamento; a identidade por cliente fica para a mudança 02.
+- [IPs do Vercel compartilhados e variáveis] → a política de destino da Sofia central fica com o professor (D13).
+- [`GetTask` sem garantia entre instâncias do Vercel] → a resposta de `message/send` já é final, e a Sofia só consulta quando não é.
 
 - [Outros agentes da turma em v0.3] → a decisão pela v1.0 diverge da skill original. Um cliente v0.3 recebe `-32601`; `A2A.V0_3Compat` é a saída, se for necessário.
 - [Endpoint público sem autenticação] → SQ-12: só dados sintéticos ou anonimizados, sem custo de provedor nesta mudança. Qualquer pessoa com a URL pode chamar, e a decisão é de Kaio Macedo.

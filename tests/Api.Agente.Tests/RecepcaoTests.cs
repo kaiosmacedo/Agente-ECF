@@ -220,7 +220,7 @@ public sealed class RecepcaoTests
             registro.TextoCompleto.Contains("SIGILOSA 456", StringComparison.Ordinal) || registro.TextoCompleto.Contains("balanco-sigiloso", StringComparison.Ordinal));
     }
 
-    [Fact(DisplayName = "REQ-A2A-007 e 008 O cartão 1.2.0 descreve a especialidade ECF, com exemplos e as tags ecf e sped")]
+    [Fact(DisplayName = "REQ-A2A-007 e 008 O cartão 1.3.0 descreve a especialidade ECF, com exemplos e as tags ecf e sped")]
     public async Task CartaoDaEcf()
     {
         using var fabrica = new FabricaApi();
@@ -229,7 +229,7 @@ public sealed class RecepcaoTests
 
         var skill = Assert.Single(cartao.RootElement.GetProperty("skills").EnumerateArray());
         var descricao = skill.GetProperty("description").GetString()!;
-        Assert.Equal("1.2.0", cartao.RootElement.GetProperty("version").GetString());
+        Assert.Equal("1.3.0", cartao.RootElement.GetProperty("version").GetString());
         Assert.Contains("valida a estrutura", descricao, StringComparison.Ordinal);
         Assert.Contains("ECF", descricao, StringComparison.Ordinal);
         Assert.Contains("leiautes 7 a 12", descricao, StringComparison.Ordinal);

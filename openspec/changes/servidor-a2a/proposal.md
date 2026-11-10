@@ -38,6 +38,9 @@ O Agente-ECF é um dos agentes da Sofia INFIS, que o aciona por A2A (constitutio
 | E07 | Qual o limite de tamanho dos documentos e o que o Vercel aceita no corpo da requisição? | Limite configurável, com padrão de 10 MiB até DP-05 ser resolvida na mudança 07. Medido em produção em 2026-11-05: o Vercel aceitou corpo de 4,4 MB e recusou o de 4,6 MB com HTTP 413 (`FUNCTION_PAYLOAD_TOO_LARGE`), antes de chegar ao serviço. | Mudança 07; verificação da tarefa 7.3 | 2026-11-05 | Não para o esqueleto; sim para arquivos reais |
 | E08 | Em que rede a Sofia alcança o agente? A skill usa `agentes-network`; o compose de `SofiaInfis` usa `sofia_network`, e a API dela roda fora dele. | `sofia_network`, cujo nome real no Docker é `sofia-infis_sofia_network`. | Kaio Macedo | 2026-11-05 | Não |
 | E09 | Como a organização chega, se o contrato não tem esse campo? | Valor padrão configurado (mudança 03, E07), até haver necessidade de isolar clientes. | Kaio Macedo | 2026-11-05 | Não |
+| E10 | Que perfil A2A a Sofia central do treinamento usa? | A2A 0.3.0, JSON-RPC 2.0, `message/send`, `tasks/get` e `tasks/cancel`, com o cartão em 0.3.0 (skill `sofia-a2a-autenticacao` e código da Sofia central, inspecionados em 2026-11-10). Kaio Macedo decidiu seguir a skill: o agente atende 0.3.0 e v1.0 no mesmo endpoint. | Kaio Macedo | 2026-11-10 | Não |
+| E11 | Como a Sofia central se autentica no agente? | Chave Bearer compartilhada do treinamento, na variável `SOFIA_A2A_TOKEN`, no cartão e no RPC. Kaio Macedo cadastra o valor no Vercel (SQ-03); o repositório só tem o nome da variável. | Kaio Macedo | 2026-11-10 | Não |
+| E12 | Como o agente entra no catálogo da Sofia central? | O professor inclui o objeto de cadastro de `docs/contratos/sofia-a2a.md` em `A2A:Agents`; a chave não registra o agente sozinha. Pendente com o professor. | Kaio Macedo, com o professor | 2026-11-10 | Sim, para o teste ponta a ponta |
 
 ## Fontes oficiais
 

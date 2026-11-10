@@ -2,10 +2,10 @@
 
 | Campo | Valor |
 | --- | --- |
-| Versão | 2.0.4 |
-| Estado | Vigente (ratificada na v1.1.0; emendas v1.2.0, v1.3.0, v2.0.0, v2.0.1, v2.0.2, v2.0.3 e v2.0.4 aprovadas) |
+| Versão | 2.1.0 |
+| Estado | Vigente (ratificada na v1.1.0; emendas v1.2.0, v1.3.0, v2.0.0, v2.0.1, v2.0.2, v2.0.3, v2.0.4 e v2.1.0 aprovadas) |
 | Criada em | 2026-10-29 |
-| Última alteração | 2026-11-08 |
+| Última alteração | 2026-11-10 |
 | Ratificada em | 2026-10-29, por Kaio Macedo (versão 1.1.0) |
 | Responsáveis pela aprovação | Kaio Macedo, responsável pelo projeto, com aprovação única (DP-19) |
 | Fonte normativa | `openspec/constitution.md` neste repositório |
@@ -491,7 +491,7 @@ Os serviços MAY compartilhar infraestrutura física de banco somente com bancos
 
 **RA-06 — Integração com LLM.** A integração MUST ser feita com a OpenAI, por adaptadores na camada de infraestrutura, usando Semantic Kernel para Function Calling. Modelo, parâmetros de execução, endpoints e chaves MUST vir de configuração externa e MUST NOT ser fixados no código. Tipos do Semantic Kernel e do SDK do provedor MUST NOT aparecer no domínio. A adoção de outro provedor exige ADR e emenda MINOR.
 
-**RA-07 — A2A.** A Sofia INFIS é cliente e orquestradora; a Api.Agente é servidor A2A. O servidor MUST seguir o protocolo A2A v1.0 com JSON-RPC 2.0 (`SendMessage`), padronizado pelo responsável em 2026-11-05, publicar o cartão em `/.well-known/agent-card.json` e trocar o contrato SOFIA v1.0 da skill `sofia-a2a-contrato`: `SolicitacaoAnaliseSofia` em `TextPart` da mensagem e `ResultadoAnaliseSofia` em `TextPart` de Artifact. Campos de negócio MUST NOT virar atributos do protocolo, e a credencial MUST ficar no transporte, fora do contrato. O servidor MUST reutilizar o mesmo fluxo de aplicação (P03) e as mesmas regras de acesso da API REST. `ResultadoAnaliseSofia` MUST ser uma projeção do resultado calculado pelo sistema (GD-02), e status e severidade internos MUST ser mapeáveis aos valores do contrato; campos adicionais MAY entrar somente como opcionais. O servidor MUST NOT expor capacidade que não esteja especificada, e o agente MUST NOT chamar outros agentes sem permissão explícita. O escopo e a priorização do A2A dependem de DP-16.
+**RA-07 — A2A.** A Sofia INFIS é cliente e orquestradora; a Api.Agente é servidor A2A. O servidor MUST seguir o protocolo A2A v1.0 com JSON-RPC 2.0 (`SendMessage`), padronizado pelo responsável em 2026-11-05, e MUST atender no mesmo endpoint os clientes A2A 0.3.0 (`message/send`, `tasks/get` e `tasks/cancel`), como a Sofia central do treinamento, com o cartão no formato 0.3.0 para quem não pede a v1.0 (decisão do responsável em 2026-11-10, skill `sofia-a2a-autenticacao`). O servidor MUST publicar o cartão em `/.well-known/agent-card.json` e trocar o contrato SOFIA v1.0 da skill `sofia-a2a-contrato`: `SolicitacaoAnaliseSofia` em `TextPart` da mensagem e `ResultadoAnaliseSofia` em `TextPart` de Artifact. Campos de negócio MUST NOT virar atributos do protocolo, e a credencial MUST ficar no transporte, fora do contrato. O servidor MUST reutilizar o mesmo fluxo de aplicação (P03) e as mesmas regras de acesso da API REST. `ResultadoAnaliseSofia` MUST ser uma projeção do resultado calculado pelo sistema (GD-02), e status e severidade internos MUST ser mapeáveis aos valores do contrato; campos adicionais MAY entrar somente como opcionais. O servidor MUST NOT expor capacidade que não esteja especificada, e o agente MUST NOT chamar outros agentes sem permissão explícita. O escopo e a priorização do A2A dependem de DP-16.
 
 **RA-08 — Camadas.** As dependências MUST seguir a direção `Endpoints → Aplicação → Domínio`. A Infraestrutura implementa as abstrações definidas pela Aplicação ou pelo Domínio. A organização física, em projetos ou em pastas, é definida no plano técnico da fundação (DP-17), e testes de arquitetura MUST verificá-la.
 
@@ -629,9 +629,10 @@ O CI MUST NOT depender de chamadas reais à OpenAI. Os testes automatizados MUST
 
 **SQ-11 — Dependências.** Os pacotes MUST vir de fontes confiáveis, com versões fixadas, e passar por verificação de vulnerabilidades no CI. Cada nova dependência MUST ser justificada (P16).
 
-**SQ-12 — Primeira versão sem autenticação.** Regra transitória, por decisão do responsável em 2026-11-05: a integração com a Sofia INFIS não usa token. A skill `sofia-cors-rest-a2a` orienta a autenticação de serviço no transporte (por exemplo, JWT/OAuth2 com audience e scopes) para quando ela for adotada, o que entra na mudança 02 (`autenticacao-autorizacao`). Até essa mudança ser concluída:
+**SQ-12 — Primeira versão sem autenticação.** Regra transitória, por decisão do responsável em 2026-11-05: não há autenticação de usuário. Desde 2026-11-10, também por decisão dele, o A2A exige a chave Bearer compartilhada da Sofia central do treinamento (abaixo). A skill `sofia-cors-rest-a2a` orienta a autenticação de serviço no transporte (por exemplo, JWT/OAuth2 com audience e scopes) para quando ela for adotada, o que entra na mudança 02 (`autenticacao-autorizacao`). Até essa mudança ser concluída:
 
 - Endpoints REST, MCP e A2A MAY ser implementados e publicados sem autenticação e sem autorização por usuário, organização ou perfil. SQ-01, SQ-02 e as exigências correspondentes de RA-03, RA-04 e DoD-14 ficam suspensas.
+- Exceção: o cartão e o RPC do A2A MUST exigir a chave Bearer compartilhada da Sofia central do treinamento, lida da variável `SOFIA_A2A_TOKEN`, com comparação em tempo constante, HTTP 401 sem chave válida e a integração indisponível, nunca aberta, sem a chave configurada (skill `sofia-a2a-autenticacao`). A chave autentica o serviço, não identifica usuário nem organização, e MUST NOT aparecer em código, cartão, logs ou respostas (SQ-03).
 - Usuário e organização MUST vir de um único ponto da camada de aplicação. Eles MAY ser declarados pelo cliente ou assumir valores padrão documentados, e MUST NOT ser tratados como identidade verificada.
 - Os serviços MUST NOT receber arquivos reais de clientes nem outros dados reais: somente dados sintéticos ou anonimizados (SQ-10).
 - Um endpoint publicado que acione provedor pago (LLM ou embeddings) MUST ter limite de uso configurável, ou ficar desativado por configuração.
@@ -827,6 +828,7 @@ Sínteses desta constitution, como a nota do cofre Obsidian, MUST indicar a vers
 | 2.0.2 | 2026-11-07 | PATCH: DP-13 e DP-26 movidas para as decisões resolvidas, e DP-07 e DP-08 complementadas com classes e veredito, conforme as mudanças `registro-consumo-ia` e `classificacao-e-veredito` arquivadas. Sem efeito normativo. | Decisões aprovadas por Kaio Macedo em 2026-11-05 e 2026-11-06. |
 | 2.0.3 | 2026-11-07 | PATCH: DP-05 e DP-22 movidas para as decisões resolvidas, conforme a mudança `recepcao-identificacao-leiaute` arquivada. Sem efeito normativo. | Decisões aprovadas por Kaio Macedo em 2026-11-07, com o plano da mudança (PR #23). |
 | 2.0.4 | 2026-11-08 | PATCH: DP-04 atualizada com a publicação vigente do manual, o catálogo do leiaute 12, a relação com o programa da ECF e o que segue pendente; a etapa e o bloqueio passam a valer para as fontes ainda não registradas, conforme a mudança `validacao-estrutural` arquivada. Sem efeito normativo: P01 continua exigindo fonte para cada regra. | Decisão E10 aprovada por Kaio Macedo em 2026-11-08. |
+| 2.1.0 | 2026-11-10 | MINOR: RA-07 passa a exigir também o A2A 0.3.0 da Sofia central do treinamento, no mesmo endpoint da v1.0; SQ-12 ganha a exceção da chave Bearer compartilhada no cartão e no RPC do A2A. REST e MCP seguem sem autenticação. Especificação da mudança 13 adequada no mesmo PR; nenhuma outra spec vigente afetada. | Decidido por Kaio Macedo em 2026-11-10: "Agora preciso que você faça o que está na skill anexada para o professor conseguir alcançar nosso agente corretamente através da sofia". |
 
 ---
 

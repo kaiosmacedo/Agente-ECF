@@ -70,7 +70,7 @@ public sealed class TelemetriaTests
         Assert.Empty(await captura.TracesAposEspera(idDoTrace));
     }
 
-    [Fact(DisplayName = "REQ-OBSERV-004 SendMessage gera os traces do SDK A2A")]
+    [Fact(DisplayName = "REQ-OBSERV-004 SendMessage gera o trace da requisição e o do SDK A2A")]
     public async Task TracesDoSdkA2A()
     {
         var (fabrica, captura) = Iniciar();
@@ -80,11 +80,12 @@ public sealed class TelemetriaTests
         using var resposta = await EnviarMensagem(fabrica, ContratoDeTeste.Solicitacao(), traceparent);
 
         Assert.Equal(HttpStatusCode.OK, resposta.StatusCode);
+        // O endpoint de compatibilidade com a v0.3 não emite a fonte A2A.AspNetCore; a requisição e o SDK continuam no trace.
         var traces = await captura.EsperarTraces(idDoTrace, encontrados =>
-            encontrados.Any(atividade => atividade.Source.Name == "A2A") && encontrados.Any(atividade => atividade.Source.Name == "A2A.AspNetCore"));
+            encontrados.Any(atividade => atividade.Source.Name == "A2A") && encontrados.Any(atividade => atividade.Source.Name == "Microsoft.AspNetCore"));
         var fontes = traces.Select(atividade => atividade.Source.Name).ToList();
         Assert.Contains("A2A", fontes);
-        Assert.Contains("A2A.AspNetCore", fontes);
+        Assert.Contains("Microsoft.AspNetCore", fontes);
     }
 
     [Fact(DisplayName = "REQ-OBSERV-005 Métrica registra a duração por rota e status")]
@@ -143,7 +144,7 @@ public sealed class TelemetriaTests
         Assert.Equal(HttpStatusCode.OK, resposta.StatusCode);
         var traces = await captura.EsperarTraces(idDoTrace);
         Assert.NotEmpty(traces);
-        foreach (var sensivel in new[] { "segredo-123", "conteudo-sigiloso-123", "Maria Oliveira", "token-secreto-123" })
+        foreach (var sensivel in new[] { "segredo-123", "conteudo-sigiloso-123", "Maria Oliveira", FabricaApi.ChaveDeTeste })
         {
             Assert.DoesNotContain(traces.SelectMany(atividade => atividade.Tags), tag => tag.Value?.Contains(sensivel, StringComparison.Ordinal) == true);
             Assert.DoesNotContain(traces, atividade => atividade.DisplayName.Contains(sensivel, StringComparison.Ordinal));
@@ -161,7 +162,7 @@ public sealed class TelemetriaTests
         };
         requisicao.Headers.Add("A2A-Version", "1.0");
         requisicao.Headers.Add("traceparent", traceparent);
-        requisicao.Headers.TryAddWithoutValidation("Authorization", "Bearer token-secreto-123");
+        requisicao.Headers.TryAddWithoutValidation("Authorization", $"Bearer {FabricaApi.ChaveDeTeste}");
         return await fabrica.CreateClient().SendAsync(requisicao, TestContext.Current.CancellationToken);
     }
 
