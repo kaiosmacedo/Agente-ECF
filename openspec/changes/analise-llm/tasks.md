@@ -1,6 +1,6 @@
 # Tasks: Análise com LLM
 
-> Plano escrito em 2026-11-10, à espera da aprovação de Kaio Macedo (P20). Skills: `semantic-kernel-tools` (grupos 2 e 3), `controle-custos-llm` (grupo 4), `testes-agentes-ia` (todos), `github-versionamento` (grupo 7).
+> Plano escrito em 2026-11-10, à espera da aprovação de Kaio Macedo (P20). Fica no repositório para retomar depois da autenticação com a Sofia; nenhuma tarefa começa antes da aprovação. Skills: `semantic-kernel-tools` (grupos 2 e 3), `controle-custos-llm` (grupo 4), `testes-agentes-ia` (todos), `github-versionamento` (grupo 7).
 
 ## 1. Contrato e prompt
 

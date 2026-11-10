@@ -1,6 +1,6 @@
 # Design: Análise com LLM
 
-> Plano técnico da mudança 10, escrito em 2026-11-10, depois das decisões de Kaio Macedo sobre E01, E02 e E06. E03 a E05 seguem as propostas registradas em `proposal.md` e são aprovadas com este plano.
+> **À espera da aprovação de Kaio Macedo (P20)**, para retomar depois da autenticação com a Sofia. Plano técnico da mudança 10, escrito em 2026-11-10, depois das decisões de Kaio Macedo sobre E01, E02 e E06. E03 a E05 seguem as propostas registradas em `proposal.md` e são aprovadas com este plano.
 
 ## Context
 
