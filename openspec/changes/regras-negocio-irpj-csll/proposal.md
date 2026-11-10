@@ -1,6 +1,6 @@
 # Proposal: Regras de negócio de IRPJ, CSLL e cruzamentos
 
-> **Estado:** especificação aprovada por Kaio Macedo em 2026-10-29 (roteiro, mudança 09; PR #4). Próxima etapa: esclarecimentos. Plano técnico e tarefas só depois dos esclarecimentos bloqueantes.
+> **Estado:** especificação aprovada por Kaio Macedo em 2026-10-29 (roteiro, mudança 09; PR #4). Próxima etapa: esclarecimentos. Plano técnico e tarefas só depois dos esclarecimentos bloqueantes. Em 2026-11-10, as perguntas que decidem E01 e E02 foram levadas ao superior: `docs/perguntas-negocio-ecf.md`, perguntas 2, 5, 7 e 9.
 
 ## Why
 
