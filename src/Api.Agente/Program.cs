@@ -19,7 +19,7 @@ builder.Services.AdicionarRecepcao(builder.Configuration);
 builder.Services.AdicionarServidorA2A(builder.Configuration);
 builder.Services.AdicionarPersistencia(builder.Configuration);
 builder.Services.AdicionarConsultaAoManual(builder.Configuration);
-builder.Services.AddOpenApi();
+builder.Services.AdicionarDocumentacao();
 
 var app = builder.Build();
 
@@ -35,7 +35,7 @@ app.UsarCorsSofia();
 app.MapearSaude();
 app.MapearA2A();
 app.MapearAnalises();
-app.MapOpenApi();
+app.UsarDocumentacao();
 
 await app.RunAsync();
 
