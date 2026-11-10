@@ -34,7 +34,7 @@
 
 ## 6. Produção
 
-- [ ] 6.1 **(em aberto, por decisão de Kaio Macedo em 2026-11-07)** Kaio Macedo cadastra no Vercel a chave da OpenAI da Api.RAG (E04; SQ-03). Até lá, a busca fica desativada por configuração.
+- [ ] 6.1 **(chave decidida em 2026-11-10: a que o projeto já usa)** Kaio Macedo cadastra no Vercel a chave da OpenAI da Api.RAG (E04; SQ-03). Até lá, a busca fica desativada por configuração.
 - [ ] 6.2 **(feito em parte em 2026-11-07: `tools/list` e `busca_desativada` em produção, com resposta `text/event-stream`; falta a consulta com trechos, que depende da chave)** Depois do merge, verificar em produção, só com dados sintéticos: `tools/list` e `tools/call` em `/mcp` vindos de instâncias diferentes, a busca desativada sem a chave e, com a chave, uma consulta com trechos do leiaute 12 (D1; ADR 0005). Se o transporte falhar no Vercel, seguir a alternativa do ADR.
 - [ ] 6.3 Verificar em produção uma análise que passa pela etapa 5, quando a mudança 08 ligar a etapa 5 ao fluxo (a etapa 5 só fundamenta achados, e eles vêm da validação estrutural).
 
