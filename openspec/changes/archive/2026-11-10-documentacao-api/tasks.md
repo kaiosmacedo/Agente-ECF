@@ -23,5 +23,5 @@ Skill: testes-agentes-ia
 Skill: github-versionamento
 
 - [x] 3.1 Registrar a capacidade `plataforma/documentacao-api`, o prefixo `REQ-DOCAPI` e a mudança 16 em `docs/roteiro.md`, e o endereço da página no `README.md`.
-- [ ] 3.2 Depois do merge, conferir em produção que `https://agente-ecf-agente.vercel.app/swagger` abre a página e que um teste de `GET /analises/{id}` com id inexistente chega ao serviço por https.
-- [ ] 3.3 Atualizar o cofre Obsidian, executar `/opsx:verify`, conferir a Definition of Done (seção 7 da constitution) e arquivar a mudança.
+- [x] 3.2 Depois do merge, conferir em produção que `https://agente-ecf-agente.vercel.app/swagger` abre a página e que um teste de `GET /analises/{id}` com id inexistente chega ao serviço por https. Feito em 2026-11-10, depois do PR #41: `/swagger` redireciona para `swagger/index.html`, que abre com as quatro rotas e o servidor `/`; os arquivos da interface respondem 200; `GET /analises/{id}` com id inexistente responde 404 por https.
+- [x] 3.3 Atualizar o cofre Obsidian, executar `/opsx:verify`, conferir a Definition of Done (seção 7 da constitution) e arquivar a mudança. Verificação em 2026-11-10: 9 de 9 tarefas; 4 requisitos e 5 cenários, cada um com teste em `DocumentacaoApiTests`; sem problema crítico.

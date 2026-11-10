@@ -45,7 +45,7 @@ Cada mudança segue o fluxo da constitution (6.1): especificação → esclareci
 | 13 | `servidor-a2a` | `integracao/servidor-a2a`, `integracao/contrato-sofia`, `integracao/cors` | 01 | 09, 16 | `sofia-a2a-contrato`, `sofia-a2a-implementacao`, `sofia-cors-rest-a2a`, `vercel-dotnet-pgvector-atlas`, `testes-agentes-ia` | Esqueleto em produção |
 | 14 | `telemetria-servicos` | `plataforma/observabilidade` | 01 | — | `testes-agentes-ia` | Arquivada; em produção desde 2026-11-05 (PR #13) |
 | 15 | `classificacao-e-veredito` | `agente/contrato-resultado` | 03 | 07, 08 | `sofia-a2a-contrato`, `testes-agentes-ia` | Arquivada; em produção desde 2026-11-06 (PR #17 e PR #21) |
-| 16 | `documentacao-api` | `plataforma/documentacao-api` | 01, 03 | — | `testes-agentes-ia` | Em implementação: página do Swagger em `/swagger` na Api.Agente, pedida por Kaio Macedo em 2026-11-10 |
+| 16 | `documentacao-api` | `plataforma/documentacao-api` | 01, 03 | — | `testes-agentes-ia` | Concluída: em produção e arquivada em 2026-11-10 (PR #41). Página do Swagger em https://agente-ecf-agente.vercel.app/swagger |
 
 `github-versionamento` vale para todas as mudanças. As mudanças 05 a 09 podem avançar em paralelo com 04 quando suas dependências estiverem mescladas.
 
