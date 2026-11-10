@@ -1,6 +1,6 @@
 # Proposal: Ferramentas do agente
 
-> **Estado:** especificação aprovada por Kaio Macedo em 2026-10-29 (roteiro, mudança 11; PR #4). Esclarecimentos propostos em 2026-11-10, à espera da aprovação de Kaio Macedo. Plano técnico e tarefas só depois dos esclarecimentos bloqueantes.
+> **Estado:** especificação aprovada por Kaio Macedo em 2026-10-29 (roteiro, mudança 11; PR #4). Esclarecimentos decididos por Kaio Macedo em 2026-11-10. Plano técnico e tarefas só depois dos esclarecimentos bloqueantes.
 
 ## Why
 
@@ -26,9 +26,9 @@ A etapa 6 do fluxo (P03) executa ferramentas externas quando necessário e autor
 
 | ID | Pergunta | Resposta | Fonte ou responsável | Data | Bloqueante |
 | --- | --- | --- | --- | --- | --- |
-| E01 | Quais ferramentas externas o agente precisa (por exemplo, consultas a serviços públicos)? Pode ser nenhuma nesta fase (DP-10). | **Proposta:** nenhuma ferramenta externa nesta fase (DP-10). Consultas a serviços públicos, como o cadastro de CNPJ, não têm fonte registrada nem custo aprovado, e o agente só valida (constitution, 1.3). | Assistente; aprovação de Kaio Macedo | 2026-11-10 | Sim |
-| E02 | O modelo deve poder consultar partes do arquivo analisado por ferramenta (por exemplo, "obter registros de um tipo")? | **Proposta:** sim, com uma ferramenta interna, só de leitura e sem custo: `consultar_linhas`, que devolve até 20 linhas do arquivo da própria execução, por número de linha ou código de registro. Ela evita mandar o arquivo inteiro ao modelo (REQ-ANALISE-007) e passa pelo catálogo, pela autorização e pelo registro de P14. | Assistente; aprovação de Kaio Macedo | 2026-11-10 | Não |
-| E03 | Limite de chamadas de ferramenta por execução e timeout (DP-14). | **Proposta:** até 5 chamadas por execução e 2 segundos de timeout, sem retentativa, porque a leitura é local. Valores iniciais (DP-14). | Assistente; aprovação de Kaio Macedo | 2026-11-10 | Não |
+| E01 | Quais ferramentas externas o agente precisa (por exemplo, consultas a serviços públicos)? Pode ser nenhuma nesta fase (DP-10). | **Decidido:** nenhuma ferramenta externa nesta fase (DP-10). Consultas a serviços públicos, como o cadastro de CNPJ, não têm fonte registrada nem custo aprovado, e o agente só valida (constitution, 1.3). Kaio Macedo: "Pode usar". | Kaio Macedo | 2026-11-10 | Sim |
+| E02 | O modelo deve poder consultar partes do arquivo analisado por ferramenta (por exemplo, "obter registros de um tipo")? | **Decidido:** sim, com uma ferramenta interna, só de leitura e sem custo: `consultar_linhas`, que devolve até 20 linhas do arquivo da própria execução, por número de linha ou código de registro, e passa pelo catálogo, pela autorização e pelo registro de P14. Kaio Macedo: "Pode usar". | Kaio Macedo | 2026-11-10 | Não |
+| E03 | Limite de chamadas de ferramenta por execução e timeout (DP-14). | **Decidido:** até 5 chamadas por execução e 2 segundos de timeout, sem retentativa, porque a leitura é local. Valores iniciais (DP-14). Kaio Macedo: "Pode usar". | Kaio Macedo | 2026-11-10 | Não |
 
 ## Fontes oficiais
 

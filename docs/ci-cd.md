@@ -140,7 +140,7 @@ O script baixa os PDFs do Release privado `fontes-ecf-2026-11`, ou dos endereço
 | Api.Agente | `Conhecimento:TimeoutEmSegundos` | `10` | Timeout de cada tentativa. |
 | Api.Agente | `Conhecimento:MaximoDeConsultasPorExecucao` | `10` | Regras consultadas por execução. |
 
-**Em aberto:** a chave da OpenAI de produção para a busca, por decisão de Kaio Macedo em 2026-11-07. Até ele decidir, a busca fica desligada, e a etapa 5 registra a limitação "consulta ao manual desativada". Para ligar: ele cadastra `OpenAI__ApiKey` no projeto `agente-ecf-rag` (tipo sensível), muda `Busca__Habilitada` para `true` e o assistente redeploya. A recomendação é uma chave própria do Agente-ECF, com limite de gasto no painel da OpenAI.
+**Chave da OpenAI de produção:** decidida por Kaio Macedo em 2026-11-10: a que o projeto já usa. Ele a cadastra como variável sensível `OpenAI__ApiKey` no projeto `agente-ecf-rag`, e depois a busca é ligada com `Busca__Habilitada=true` e um novo deploy. Até lá, a busca segue desligada, e a etapa 5 registra a limitação "consulta ao manual desativada".
 
 ## Telemetria
 

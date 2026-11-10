@@ -1,6 +1,6 @@
 # Proposal: Análise com LLM
 
-> **Estado:** especificação aprovada por Kaio Macedo em 2026-10-29 (roteiro, mudança 10; PR #4). Esclarecimentos propostos em 2026-11-10, à espera da aprovação de Kaio Macedo. Plano técnico e tarefas só depois dos esclarecimentos bloqueantes.
+> **Estado:** especificação aprovada por Kaio Macedo em 2026-10-29 (roteiro, mudança 10; PR #4). Kaio Macedo decidiu E01, E02 e E06 em 2026-11-10; E03 a E05 seguem como propostas, a aprovar com o plano. Plano técnico e tarefas só depois dos esclarecimentos bloqueantes.
 
 ## Why
 
@@ -27,12 +27,12 @@ As etapas 7 e 8 do fluxo (P03) produzem a análise com o LLM e validam a saída 
 
 | ID | Pergunta | Resposta | Fonte ou responsável | Data | Bloqueante |
 | --- | --- | --- | --- | --- | --- |
-| E01 | Qual modelo da OpenAI usar, com suporte a saída estruturada, e quais parâmetros (DP-02)? | **Proposta:** `gpt-4.1-mini`, o modelo de geração que a Sofia já usa, com saída estruturada estrita (`json_schema`) e temperatura 0, tudo por configuração (`Llm:Modelo`). Trocar de modelo é mudar a configuração, depois de nova avaliação. Sem a chave de produção, a etapa 7 fica desligada em produção e registra a limitação, como a busca da 06. | Assistente; aprovação de Kaio Macedo | 2026-11-10 | Sim |
-| E02 | Qual a política de dados com a OpenAI: retenção, região, uso para treinamento, anonimização (DP-12)? | **Proposta:** segue em aberto, com a pergunta 19 do levantamento para o superior. Até lá, só dados sintéticos (SQ-12), e o envio já é mínimo: achados, trechos do manual e as linhas citadas, nunca o arquivo inteiro (REQ-ANALISE-007). | Kaio Macedo, com o superior | 2026-11-10 | Sim, para dados reais |
+| E01 | Qual modelo da OpenAI usar, com suporte a saída estruturada, e quais parâmetros (DP-02)? | **Decidido:** `gpt-4.1-mini`, o modelo de geração que a Sofia já usa, com saída estruturada estrita (`json_schema`) e temperatura 0, tudo por configuração (`Llm:Modelo`). Trocar de modelo é mudar a configuração, depois de nova avaliação. Kaio Macedo: "podemos usar o modelo comentado sim". | Kaio Macedo | 2026-11-10 | Sim |
+| E02 | Qual a política de dados com a OpenAI: retenção, região, uso para treinamento, anonimização (DP-12)? | **Decidido:** os dados podem ir para a OpenAI ("Pode ir para OpenAI"). O envio continua mínimo: achados, trechos do manual e as linhas citadas, nunca o arquivo inteiro (REQ-ANALISE-007). Enquanto a primeira versão não tiver autenticação, seguem só dados sintéticos (SQ-12). | Kaio Macedo | 2026-11-10 | Sim, para dados reais |
 | E03 | Quantas retentativas e qual timeout para o LLM (DP-14)? | **Proposta:** até 2 retentativas, só para resposta inválida ou falha transitória, com timeout de 30 segundos por chamada e de 60 segundos para a etapa inteira. Esgotado o limite, falha técnica, com os achados determinísticos mantidos (REQ-ANALISE-004). Valores iniciais, a medir em produção (DP-14). | Assistente; aprovação de Kaio Macedo | 2026-11-10 | Não |
 | E04 | Idioma, tom e tamanho da síntese entregue ao usuário e à Sofia. | **Proposta:** português do Brasil, em registro técnico para a equipe que revisa a ECF; síntese de até 5 frases e explicação de até 2 frases por achado, com os impeditivos e os riscos fiscais primeiro. O LLM não muda classe, veredito nem revisão humana. | Assistente; aprovação de Kaio Macedo | 2026-11-10 | Não |
 | E05 | Política para referência não verificável: rejeitar o item ou reclassificar (DP-23, da mudança 03). | **Proposta:** rejeitar o item, sem reclassificar, e registrar a ocorrência, como REQ-ANALISE-003 e REQ-MEMORIA-004 já pedem. Resolve DP-23. | Assistente; aprovação de Kaio Macedo | 2026-11-10 | Sim, se não resolvida em 03 |
-| E06 | Como avaliar a análise com o modelo real, fora do CI (SQ-09, DoD-12), se a chave de produção está em aberto? | **Proposta:** como na carga da mudança 05: um script que Kaio Macedo roda, que lê a chave do `SofiaInfis` só na hora e a passa ao processo por variável de ambiente, com o conjunto de avaliação sintético e o consumo registrado. A chave não aparece na saída nem na linha de comando. | Kaio Macedo | 2026-11-10 | Não para implementar; sim para a avaliação |
+| E06 | Como avaliar a análise com o modelo real, fora do CI (SQ-09, DoD-12), se a chave de produção está em aberto? | **Decidido:** a chave que o projeto já usa, a do `SofiaInfis`. O assistente roda a avaliação por script que lê a chave só na hora e a passa ao processo por variável de ambiente, sem exibi-la ("pode você mesmo rodar"). Em produção, Kaio Macedo cadastra a chave no Vercel como `OpenAI__ApiKey` (SQ-03). | Kaio Macedo | 2026-11-10 | Não |
 
 ## Fontes oficiais
 
