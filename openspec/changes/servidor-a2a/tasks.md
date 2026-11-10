@@ -69,6 +69,6 @@ Skill: sofia-a2a-implementacao
 - [x] 8.3 Middleware da chave Bearer: 401 sem chave válida, 503 sem chave configurada, comparação em tempo constante e nada em log (D12; REQ-A2A-003, 010).
 - [x] 8.4 Testes de `AutenticacaoSofiaTests` e ajuste dos testes existentes à chave sintética; 539 testes aprovados (D14).
 - [x] 8.5 Emenda v2.1.0 (RA-07 e SQ-12), guia da Sofia com o objeto de cadastro, variáveis em `docs/ci-cd.md` e roteiro.
-- [ ] 8.6 Kaio Macedo cadastra a variável sensível `SOFIA_A2A_TOKEN` em `agente-ecf-agente` (SQ-03); depois do deploy, conferir em produção o 401 sem chave e, com o script `verificar-sofia-a2a.sh` rodado por ele, o cartão e o `message/send` com a chave.
+- [x] 8.6 Kaio Macedo cadastra a variável sensível `SOFIA_A2A_TOKEN` em `agente-ecf-agente` (SQ-03); depois do deploy, conferir em produção o 401 sem chave e, com o script `verificar-sofia-a2a.sh` rodado por ele, o cartão e o `message/send` com a chave. Feito em 2026-11-10: Kaio Macedo cadastrou a variável, e o assistente refez o deploy e, a pedido dele ("Rode você"), rodou o script com a chave lida da skill, sem exibi-la. Os 12 itens passaram: 401 sem chave, cartão 0.3.0 com nome, Bearer e URL https, e `message/send` com Task `completed`, um Artifact `analise-sofia-v1` e os mesmos IDs; resultado `parcial` para a ECF sintética válida.
 - [ ] 8.7 Entregar ao professor o objeto de cadastro e, quando ele incluir o agente em `A2A:Agents`, fazer o teste ponta a ponta pela Sofia central com documento sintético (E12; tarefa 7.4).
 

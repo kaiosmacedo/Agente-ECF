@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Confere a integração A2A 0.3.0 com a chave Bearer da Sofia central, como a Sofia chama (mudança 13, tarefa 8.6).
-# Roda Kaio Macedo, que tem a chave: o assistente não usa a chave real (SQ-03). A chave não aparece na tela,
+# Roda quem tem a chave: Kaio Macedo ou, a pedido dele, o assistente (SQ-03). A chave não aparece na tela,
 # na linha de comando nem em arquivo fora da pasta temporária, apagada no fim.
 #
 #   bash .github/scripts/verificar-sofia-a2a.sh                       # produção

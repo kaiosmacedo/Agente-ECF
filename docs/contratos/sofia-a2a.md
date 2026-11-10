@@ -349,7 +349,8 @@ A chave autentica, mas não registra o agente: a Sofia central só descobre os a
 
 - **`AllowedAddresses`:** os dois IPs que o DNS de `agente-ecf-agente.vercel.app` devolveu em 2026-11-10. São endereços compartilhados do Vercel e podem mudar; a política de destino da Sofia central fica com o professor.
 - **O que o agente atende:** `name` do cartão igual a `ExpectedName`, `agente.idAgente` do resultado igual a `IdAgente`, skill `analisar_documentos`, Task `completed` na própria resposta do `message/send` e um Artifact `analise-sofia-v1`.
-- **Conferir sem a Sofia:** `bash .github/scripts/verificar-sofia-a2a.sh`, que pede a chave sem mostrá-la e confere o 401 sem chave, o cartão e um `message/send` com ECF sintética.
+- **Conferir sem a Sofia:** `bash .github/scripts/verificar-sofia-a2a.sh`, que pede a chave sem mostrá-la e confere o 401 sem chave, o cartão e um `message/send` com ECF sintética. Em 2026-11-10, em produção e com a chave cadastrada, os 12 itens passaram.
+- **Falta:** o professor incluir o objeto acima em `A2A:Agents` e o teste ponta a ponta pela Sofia central.
 
 ## Como executar
 
