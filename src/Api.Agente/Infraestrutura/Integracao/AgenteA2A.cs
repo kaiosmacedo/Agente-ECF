@@ -14,6 +14,9 @@ internal sealed partial class AgenteA2A(ProcessadorDeSolicitacoes processador, I
 
     private const string NomeDoArtefato = "analise-sofia-v1";
 
+    /// <summary>Nome do esquema Bearer no cartão, o mesmo do exemplo da Sofia central.</summary>
+    public const string EsquemaDeSeguranca = "sofiaService";
+
     /// <summary>Emite a tarefa já terminada: a primeira resposta é final, mesmo com <c>returnImmediately</c> (REQ-A2A-006).</summary>
     public async Task ExecuteAsync(RequestContext context, AgentEventQueue eventQueue, CancellationToken cancellationToken)
     {
@@ -58,9 +61,16 @@ internal sealed partial class AgenteA2A(ProcessadorDeSolicitacoes processador, I
     {
         Name = ContratoSofiaV1.Agente.Nome,
         Description = "Valida arquivos da Escrituração Contábil Fiscal (ECF) do SPED enviados pela Sofia INFIS e devolve o veredito, o que corrigir e o que não foi verificado.",
-        Version = "1.2.0",
+        Version = "1.3.0",
         SupportedInterfaces = [new AgentInterface { Url = url, ProtocolBinding = "JSONRPC", ProtocolVersion = "1.0" }],
         Capabilities = new AgentCapabilities { Streaming = false, PushNotifications = false },
+
+        // Bearer no transporte, sem o segredo no cartão (REQ-A2A-003; skill sofia-a2a-autenticacao).
+        SecuritySchemes = new Dictionary<string, SecurityScheme>
+        {
+            [EsquemaDeSeguranca] = new() { HttpAuthSecurityScheme = new HttpAuthSecurityScheme { Scheme = "bearer" } },
+        },
+        SecurityRequirements = [new SecurityRequirement { Schemes = new Dictionary<string, StringList> { [EsquemaDeSeguranca] = new StringList() } }],
         DefaultInputModes = ["text/plain", "application/json"],
         DefaultOutputModes = ["text/plain", "application/json"],
         Skills =

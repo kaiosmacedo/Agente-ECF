@@ -16,12 +16,12 @@ Cada mudança segue o fluxo da constitution (6.1): especificação → esclareci
 
 | Etapa | Situação |
 | --- | --- |
-| Constitution | v2.0.4 vigente (ratificada na v1.1.0; emendas aprovadas por Kaio Macedo). |
+| Constitution | v2.1.0 vigente (ratificada na v1.1.0; emendas aprovadas por Kaio Macedo). |
 | CI/CD | CI com checks obrigatórios `OpenSpec` e `.NET`; CD publica no Vercel a cada merge na `main`. |
 | Vercel | Em produção: https://agente-ecf-agente.vercel.app e https://agente-ecf-rag.vercel.app (time `agent-ecf`). |
 | Mudança 01 | Concluída: mesclada (PR #2), em produção e arquivada em 2026-10-29; specs vigentes em `openspec/specs/plataforma/`. |
-| Mudança 02 | Congelada em 2026-11-05: a integração com a Sofia não usa token, por decisão de Kaio Macedo. Código preservado na branch `feat/autenticacao-autorizacao` (PR #7, em rascunho). |
-| Mudança 13 | Esqueleto em produção desde 2026-11-05 (PR #9): cartão, `SendMessage` A2A v1.0, contrato SOFIA v1.0 e CORS. Falta o teste com a Sofia real, quando o cliente A2A dela existir. A análise completa chega com as mudanças 03 a 10. |
+| Mudança 02 | Congelada em 2026-11-05, por decisão de Kaio Macedo: não há autenticação de usuário. Desde 2026-11-10, o A2A exige só a chave Bearer compartilhada da Sofia central (SQ-12). Código preservado na branch `feat/autenticacao-autorizacao` (PR #7, em rascunho). |
+| Mudança 13 | Esqueleto em produção desde 2026-11-05 (PR #9): cartão, `SendMessage` A2A v1.0, contrato SOFIA v1.0 e CORS. Desde 2026-11-10, também o A2A 0.3.0 e a chave Bearer da Sofia central do treinamento; falta o cadastro dela no catálogo da Sofia central. Falta o teste com a Sofia real, quando o cliente A2A dela existir. A análise completa chega com as mudanças 03 a 10. |
 | Mudança 03 | Em produção e arquivada desde 2026-11-05 (PR #10): nove etapas, status, achados e `GET /analises/{id}`, com banco no Neon. |
 | Mudanças 04 a 08 | Em produção: consumo e base do manual (04, 05), busca no manual por MCP, desligada até a decisão da chave (06), recepção da ECF (07) e validação estrutural do leiaute 12 (08). A ECF com erro de estrutura impeditivo sai `recusado`, com o que corrigir; sem ele, `parcial`. Estado de cada uma na tabela abaixo. |
 | Mudanças 09 a 12 | Especificações aprovadas por Kaio Macedo em 2026-10-29 (PR #4) e adequadas às regras SQ-12 e RA-07 em 2026-11-05. |
@@ -87,7 +87,7 @@ Receber uma ECF, por exemplo da Sofia, e responder se ela está correta e, se n�
 
 ## Autenticação adiada (SQ-12)
 
-A primeira versão não tem autenticação (constitution, SQ-12), e a integração com a Sofia não usa token. As exigências abaixo ficam adiadas e só voltam se a mudança 02 for retomada. Até lá, os serviços só recebem dados sintéticos ou anonimizados, e a identidade declarada pelo cliente não é verificada.
+A primeira versão não tem autenticação de usuário (constitution, SQ-12). Desde 2026-11-10, o A2A exige só a chave Bearer compartilhada da Sofia central do treinamento, que autentica o serviço, não a pessoa. As exigências abaixo ficam adiadas e só voltam se a mudança 02 for retomada. Até lá, os serviços só recebem dados sintéticos ou anonimizados, e a identidade declarada pelo cliente não é verificada.
 
 | Mudança | O que fica adiado | Referência |
 | --- | --- | --- |
@@ -98,7 +98,7 @@ A primeira versão não tem autenticação (constitution, SQ-12), e a integraç�
 | 07 | Exigir credencial em `POST /analises` | REQ-RECEPCAO-001, REQ-AUTH-001 |
 | 11 | Verificar usuário e organização autenticados na autorização de ferramentas | REQ-FERRAM-002, SQ-02 |
 | 12 | Isolar a memória pela identidade autenticada | REQ-MEMORIA-001, SQ-02 |
-| 13 | Exigir credencial da Sofia INFIS e de outros clientes na chamada A2A; declarar o esquema de segurança no cartão, se ele deixar de ser público | REQ-A2A-003, REQ-AUTH-001 |
+| 13 | Trocar a chave compartilhada por credencial própria de cada cliente A2A, com identidade verificada | REQ-A2A-003, REQ-A2A-010, REQ-AUTH-001 |
 
 **Retomada:**
 

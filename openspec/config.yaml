@@ -10,7 +10,7 @@ context: |
   Nesta fase o agente apenas valida o arquivo, sob demanda, a cada envio. É um dos agentes da
   Sofia INFIS (orquestradora), que o aciona por A2A; também é usado pelos endpoints REST.
 
-  Fonte normativa: openspec/constitution.md (v2.0.4; ratificada em 2026-10-29). Ler antes de
+  Fonte normativa: openspec/constitution.md (v2.1.0; ratificada em 2026-10-29). Ler antes de
   produzir qualquer artefato.
   Em conflito, a constitution prevalece. Desvios exigem registro em docs/governanca/desvios.md.
   ADRs ficam em docs/adr/.
@@ -51,10 +51,11 @@ context: |
   - P11: chunk, topK e limiares não são fixados sem avaliação com exemplos representativos.
   - P14: a seleção de ferramenta pelo LLM não concede autorização.
   - P15: Api.Agente e Api.RAG se comunicam apenas por MCP; cada serviço é dono dos seus dados.
-  - RA-07: a Sofia é cliente e a Api.Agente é servidor A2A v1.0 JSON-RPC, com o contrato SOFIA
-    v1.0 em TextPart; os valores internos são mapeados para os do contrato.
-  - SQ-12: a primeira versão não tem autenticação e a integração com a Sofia não usa token; a
-    mudança 02 está congelada. Só dados sintéticos ou anonimizados; identidade declarada não é
+  - RA-07: a Sofia é cliente e a Api.Agente é servidor A2A v1.0 JSON-RPC, que atende também o
+    A2A 0.3.0 da Sofia central do treinamento no mesmo endpoint, com o contrato SOFIA v1.0 em
+    TextPart; os valores internos são mapeados para os do contrato.
+  - SQ-12: a primeira versão não tem autenticação de usuário; o A2A exige só a chave Bearer
+    compartilhada da Sofia central (SOFIA_A2A_TOKEN); a mudança 02 está congelada. Só dados sintéticos ou anonimizados; identidade declarada não é
     verificada; cada exigência adiada vai para a seção "Autenticação adiada" de docs/roteiro.md.
   - SQ-13: CORS só para clientes de navegador, com origens explícitas; não substitui autenticação.
   Decisões pendentes estão na seção 9 da constitution; as resolvidas ficam em 9.1. Não

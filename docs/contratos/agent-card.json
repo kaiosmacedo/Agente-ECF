@@ -1,7 +1,7 @@
 {
   "name": "Agente ECF",
   "description": "Valida arquivos da Escrituração Contábil Fiscal (ECF) do SPED enviados pela Sofia INFIS e devolve o veredito, o que corrigir e o que não foi verificado.",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "supportedInterfaces": [
     {
       "url": "https://agente-ecf-agente.vercel.app/a2a",
@@ -45,5 +45,21 @@
   "defaultOutputModes": [
     "text/plain",
     "application/json"
+  ],
+  "securitySchemes": {
+    "sofiaService": {
+      "httpAuthSecurityScheme": {
+        "scheme": "bearer"
+      }
+    }
+  },
+  "securityRequirements": [
+    {
+      "schemes": {
+        "sofiaService": {
+          "list": []
+        }
+      }
+    }
   ]
 }

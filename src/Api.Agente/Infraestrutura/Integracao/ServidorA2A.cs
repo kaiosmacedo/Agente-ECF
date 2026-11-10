@@ -22,4 +22,11 @@ internal static class ServidorA2A
         servicos.AddSingleton(provedor => AgenteA2A.Cartao(provedor.GetRequiredService<IOptions<OpcoesA2A>>().Value.UrlPublica));
         return servicos;
     }
+
+    /// <summary>Bearer da Sofia só nas rotas do A2A, depois do CORS, para o preflight passar (REQ-A2A-010; SQ-13).</summary>
+    public static WebApplication UsarAutenticacaoDaSofia(this WebApplication app)
+    {
+        app.UseWhen(contexto => AutenticacaoDaSofia.Protegido(contexto.Request.Path), ramo => ramo.UseMiddleware<AutenticacaoDaSofia>());
+        return app;
+    }
 }

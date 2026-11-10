@@ -18,6 +18,9 @@ internal sealed class ConsultaDesativada : IConsultaAoManual
 /// <summary>Serviço em memória com captura de logs e ajustes por teste.</summary>
 internal sealed class FabricaApi(string? conexaoReal = null) : WebApplicationFactory<Program>
 {
+    /// <summary>Chave sintética da Sofia nos testes; os clientes criados pela fábrica já a enviam (REQ-A2A-010).</summary>
+    public const string ChaveDeTeste = "chave-sintetica-de-teste-a2a";
+
     private readonly List<Action<IWebHostBuilder>> ajustes = [];
 
     public ProvedorDeLogEmMemoria Logs { get; } = new();
@@ -31,6 +34,7 @@ internal sealed class FabricaApi(string? conexaoReal = null) : WebApplicationFac
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseSetting("ConnectionStrings:Execucoes", conexaoReal ?? "Host=banco-de-teste-nao-usado");
+        builder.UseSetting("SOFIA_A2A_TOKEN", ChaveDeTeste);
         if (conexaoReal is null)
         {
             builder.ConfigureTestServices(servicos => servicos.AddSingleton<IRepositorioDeExecucoes>(new RepositorioEmMemoria()));
@@ -43,5 +47,11 @@ internal sealed class FabricaApi(string? conexaoReal = null) : WebApplicationFac
         {
             ajuste(builder);
         }
+    }
+
+    protected override void ConfigureClient(HttpClient client)
+    {
+        base.ConfigureClient(client);
+        client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", ChaveDeTeste);
     }
 }

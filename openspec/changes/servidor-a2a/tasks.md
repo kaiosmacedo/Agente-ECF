@@ -59,3 +59,16 @@ Skill: vercel-dotnet-pgvector-atlas
 ## Workflow follow-up
 
 - O arquivamento espera o teste com a Sofia real (7.4). Ao arquivar, mover DP-16 para as decisões resolvidas.
+
+## 8. Perfil 0.3.0 e chave da Sofia central (2026-11-10)
+
+Skill: sofia-a2a-implementacao
+
+- [x] 8.1 Trocar o mapeamento pelo pacote `A2A.V0_3Compat` e conferir `message/send`, `tasks/get` e `tasks/cancel` como a Sofia central chama (D10; REQ-A2A-009).
+- [x] 8.2 Cartão 1.3.0 com o esquema Bearer, no formato 0.3.0 sem `A2A-Version` e v1.0 com ele, e as duas cópias versionadas (D11; REQ-A2A-001, 008, 009).
+- [x] 8.3 Middleware da chave Bearer: 401 sem chave válida, 503 sem chave configurada, comparação em tempo constante e nada em log (D12; REQ-A2A-003, 010).
+- [x] 8.4 Testes de `AutenticacaoSofiaTests` e ajuste dos testes existentes à chave sintética; 539 testes aprovados (D14).
+- [x] 8.5 Emenda v2.1.0 (RA-07 e SQ-12), guia da Sofia com o objeto de cadastro, variáveis em `docs/ci-cd.md` e roteiro.
+- [ ] 8.6 Kaio Macedo cadastra a variável sensível `SOFIA_A2A_TOKEN` em `agente-ecf-agente` (SQ-03); depois do deploy, conferir em produção o 401 sem chave e, com o script `verificar-sofia-a2a.sh` rodado por ele, o cartão e o `message/send` com a chave.
+- [ ] 8.7 Entregar ao professor o objeto de cadastro e, quando ele incluir o agente em `A2A:Agents`, fazer o teste ponta a ponta pela Sofia central com documento sintético (E12; tarefa 7.4).
+

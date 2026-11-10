@@ -4,7 +4,7 @@
 - O trabalho segue o fluxo SDD com OpenSpec (`/opsx:new`, `/opsx:continue`, `/opsx:apply`, `/opsx:verify`, `/opsx:archive`). Não implemente funcionalidade sem mudança aprovada (P20).
 - Não invente leiautes, registros, regras fiscais, schemas ou critérios de conformidade (P01). Sem fonte oficial, registre o esclarecimento ou a decisão pendente.
 - Decisões pendentes estão na seção 9 da constitution e não são requisitos aprovados; as resolvidas ficam em 9.1.
-- A primeira versão não tem autenticação (SQ-12) e a integração com a Sofia não usa token: a mudança 02 está congelada. Não exija autenticação nas demais mudanças; registre o que ficar adiado em `docs/roteiro.md`. O protocolo é A2A v1.0, e a rede, `sofia_network`.
+- A primeira versão não tem autenticação de usuário (SQ-12), e a mudança 02 está congelada. A exceção é o A2A, que exige a chave Bearer compartilhada da Sofia central do treinamento (`SOFIA_A2A_TOKEN`, skill `sofia-a2a-autenticacao`). Não exija outra autenticação nas demais mudanças; registre o que ficar adiado em `docs/roteiro.md`. O protocolo é A2A v1.0, com o 0.3.0 da Sofia central no mesmo endpoint, e a rede, `sofia_network`.
 - Use `/opsx:new` e `/opsx:continue` (um artefato por vez) para que os esclarecimentos venham antes do `design.md`.
 - Commits, branches e PRs seguem a skill `github-versionamento` (seção 6.8 da constitution).
 - Na implementação, use as skills do projeto conforme o tema: `testes-agentes-ia`, `rag-pgvector`, `mcp-client-server`, `semantic-kernel-tools`, `controle-custos-llm`, `memoria-mongodb`, `vercel-dotnet-pgvector-atlas`, `sofia-a2a-contrato`, `sofia-a2a-implementacao` e `sofia-cors-rest-a2a`. Cada uma declara suas pré-condições (ADRs e decisões pendentes).

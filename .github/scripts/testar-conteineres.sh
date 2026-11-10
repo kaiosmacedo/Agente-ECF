@@ -58,6 +58,9 @@ falhar() {
 ECF_VALIDA=tests/Api.Agente.Tests/Dados/ecf/ecf-leiaute-12-estrutural.txt
 ECF_COM_ERROS=tests/Api.Agente.Tests/Dados/ecf/ecf-leiaute-12.txt
 
+# Chave sintética da Sofia só para este teste; a real fica no Vercel (mudança 13, D12; SQ-03).
+CHAVE_A2A=chave-sintetica-de-ci
+
 # SendMessage com uma ECF do arquivo dado, no contrato SOFIA v1.0.
 corpo_a2a() {
   jq -n --arg ecf "$(cat "$1")" --arg solicitacao "$2" \
@@ -68,18 +71,28 @@ corpo_a2a() {
 # Cartão e SendMessage com dados sintéticos: Task concluída, com o resultado do contrato no Artifact.
 testar_a2a() {
   local id="$1" corpo resposta execucao
-  curl -fsS "http://localhost:8080/.well-known/agent-card.json" | jq -e '.supportedInterfaces[0].protocolVersion == "1.0" and .skills[0].id == "analisar_documentos"' > /dev/null \
+  local chave=(-H "Authorization: Bearer $CHAVE_A2A")
+  [ "$(curl -s -o /dev/null -w '%{http_code}' "http://localhost:8080/.well-known/agent-card.json")" = 401 ] \
+    || falhar "$id" "O cartão respondeu sem a chave da Sofia."
+  curl -fsS "${chave[@]}" -H "A2A-Version: 1.0" "http://localhost:8080/.well-known/agent-card.json" | jq -e '.supportedInterfaces[0].protocolVersion == "1.0" and .skills[0].id == "analisar_documentos"' > /dev/null \
     || falhar "$id" "Cartão do agente inválido."
+  curl -fsS "${chave[@]}" "http://localhost:8080/.well-known/agent-card.json" | jq -e '.protocolVersion == "0.3.0" and .preferredTransport == "JSONRPC" and .securitySchemes.sofiaService.scheme == "bearer"' > /dev/null \
+    || falhar "$id" "Cartão 0.3.0 da Sofia central inválido."
   corpo=$(corpo_a2a "$ECF_VALIDA" e1b3a4cb-d729-4bd4-b796-b9c94be07b46)
-  resposta=$(curl -fsS -X POST "http://localhost:8080/a2a" -H "Content-Type: application/json" -H "A2A-Version: 1.0" -d "$corpo")
+  resposta=$(curl -fsS -X POST "http://localhost:8080/a2a" "${chave[@]}" -H "Content-Type: application/json" -H "A2A-Version: 1.0" -d "$corpo")
   echo "$resposta" | jq -e '.result.task.status.state == "TASK_STATE_COMPLETED" and (.result.task.artifacts[0].parts[0].text | fromjson | .status == "parcial" and .veredito == "parcial" and .idSolicitacao == "e1b3a4cb-d729-4bd4-b796-b9c94be07b46")' > /dev/null \
     || falhar "$id" "SendMessage não devolveu o resultado do contrato."
   execucao=$(echo "$resposta" | jq -r '.result.task.artifacts[0].parts[0].text | fromjson | .idExecucaoAgente')
   curl -fsS "http://localhost:8080/analises/$execucao" | jq -e --arg id "$execucao" '.idExecucao == $id and .status == "parcial" and .veredito == "parcial" and (.etapas | length) == 9' > /dev/null \
     || falhar "$id" "GET /analises/{id} não devolveu o envelope registrado."
-  curl -fsS -X POST "http://localhost:8080/a2a" -H "Content-Type: application/json" -H "A2A-Version: 1.0" -d "$corpo" \
+  curl -fsS -X POST "http://localhost:8080/a2a" "${chave[@]}" -H "Content-Type: application/json" -H "A2A-Version: 1.0" -d "$corpo" \
     | jq -e --arg id "$execucao" '.result.task.artifacts[0].parts[0].text | fromjson | .idExecucaoAgente == $id' > /dev/null \
     || falhar "$id" "A retentativa criou outra execução."
+  # message/send 0.3.0, como a Sofia central envia: Task concluída e um Artifact analise-sofia-v1.
+  corpo=$(echo "$corpo" | jq '.method = "message/send" | .params.message.kind = "message" | .params.message.role = "user" | .params.message.parts[0].kind = "text"')
+  curl -fsS -X POST "http://localhost:8080/a2a" "${chave[@]}" -H "Content-Type: application/json" -d "$corpo" \
+    | jq -e '.id == "ci" and .result.kind == "task" and .result.status.state == "completed" and ([.result.artifacts[] | select(.name == "analise-sofia-v1")] | length) == 1' > /dev/null \
+    || falhar "$id" "message/send 0.3.0 não devolveu a Task concluída."
   curl -fsS "http://localhost:8080/openapi/v1.json" | jq -e '.paths["/analises/{id}"] and .paths["/analises"].post' > /dev/null \
     || falhar "$id" "O documento OpenAPI não descreve /analises."
   # REST com a mesma ECF sintética, em ISO 8859-1 e CR LF, como o manual pede (mudança 07, REQ-RECEPCAO-001 e 008).
@@ -131,7 +144,7 @@ for servico in Api.Agente Api.RAG; do
   fi
   subir_banco
   testar_migracao "$imagem" "$variavel"
-  ambiente=(--network "$REDE" -e "$variavel=$CONEXAO")
+  ambiente=(--network "$REDE" -e "$variavel=$CONEXAO" -e "SOFIA_A2A_TOKEN=$CHAVE_A2A")
 
   # Sem PORT: porta 8080, vivacidade em até 30 s e logs em JSON com correlação.
   id=$(docker run -d "${ambiente[@]}" -p 8080:8080 "$imagem")

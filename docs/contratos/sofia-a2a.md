@@ -8,15 +8,16 @@ Como a Sofia aciona o Agente-ECF. Requisitos em `openspec/changes/servidor-a2a/`
 
 | Item | Valor |
 | --- | --- |
-| Cartão | `GET /.well-known/agent-card.json` (cópia versionada em [`agent-card.json`](agent-card.json)) |
-| Endpoint A2A | `supportedInterfaces[0].url` do cartão; em produção, `https://agente-ecf-agente.vercel.app/a2a` |
-| Protocolo | A2A `1.0`, JSON-RPC 2.0, com o cabeçalho `A2A-Version: 1.0` |
-| SDK do servidor | `A2A.AspNetCore` 1.0.0-preview4 |
+| Cartão | `GET /.well-known/agent-card.json`, com a chave: em 0.3.0 sem o cabeçalho `A2A-Version` ([`agent-card-v0.3.json`](agent-card-v0.3.json)) e em 1.0 com `A2A-Version: 1.0` ([`agent-card.json`](agent-card.json)) |
+| Endpoint A2A | `url` do cartão 0.3.0 ou `supportedInterfaces[0].url` do 1.0; em produção, `https://agente-ecf-agente.vercel.app/a2a` |
+| Protocolo | A2A `0.3.0` (`message/send`, `tasks/get`, `tasks/cancel`), o da Sofia central do treinamento, e A2A `1.0` (`SendMessage`, com `A2A-Version: 1.0`), no mesmo endpoint, JSON-RPC 2.0 |
+| Autenticação | `Authorization: Bearer <chave>` no cartão e no RPC, com a chave compartilhada do treinamento; sem ela, HTTP 401 |
+| SDK do servidor | `A2A.AspNetCore` e `A2A.V0_3Compat` 1.0.0-preview4 |
 | `agente.idAgente` | `agente-ecf` |
 | Skill | `analisar_documentos` |
 | Streaming e notificações | Não |
 
-As skills da turma fixavam v0.3.x "até decisão explícita de migração". Kaio Macedo padronizou v1.0 em 2026-11-05, a versão que o pacote `Microsoft.Agents.AI.A2A` do projeto `SofiaInfis` traz. O contrato de negócio (`versaoContrato: "1.0"`) não mudou.
+As skills da turma fixavam v0.3.x "até decisão explícita de migração". Kaio Macedo padronizou v1.0 em 2026-11-05, a versão que o pacote `Microsoft.Agents.AI.A2A` do projeto `SofiaInfis` traz. Em 2026-11-10, ele pediu para seguir a skill `sofia-a2a-autenticacao`, do professor: a Sofia central (`https://sofia-infis.onrender.com/`) fala 0.3.0 e autentica com a chave Bearer compartilhada, e o agente passou a atender os dois perfis. O contrato de negócio (`versaoContrato: "1.0"`) não mudou.
 
 ## O que é de A2A e o que é do contrato
 
@@ -32,7 +33,7 @@ As skills da turma fixavam v0.3.x "até decisão explícita de migração". Kaio
 
 Chamada real à produção, refeita em 2026-11-08, com a ECF sintética `01-valor-fora-da-lista.txt` do gabarito (`tests/Api.Agente.Tests/Dados/ecf/gabarito/`), que tem `IND_SIT_INI_PER` igual a 9 no Registro 0000. O veredito é `recusado`, com o que corrigir, e a consulta ao manual não roda porque a busca está desligada em produção.
 
-Requisição (`POST` no endereço do cartão, com `Content-Type: application/json` e `A2A-Version: 1.0`):
+Requisição v1.0 (`POST` no endereço do cartão, com `Content-Type: application/json`, `A2A-Version: 1.0` e, desde 2026-11-10, `Authorization: Bearer <chave>`). A Sofia central faz o mesmo em 0.3.0, com `message/send` (seção "Cadastro na Sofia central"):
 
 ```json
 {
@@ -303,6 +304,7 @@ O corpo inclui o envelope e o escape do JSON, então o texto útil é um pouco m
 
 | Opção (variável de ambiente) | Padrão | Uso |
 | --- | --- | --- |
+| `SOFIA_A2A_TOKEN` | Nenhum: sem ela, o A2A responde 503 | Chave Bearer compartilhada da Sofia central. Segredo: cadastrada por Kaio Macedo no Vercel, nunca no repositório |
 | `A2A:UrlPublica` (`A2A__UrlPublica`) | Em produção, a URL do Vercel; fora dela, `http://localhost:8080/a2a` | Endereço anunciado no cartão |
 | `Recepcao:TamanhoMaximoDosDocumentosEmBytes` (`Recepcao__TamanhoMaximoDosDocumentosEmBytes`) | `4194304` | Limite do texto somado dos documentos, nos dois canais (mudança 07, D4) |
 | `Recepcao:TamanhoMaximoDaLinhaEmCaracteres` | Igual ao tamanho máximo | Limite de cada linha; o manual não limita o `ARQ_RTF` do Y800 |
@@ -313,11 +315,41 @@ O corpo inclui o envelope e o escape do JSON, então o texto útil é um pouco m
 
 **CORS:** a chamada da Sofia é entre servidores e não depende de CORS. Preencha `Cors:AllowedOrigins` só se um frontend no navegador chamar o agente, com a origem desse frontend (esquema, host e porta, sem barra final). CORS não substitui autenticação.
 
-**Autenticação:** a integração não usa token, por decisão de Kaio Macedo (SQ-12). O que voltaria se isso mudar está na seção "Autenticação adiada" de [`docs/roteiro.md`](../roteiro.md).
+**Autenticação:** o cartão e o RPC exigem `Authorization: Bearer` com a chave compartilhada do treinamento, lida da variável `SOFIA_A2A_TOKEN` (SQ-12, exceção de 2026-11-10). Sem a chave, ou com chave errada, a resposta é 401 com `WWW-Authenticate: Bearer`, antes de qualquer análise; sem a variável configurada, 503. A chave autentica o serviço, não identifica a pessoa, e nunca aparece no cartão, nos logs ou nas respostas. A saúde, o REST e o Swagger seguem sem chave. A identidade por cliente fica na seção "Autenticação adiada" de [`docs/roteiro.md`](../roteiro.md).
 
 **Organização:** o contrato v1.0 não tem esse campo, então o agente registra um valor padrão configurado, marcado como não verificado.
 
 **Privacidade:** `usuario.nome`, `pergunta` e o texto dos documentos não vão para logs, para a resposta, para o armazenamento das tarefas nem para o banco. Do nome, só o SHA-256 é guardado, como pseudônimo; dos documentos, só hash e tamanho. Os logs trazem `idExecucao`, `idSolicitacao`, status e o `X-Correlation-Id`.
+
+## Cadastro na Sofia central
+
+A chave autentica, mas não registra o agente: a Sofia central só descobre os agentes listados em `A2A:Agents`. O objeto abaixo é para o professor incluir nessa lista, preservando os demais. `CredentialRef` e `DiscoveryCredentialRef` são o **nome** da variável, não a chave.
+
+```json
+{
+  "IdAgente": "agente-ecf",
+  "ExpectedName": "Agente ECF",
+  "Enabled": true,
+  "CardUri": "https://agente-ecf-agente.vercel.app/.well-known/agent-card.json",
+  "AllowedDestinations": [
+    "https://agente-ecf-agente.vercel.app/.well-known/agent-card.json",
+    "https://agente-ecf-agente.vercel.app/a2a"
+  ],
+  "AllowedAddresses": [
+    "64.29.17.194",
+    "216.198.79.194"
+  ],
+  "AllowedCapabilities": [
+    "analisar_documentos"
+  ],
+  "CredentialRef": "SOFIA_A2A_TOKEN",
+  "DiscoveryCredentialRef": "SOFIA_A2A_TOKEN"
+}
+```
+
+- **`AllowedAddresses`:** os dois IPs que o DNS de `agente-ecf-agente.vercel.app` devolveu em 2026-11-10. São endereços compartilhados do Vercel e podem mudar; a política de destino da Sofia central fica com o professor.
+- **O que o agente atende:** `name` do cartão igual a `ExpectedName`, `agente.idAgente` do resultado igual a `IdAgente`, skill `analisar_documentos`, Task `completed` na própria resposta do `message/send` e um Artifact `analise-sofia-v1`.
+- **Conferir sem a Sofia:** `bash .github/scripts/verificar-sofia-a2a.sh`, que pede a chave sem mostrá-la e confere o 401 sem chave, o cartão e um `message/send` com ECF sintética.
 
 ## Como executar
 
@@ -339,14 +371,16 @@ O compose sobe também o banco local das execuções e aplica as migrações:
 docker compose up --build agente-ecf
 ```
 
+Com a chave em `SOFIA_A2A_TOKEN` no ambiente de quem sobe o compose (sem ela, o A2A responde 503):
+
 ```bash
-curl http://localhost:8085/.well-known/agent-card.json
+curl -H "Authorization: Bearer $SOFIA_A2A_TOKEN" http://localhost:8085/.well-known/agent-card.json
 ```
 
 De outro contêiner na mesma rede, o endereço é o nome do serviço, não `localhost`:
 
 ```bash
-docker run --rm --network sofia-infis_sofia_network curlimages/curl:8.10.1 http://agente-ecf:8080/.well-known/agent-card.json
+docker run --rm --network sofia-infis_sofia_network curlimages/curl:8.10.1 -H "Authorization: Bearer $SOFIA_A2A_TOKEN" http://agente-ecf:8080/.well-known/agent-card.json
 ```
 
 A API da Sofia hoje roda fora do compose dela. Nesse caso, informe o endereço que ela enxerga:
