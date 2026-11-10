@@ -195,9 +195,9 @@ subir_banco
 docker run --rm --network "$REDE" -e "ConnectionStrings__Execucoes=$CONEXAO" agente-ecf-api-agente:ci --migrar > /dev/null
 docker run --rm --network "$REDE" -e "ConnectionStrings__Conhecimento=$CONEXAO" agente-ecf-api-rag:ci --migrar > /dev/null
 docker run -d --name "$RAG" --network "$REDE" -e "ConnectionStrings__Conhecimento=$CONEXAO" agente-ecf-api-rag:ci > /dev/null
-id=$(docker run -d --network "$REDE" -e "ConnectionStrings__Execucoes=$CONEXAO" -e "Conhecimento__UrlDoServidorMcp=http://$RAG:8080/mcp" -p 8080:8080 agente-ecf-api-agente:ci)
+id=$(docker run -d --network "$REDE" -e "ConnectionStrings__Execucoes=$CONEXAO" -e "SOFIA_A2A_TOKEN=$CHAVE_A2A" -e "Conhecimento__UrlDoServidorMcp=http://$RAG:8080/mcp" -p 8080:8080 agente-ecf-api-agente:ci)
 esperar_saude "http://localhost:8080/health/live" 30 || falhar "$id" "A Api.Agente não subiu com a Api.RAG."
-resposta=$(curl -fsS -X POST "http://localhost:8080/a2a" -H "Content-Type: application/json" -H "A2A-Version: 1.0" -d "$(corpo_a2a "$ECF_COM_ERROS" 0c6f1f6e-6a4b-4b8e-9d3a-2f7d1c9b5a10)")
+resposta=$(curl -fsS -X POST "http://localhost:8080/a2a" -H "Authorization: Bearer $CHAVE_A2A" -H "Content-Type: application/json" -H "A2A-Version: 1.0" -d "$(corpo_a2a "$ECF_COM_ERROS" 0c6f1f6e-6a4b-4b8e-9d3a-2f7d1c9b5a10)")
 execucao=$(echo "$resposta" | jq -r '.result.task.artifacts[0].parts[0].text | fromjson | .idExecucaoAgente')
 curl -fsS "http://localhost:8080/analises/$execucao" \
   | jq -e '.veredito == "recusado" and .status == "parcial" and ([.etapas[] | select(.numero == 4) | .estado] == ["concluida"])
