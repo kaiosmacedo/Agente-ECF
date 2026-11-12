@@ -46,6 +46,7 @@ Cada mudança segue o fluxo da constitution (6.1): especificação → esclareci
 | 14 | `telemetria-servicos` | `plataforma/observabilidade` | 01 | — | `testes-agentes-ia` | Arquivada; em produção desde 2026-11-05 (PR #13) |
 | 15 | `classificacao-e-veredito` | `agente/contrato-resultado` | 03 | 07, 08 | `sofia-a2a-contrato`, `testes-agentes-ia` | Arquivada; em produção desde 2026-11-06 (PR #17 e PR #21) |
 | 16 | `documentacao-api` | `plataforma/documentacao-api` | 01, 03 | — | `testes-agentes-ia` | Concluída: em produção e arquivada em 2026-11-10 (PR #41). Página do Swagger em https://agente-ecf-agente.vercel.app/swagger |
+| 17 | `perguntas-ecf` | `agente/perguntas-ecf` | 05, 06, 13 (e 10, conforme E02) | 02, 03, 12 | `semantic-kernel-tools`, `mcp-client-server`, `rag-pgvector`, `controle-custos-llm`, `sofia-a2a-contrato`, `testes-agentes-ia` | Proposta e specs escritas em 2026-11-12, à espera da aprovação de Kaio Macedo e da emenda da seção 1.3 da constitution (P20) |
 
 `github-versionamento` vale para todas as mudanças. As mudanças 05 a 09 podem avançar em paralelo com 04 quando suas dependências estiverem mescladas.
 
@@ -148,6 +149,7 @@ As capacidades ficam em `openspec/specs/` (e nos deltas das mudanças) agrupadas
 | | `analise-llm` | `REQ-ANALISE` |
 | | `ferramentas` | `REQ-FERRAM` |
 | | `memoria-conversacional` | `REQ-MEMORIA` |
+| | `perguntas-ecf` | `REQ-PERGUNTA` |
 | `rag/` (Api.RAG) | `ingestao-documentos` | `REQ-INGEST` |
 | | `administracao-base` | `REQ-BASE` |
 | | `recuperacao-conhecimento` | `REQ-RECUP` |
