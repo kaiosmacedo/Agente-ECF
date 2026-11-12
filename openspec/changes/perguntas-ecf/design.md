@@ -97,6 +97,7 @@ A aplicação define a porta `IRedatorDeRespostas`. Ela recebe a pergunta e os t
 | `OpenAI:ApiKey` | segredo, nunca no repositório | SQ-03 |
 
 - **Prompt `pergunta-v1` (P19):** arquivo versionado, embutido no assembly. As instruções vão como mensagem de sistema. A pergunta vai delimitada em `<pergunta>`, e cada trecho com `DelimitadorDeFontes`, ambos escapados (P10).
+- **Ajuste de 2026-11-12, `pergunta-v2`:** em produção, perguntas sobre o Registro 0000 caíam na reserva. Com os acentos escapados como entidades (`&#231;`) pelo `DelimitadorDeFontes`, o modelo citava o id sem o prefixo `trecho:`, e a validação recusava a resposta. Agora o `id` da fonte já vem como `trecho:<uuid>`, e só `<`, `>`, `&` e aspas são escapados, o que preserva a P10 e deixa os acentos legíveis. A validação aceita também o UUID sem prefixo, porque ele continua conferido contra os trechos recebidos (P07). O prompt passou a `pergunta-v2`, com nova avaliação.
 - **Saída:** estruturada estrita (`json_schema`), com `respondida` (booleano), `resposta` (texto) e `citacoes` (lista de `trecho:<uuid>`). O modelo não preenche id de execução, status, custo nem data (P13).
 - **Com `Llm:Habilitada=false` ou sem a chave:** o redator não é chamado, e sai a reserva (D6).
 - **Com `Llm:Habilitada=true` e sem `OpenAI:ApiKey`:** o serviço não sobe, como a busca da Api.RAG (RA-09).
@@ -194,7 +195,7 @@ O script `.github/scripts/avaliar-respostas.sh` sobe a Api.RAG como o `popular-r
 | P12, P13 | Atende | Saída estruturada estrita, validada; metadados do sistema (D5, D6, D7). |
 | P15 | Atende | Busca só pela ferramenta MCP (D4). |
 | P17 | Atende | Consumo por tentativa (D10). |
-| P19 | Atende | Prompt `pergunta-v1` versionado (D5). |
+| P19 | Atende | Prompt versionado, hoje `pergunta-v2` (D5). |
 | RA-06 | Atende | Semantic Kernel na infraestrutura (D5). |
 | RA-07 | Atende | Contrato SOFIA v1.0 sem campo novo (D7). |
 | SQ-03, SQ-12 | Atende | Chave só em variável de ambiente; limite diário; dados sintéticos (D9, D11). |

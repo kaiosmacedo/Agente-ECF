@@ -104,7 +104,7 @@ public sealed class RedatorSemanticKernelTests
 
     private static MaterialDaRedacao Material() => new("O que é o Registro 0000?", "leiaute-12", [TrechosSinteticos.Trecho(63, 0.71)]);
 
-    [Fact(DisplayName = "D5 Saída estruturada estrita, temperatura 0, prompt pergunta-v1 e tokens informados")]
+    [Fact(DisplayName = "D5 Saída estruturada estrita, temperatura 0, prompt pergunta-v2 e tokens informados")]
     public async Task Sucesso()
     {
         const string Completo = """

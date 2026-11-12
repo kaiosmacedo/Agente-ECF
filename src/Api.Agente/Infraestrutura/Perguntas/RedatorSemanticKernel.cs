@@ -10,7 +10,7 @@ namespace Api.Agente.Infraestrutura.Perguntas;
 
 /// <summary>
 /// Redator com o Semantic Kernel e o conector da OpenAI (RA-06; mudança 17, D5): mensagem de sistema com o prompt
-/// <c>pergunta-v1</c>, pergunta e trechos delimitados, saída estruturada estrita e temperatura da configuração. Uma
+/// <c>pergunta-v2</c>, pergunta e trechos delimitados, saída estruturada estrita e temperatura da configuração. Uma
 /// chamada é uma tentativa; timeout, falha de conexão, 429 e erro 5xx são transitórios.
 /// </summary>
 internal sealed class RedatorSemanticKernel(IChatCompletionService chat, IOptions<OpcoesDoLlm> opcoes) : IRedatorDeRespostas

@@ -39,4 +39,5 @@
 - [x] 6.3 Atualizar `docs/contratos/sofia-a2a.md`, `docs/ci-cd.md`, `docs/roteiro.md` e o cofre Obsidian.
 - [x] 6.4 **(feito por Kaio Macedo em 2026-11-12)** Cadastrar `OpenAI__ApiKey` em `agente-ecf-rag` e `agente-ecf-agente` (E11).
 - [x] 6.5 Ligar a busca, o LLM e as perguntas em produção, atualizar as cópias do cartão e verificar pela Sofia (Migration Plan, passo 4). **Feito em 2026-11-12:** as variáveis de configuração estão no Vercel, e 10 de 10 perguntas do roteiro saíram como esperado. O A2A 0.3.0 com o pseudodocumento saiu `concluido`, e o cartão está na versão 1.4.0. A conversa da Sofia central chamou o agente, com "Concluído". Uma tentativa logo depois do deploy saiu sem especialista (`docs/contratos/sofia-a2a.md`). As cópias do cartão em `docs/contratos/` seguem com a configuração padrão (1.3.0), a usada nos testes de contrato.
+- [x] 6.7 Corrigir as citações recusadas em produção (perguntas do Registro 0000). O prompt passou a `pergunta-v2`, o id da fonte vem com o prefixo `trecho:`, o escape é mínimo e a citação sem prefixo é aceita. A avaliação foi refeita, com a R01 (D5).
 - [ ] 6.6 Executar `/opsx:verify` e arquivar a mudança.
