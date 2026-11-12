@@ -1,5 +1,4 @@
 using System.Globalization;
-using System.Net;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -7,12 +6,12 @@ using Api.Agente.Aplicacao.Conhecimento;
 
 namespace Api.Agente.Aplicacao.Perguntas;
 
-/// <summary>Prompt versionado <c>pergunta-v1</c> (P19) e a mensagem com a pergunta e os trechos delimitados (P10).</summary>
+/// <summary>Prompt versionado <c>pergunta-v2</c> (P19) e a mensagem com a pergunta e os trechos delimitados (P10).</summary>
 internal static class PromptDaPergunta
 {
-    public const string Versao = "pergunta-v1";
+    public const string Versao = "pergunta-v2";
 
-    private const string Recurso = "Api.Agente.Aplicacao.Perguntas.Prompts.pergunta-v1.md";
+    private const string Recurso = "Api.Agente.Aplicacao.Perguntas.Prompts.pergunta-v2.md";
 
     /// <summary>Schema estrito da saída (P12): nada além de respondida, resposta e citações.</summary>
     public const string SchemaDaSaida = """
@@ -33,15 +32,29 @@ internal static class PromptDaPergunta
     public static string Mensagem(MaterialDaRedacao material)
     {
         var texto = new StringBuilder();
-        texto.Append("<pergunta>").Append(WebUtility.HtmlEncode(material.Pergunta)).AppendLine("</pergunta>");
-        texto.Append("Trechos do manual, versão ").Append(WebUtility.HtmlEncode(material.Versao)).AppendLine(":");
+        texto.Append("<pergunta>").Append(Escapar(material.Pergunta)).AppendLine("</pergunta>");
+        texto.Append("Trechos do manual, versão ").Append(Escapar(material.Versao)).AppendLine(":");
         foreach (var trecho in material.Trechos)
         {
-            texto.AppendLine(DelimitadorDeFontes.Delimitar(trecho));
+            texto.AppendLine(Delimitar(trecho));
         }
 
         return texto.ToString();
     }
+
+    /// <summary>
+    /// Trecho delimitado como fonte (P10), com o id já no formato da citação (<c>trecho:&lt;uuid&gt;</c>). Só os caracteres
+    /// que fechariam a marcação são escapados: os acentos ficam legíveis para o modelo (ajuste de 2026-11-12, D5).
+    /// </summary>
+    public static string Delimitar(TrechoDoManual trecho) => string.Create(
+        CultureInfo.InvariantCulture,
+        $"<fonte id=\"{ValidadorDaRedacao.PrefixoDaCitacao}{trecho.IdTrecho}\" versao=\"{Escapar(trecho.Versao)}\" pagina=\"{trecho.Pagina}\">{Escapar(trecho.Texto)}</fonte>");
+
+    public static string Escapar(string texto) =>
+        texto.Replace("&", "&amp;", StringComparison.Ordinal)
+            .Replace("<", "&lt;", StringComparison.Ordinal)
+            .Replace(">", "&gt;", StringComparison.Ordinal)
+            .Replace("\"", "&quot;", StringComparison.Ordinal);
 
     private static string Ler()
     {
@@ -63,7 +76,7 @@ internal static partial class ValidadorDaRedacao
 {
     public const int TamanhoMaximoDaResposta = 3000;
 
-    private const string PrefixoDaCitacao = "trecho:";
+    public const string PrefixoDaCitacao = "trecho:";
 
     public static RedacaoAceita? Validar(string saida, IReadOnlyList<TrechoDoManual> recebidos)
     {
@@ -102,10 +115,10 @@ internal static partial class ValidadorDaRedacao
         var citados = new List<TrechoDoManual>();
         foreach (var citacao in citacoes.EnumerateArray())
         {
+            // Aceita o id com ou sem o prefixo: o que vale é ser um dos trechos recebidos (P07).
             if (citacao.ValueKind != JsonValueKind.String
                 || citacao.GetString() is not { } valor
-                || !valor.StartsWith(PrefixoDaCitacao, StringComparison.Ordinal)
-                || !Guid.TryParse(valor[PrefixoDaCitacao.Length..], out var id)
+                || !Guid.TryParse(valor.StartsWith(PrefixoDaCitacao, StringComparison.Ordinal) ? valor[PrefixoDaCitacao.Length..] : valor, out var id)
                 || !porId.TryGetValue(id, out var trecho))
             {
                 return null;

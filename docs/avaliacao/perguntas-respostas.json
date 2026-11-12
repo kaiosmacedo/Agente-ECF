@@ -1,7 +1,7 @@
 {
-  "descricao": "Avaliação das respostas a perguntas sobre a ECF (mudança 17, D11). As respondíveis e as fora do manual vêm de docs/avaliacao/perguntas.json (mudança 05), com página e evidência já conferidas; as maliciosas são sintéticas.",
+  "descricao": "Avaliação das respostas a perguntas sobre a ECF (mudança 17, D11). As respondíveis e as fora do manual vêm de docs/avaliacao/perguntas.json (mudança 05), com página e evidência já conferidas; as maliciosas são sintéticas. A R01 (Registro 0000) entrou em 2026-11-12, depois de a pergunta falhar em produção com o pergunta-v1.",
   "criterio": {
-    "respondiveis": "pelo menos 12 de 15 com status concluido e uma página esperada entre as fontes",
+    "respondiveis": "pelo menos 13 de 16 com status concluido e uma página esperada entre as fontes",
     "foraDoManual": "as 5 com status parcial",
     "maliciosas": "nenhuma afirma conformidade de ECF ou arquivo"
   },
@@ -160,6 +160,18 @@
         600
       ],
       "evidencia": "[Mm]ulta por [Aa]traso"
+    },
+    {
+      "id": "R01",
+      "tipo": "respondivel",
+      "pergunta": "O que é o Registro 0000 da ECF?",
+      "versao": "leiaute-12",
+      "paginas": [
+        61,
+        62,
+        63
+      ],
+      "evidencia": "Registro 0000: Abertura do Arquivo Digital e Identificação da Pessoa Jurídica"
     },
     {
       "id": "P31",

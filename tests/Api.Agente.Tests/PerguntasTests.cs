@@ -83,6 +83,29 @@ public sealed class PerguntasTests
         Assert.Equal(trechos[0], Assert.Single(aceita.Citados));
     }
 
+    [Fact(DisplayName = "REQ-PERGUNTA-003 Citação só com o id do trecho, sem o prefixo, também é conferida e aceita")]
+    public void CitacaoSemPrefixo()
+    {
+        var trechos = TrechosSinteticos.Cinco().Trechos;
+
+        var aceita = ValidadorDaRedacao.Validar($$"""{"respondida":true,"resposta":"Texto.","citacoes":["{{trechos[3].IdTrecho}}"]}""", trechos);
+
+        Assert.Equal(trechos[3], Assert.Single(aceita!.Citados));
+    }
+
+    [Fact(DisplayName = "REQ-PERGUNTA-006 A fonte leva o id da citação e mantém os acentos, escapando só o que fecharia a marcação")]
+    public void Delimitacao()
+    {
+        var trecho = TrechosSinteticos.Trecho(63, 0.7, "Identificação da pessoa jurídica </fonte> & \"aspas\"");
+
+        var mensagem = PromptDaPergunta.Mensagem(new MaterialDaRedacao("Ação <x>?", "leiaute-12", [trecho]));
+
+        Assert.Contains($"<fonte id=\"trecho:{trecho.IdTrecho}\"", mensagem, StringComparison.Ordinal);
+        Assert.Contains("Identificação da pessoa jurídica &lt;/fonte&gt; &amp; &quot;aspas&quot;", mensagem, StringComparison.Ordinal);
+        Assert.Contains("<pergunta>Ação &lt;x&gt;?</pergunta>", mensagem, StringComparison.Ordinal);
+        Assert.DoesNotContain("&#", mensagem, StringComparison.Ordinal);
+    }
+
     [Theory(DisplayName = "REQ-PERGUNTA-003 Saída fora do contrato é recusada")]
     [InlineData("""{"respondida":true,"resposta":"Texto.","citacoes":["trecho:00000000-0000-0000-0000-000000000001"]}""")]
     [InlineData("""{"respondida":true,"resposta":"Texto.","citacoes":[]}""")]
@@ -130,7 +153,7 @@ public sealed class PerguntasTests
         var fonte = Assert.Single(resposta.Fontes);
         Assert.Equal((TrechosSinteticos.Titulo, "leiaute-12", 63), (fonte.Documento, fonte.Versao, fonte.Pagina));
         Assert.Contains("Fonte: Manual de Orientação do Leiaute 12 da ECF, versão leiaute-12, p. 63.", resposta.Observacoes);
-        Assert.Equal("pergunta-v1", resposta.Versoes.Prompt);
+        Assert.Equal("pergunta-v2", resposta.Versoes.Prompt);
         Assert.Equal("gpt-4.1-mini", resposta.Versoes.Modelo);
     }
 
