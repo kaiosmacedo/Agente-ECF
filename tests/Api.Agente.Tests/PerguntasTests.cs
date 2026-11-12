@@ -417,6 +417,19 @@ public sealed class PerguntasTests
         Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
     }
 
+    [Fact(DisplayName = "REQ-DOCAPI-004 O Swagger sugere um corpo só com a pergunta, sem versão do manual")]
+    public async Task ExemploNoSwagger()
+    {
+        using var fabrica = new FabricaApi();
+
+        using var documento = JsonDocument.Parse(await fabrica.CreateClient().GetStringAsync("/openapi/v1.json", Cancelamento));
+        var exemplo = documento.RootElement.GetProperty("paths").GetProperty("/perguntas").GetProperty("post")
+            .GetProperty("requestBody").GetProperty("content").GetProperty("application/json").GetProperty("example");
+
+        Assert.Equal("O que é o Registro 0000 da ECF?", exemplo.GetProperty("pergunta").GetString());
+        Assert.False(exemplo.TryGetProperty("versaoDoManual", out _));
+    }
+
     [Fact(DisplayName = "REQ-A2A-007 Com o modo pergunta ligado, o cartão 1.4.0 anuncia as perguntas")]
     public async Task CartaoComPerguntas()
     {

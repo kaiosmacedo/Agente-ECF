@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Api.Agente.Aplicacao.ContratoSofia;
 using Api.Agente.Aplicacao.Perguntas;
 using Api.Agente.Infraestrutura.Observabilidade;
@@ -14,12 +15,24 @@ internal sealed record PedidoDePerguntaRest(string? Pergunta, string? VersaoDoMa
 /// </summary>
 internal static class PerguntasEndpoints
 {
+    public const string ExemploDePergunta = "O que é o Registro 0000 da ECF?";
+
     public static IEndpointRouteBuilder MapearPerguntas(this IEndpointRouteBuilder rotas)
     {
         rotas.MapPost("/perguntas", ResponderAsync)
             .WithName("ResponderPergunta")
             .WithSummary("Responde uma pergunta sobre a ECF só com os trechos dos manuais oficiais, citando a fonte.")
             .Accepts<PedidoDePerguntaRest>("application/json")
+            // Exemplo só com a pergunta: com o "string" padrão em versaoDoManual, o Swagger pediria uma versão que não existe.
+            .AddOpenApiOperationTransformer((operacao, _, _) =>
+            {
+                if (operacao.RequestBody?.Content?.TryGetValue("application/json", out var corpo) == true)
+                {
+                    corpo.Example = new JsonObject { ["pergunta"] = ExemploDePergunta };
+                }
+
+                return Task.CompletedTask;
+            })
             .Produces<RespostaDaPergunta>()
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound);
