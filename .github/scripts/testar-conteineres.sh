@@ -192,10 +192,14 @@ done
 # da Api.RAG real, e a busca desligada vira limitação, sem falha técnica (REQ-CONSULTA-007).
 echo "::group::Api.Agente com a Api.RAG"
 subir_banco
-docker run --rm --network "$REDE" -e "ConnectionStrings__Execucoes=$CONEXAO" agente-ecf-api-agente:ci --migrar > /dev/null
-docker run --rm --network "$REDE" -e "ConnectionStrings__Conhecimento=$CONEXAO" agente-ecf-api-rag:ci --migrar > /dev/null
-docker run -d --name "$RAG" --network "$REDE" -e "ConnectionStrings__Conhecimento=$CONEXAO" agente-ecf-api-rag:ci > /dev/null
-id=$(docker run -d --network "$REDE" -e "ConnectionStrings__Execucoes=$CONEXAO" -e "SOFIA_A2A_TOKEN=$CHAVE_A2A" -e "Conhecimento__UrlDoServidorMcp=http://$RAG:8080/mcp" -p 8080:8080 agente-ecf-api-agente:ci)
+# Um banco por serviço, como em produção (P15): os dois têm a tabela consumo_ia (mudança 17).
+docker exec "$BANCO" psql -q -U postgres -c "CREATE DATABASE agente" -c "CREATE DATABASE rag" > /dev/null
+CONEXAO_AGENTE="Host=$BANCO;Database=agente;Username=postgres"
+CONEXAO_RAG="Host=$BANCO;Database=rag;Username=postgres"
+docker run --rm --network "$REDE" -e "ConnectionStrings__Execucoes=$CONEXAO_AGENTE" agente-ecf-api-agente:ci --migrar > /dev/null
+docker run --rm --network "$REDE" -e "ConnectionStrings__Conhecimento=$CONEXAO_RAG" agente-ecf-api-rag:ci --migrar > /dev/null
+docker run -d --name "$RAG" --network "$REDE" -e "ConnectionStrings__Conhecimento=$CONEXAO_RAG" agente-ecf-api-rag:ci > /dev/null
+id=$(docker run -d --network "$REDE" -e "ConnectionStrings__Execucoes=$CONEXAO_AGENTE" -e "SOFIA_A2A_TOKEN=$CHAVE_A2A" -e "Conhecimento__UrlDoServidorMcp=http://$RAG:8080/mcp" -e Perguntas__Habilitada=true -p 8080:8080 agente-ecf-api-agente:ci)
 esperar_saude "http://localhost:8080/health/live" 30 || falhar "$id" "A Api.Agente não subiu com a Api.RAG."
 resposta=$(curl -fsS -X POST "http://localhost:8080/a2a" -H "Authorization: Bearer $CHAVE_A2A" -H "Content-Type: application/json" -H "A2A-Version: 1.0" -d "$(corpo_a2a "$ECF_COM_ERROS" 0c6f1f6e-6a4b-4b8e-9d3a-2f7d1c9b5a10)")
 execucao=$(echo "$resposta" | jq -r '.result.task.artifacts[0].parts[0].text | fromjson | .idExecucaoAgente')
@@ -206,5 +210,9 @@ curl -fsS "http://localhost:8080/analises/$execucao" \
   || falhar "$id" "A etapa 5 não consultou a Api.RAG por MCP ou não tratou a busca desligada."
 docker logs "$RAG" 2>&1 | jq -e -s 'any(.[]; .Message? == "Busca no manual recusada: busca_desativada")' > /dev/null \
   || falhar "$id" "A Api.RAG não recebeu a chamada MCP da Api.Agente."
+# Pergunta sem arquivo (mudança 17): com a busca desligada na Api.RAG, a resposta é consulta_indisponivel, sem falha.
+curl -fsS -X POST "http://localhost:8080/perguntas" -H "Content-Type: application/json" -d '{"pergunta":"O que é o Registro 0000 da ECF?"}' \
+  | jq -e '.versaoContrato == "1.0" and .status == "erro" and .erro.codigo == "consulta_indisponivel" and .versaoDoManual == "leiaute-12"' > /dev/null \
+  || falhar "$id" "A pergunta pelo REST não chegou à busca da Api.RAG."
 docker rm -f "$id" "$RAG" > /dev/null
 echo "::endgroup::"
