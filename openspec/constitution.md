@@ -2,8 +2,8 @@
 
 | Campo | Valor |
 | --- | --- |
-| Versão | 2.1.0 |
-| Estado | Vigente (ratificada na v1.1.0; emendas v1.2.0, v1.3.0, v2.0.0, v2.0.1, v2.0.2, v2.0.3, v2.0.4 e v2.1.0 aprovadas) |
+| Versão | 2.2.0 |
+| Estado | Vigente (ratificada na v1.1.0; emendas v1.2.0, v1.3.0, v2.0.0, v2.0.1, v2.0.2, v2.0.3, v2.0.4, v2.1.0 e v2.2.0 aprovadas) |
 | Criada em | 2026-10-29 |
 | Última alteração | 2026-11-10 |
 | Ratificada em | 2026-10-29, por Kaio Macedo (versão 1.1.0) |
@@ -48,13 +48,14 @@ A solução combina:
 - uso controlado de ferramentas externas;
 - análise com LLM;
 - respostas estruturadas e rastreáveis;
+- respostas a perguntas sobre a ECF, sem arquivo, só com os trechos dos manuais oficiais registrados e com a fonte citada;
 - integração com outros agentes e orquestradores por A2A, a começar pela Sofia INFIS.
 
-A análise é executada sob demanda, a cada envio de arquivo pelo usuário ou pela orquestradora. Não há execução agendada.
+A análise é executada sob demanda, a cada envio de arquivo ou pergunta pelo usuário ou pela orquestradora. Não há execução agendada.
 
 ### 1.3 Fora do escopo
 
-Nesta fase, o agente apenas valida o arquivo recebido. Os itens abaixo estão fora do escopo, e a inclusão de qualquer um deles exige emenda a esta constitution (seção 8).
+Nesta fase, o agente valida o arquivo recebido e responde perguntas sobre a ECF só com os trechos dos manuais oficiais registrados, citando documento, versão e página. A resposta a uma pergunta MUST NOT declarar conforme nenhum documento nem completar o que os manuais não dizem; P05 continua valendo para a análise de arquivo. Os itens abaixo estão fora do escopo, e a inclusão de qualquer um deles exige emenda a esta constitution (seção 8).
 
 - Transmitir, assinar ou entregar a ECF ao SPED.
 - Alterar, corrigir ou regenerar o arquivo analisado. Orientações de correção são permitidas (P06).
@@ -829,6 +830,7 @@ Sínteses desta constitution, como a nota do cofre Obsidian, MUST indicar a vers
 | 2.0.3 | 2026-11-07 | PATCH: DP-05 e DP-22 movidas para as decisões resolvidas, conforme a mudança `recepcao-identificacao-leiaute` arquivada. Sem efeito normativo. | Decisões aprovadas por Kaio Macedo em 2026-11-07, com o plano da mudança (PR #23). |
 | 2.0.4 | 2026-11-08 | PATCH: DP-04 atualizada com a publicação vigente do manual, o catálogo do leiaute 12, a relação com o programa da ECF e o que segue pendente; a etapa e o bloqueio passam a valer para as fontes ainda não registradas, conforme a mudança `validacao-estrutural` arquivada. Sem efeito normativo: P01 continua exigindo fonte para cada regra. | Decisão E10 aprovada por Kaio Macedo em 2026-11-08. |
 | 2.1.0 | 2026-11-10 | MINOR: RA-07 passa a exigir também o A2A 0.3.0 da Sofia central do treinamento, no mesmo endpoint da v1.0; SQ-12 ganha a exceção da chave Bearer compartilhada no cartão e no RPC do A2A. REST e MCP seguem sem autenticação. Especificação da mudança 13 adequada no mesmo PR; nenhuma outra spec vigente afetada. | Decidido por Kaio Macedo em 2026-11-10: "Agora preciso que você faça o que está na skill anexada para o professor conseguir alcançar nosso agente corretamente através da sofia". |
+| 2.2.0 | 2026-11-12 | MINOR: as seções 1.2 e 1.3 passam a incluir a resposta a perguntas sobre a ECF, sem arquivo, só com os trechos dos manuais oficiais registrados e com a fonte citada, sem declarar conformidade de documento (mudança `perguntas-ecf`). | Kaio Macedo, 2026-11-12 ("Aprovo"). |
 
 ---
 
