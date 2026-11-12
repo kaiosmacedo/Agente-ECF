@@ -24,7 +24,7 @@
     <!-- Clientes A2A v0.3, como a Sofia central do treinamento, no mesmo endpoint da v1.0 (mudança 13, D10). -->
     <PackageReference Include="A2A.V0_3Compat" Version="1.0.0-preview4" />
     <PackageReference Include="Dapper" Version="2.1.89" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.14" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.15" />
     <PackageReference Include="Microsoft.SemanticKernel" Version="1.82.0" />
     <!-- Cliente MCP da consulta ao manual (mudança 06, ADR 0005). -->
     <PackageReference Include="ModelContextProtocol.Core" Version="2.4.0" />
