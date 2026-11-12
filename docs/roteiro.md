@@ -52,6 +52,8 @@ Cada mudança segue o fluxo da constitution (6.1): especificação → esclareci
 
 ## Ordem de execução
 
+**Correção do Swagger, 12/11/2026:** `corrigir-upload-ecf-swagger` em produção pelo PR #47, com regressão HTTP e envio conferido no próprio formulário: HTTP 201 e `recusado` no exemplo com erro, `parcial` no controle sem erro estrutural. Arquivada em `openspec/changes/archive/2026-11-12-corrigir-upload-ecf-swagger/`, com REQ-DOCAPI-005 na spec vigente. Guia em `docs/demonstracao-ecf.md`. Não altera o processamento em fluxo nem as regras fiscais.
+
 A numeração é estável. A ordem foi revista em 2026-11-05, com as skills da turma e a análise do projeto `SofiaInfis` (`docs/base-sofiainfis.md`). Depois, Kaio Macedo aprovou colocar a base de conhecimento antes da recepção de arquivos, com as fontes oficiais em `docs/fontes-oficiais.md`, e pediu a classificação das regras e o veredito (mudança 15).
 
 1. **13, esqueleto:** feito. A Sofia alcança o agente e recebe uma resposta válida, com status `parcial`.

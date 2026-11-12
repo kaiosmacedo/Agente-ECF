@@ -7,6 +7,7 @@ using Api.Agente.Infraestrutura.Observabilidade;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Net.Http.Headers;
+using Microsoft.OpenApi;
 
 namespace Api.Agente.Endpoints;
 
@@ -29,6 +30,30 @@ internal static class AnalisesEndpoints
             .DisableAntiforgery()
             .WithMetadata(new RequestSizeLimitAttribute(limite + FolgaDoMultipart))
             .Accepts<IFormFile>("multipart/form-data")
+            // O parser exige uma parte nomeada. Um binário na raiz mostra o seletor no Swagger, mas não envia o anexo.
+            .AddOpenApiOperationTransformer((operacao, _, _) =>
+            {
+                operacao.RequestBody = new OpenApiRequestBody
+                {
+                    Required = true,
+                    Content = new Dictionary<string, OpenApiMediaType>
+                    {
+                        ["multipart/form-data"] = new()
+                        {
+                            Schema = new OpenApiSchema
+                            {
+                                Type = JsonSchemaType.Object,
+                                Properties = new Dictionary<string, IOpenApiSchema>
+                                {
+                                    [ParteDoArquivo] = new OpenApiSchema { Type = JsonSchemaType.String, Format = "binary" },
+                                },
+                                Required = new HashSet<string> { ParteDoArquivo },
+                            },
+                        },
+                    },
+                };
+                return Task.CompletedTask;
+            })
             .Produces<EnvelopeDoResultado>(StatusCodes.Status201Created)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status503ServiceUnavailable);
