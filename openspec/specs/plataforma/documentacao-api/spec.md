@@ -35,11 +35,11 @@ A página MUST NOT carregar script ou estilo de outro domínio, e o documento Op
 - **THEN** nenhum desses valores aparece no documento
 
 ### Requirement: REQ-DOCAPI-004 Rotas publicadas no documento
-O documento OpenAPI SHALL listar as rotas públicas da Api.Agente: `POST /analises`, `GET /analises/{id}`, `POST /a2a` e `GET /.well-known/agent-card.json`.
+O documento OpenAPI SHALL listar as rotas públicas da Api.Agente: `POST /analises`, `GET /analises/{id}`, `POST /perguntas`, `POST /a2a` e `GET /.well-known/agent-card.json`.
 
 #### Scenario: Rotas documentadas
 - **WHEN** um cliente pede `GET /openapi/v1.json`
-- **THEN** o documento traz essas quatro rotas, com os métodos indicados
+- **THEN** o documento traz essas cinco rotas, com os métodos indicados
 
 ### Requirement: REQ-DOCAPI-005 Upload da ECF com a parte nomeada
 O documento OpenAPI de `POST /analises` SHALL descrever um corpo obrigatório `multipart/form-data` como objeto com a propriedade obrigatória `arquivo`, do tipo string e formato binary, para que o Swagger envie o conteúdo em uma parte de formulário com esse nome, conforme REQ-RECEPCAO-001.

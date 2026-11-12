@@ -127,7 +127,7 @@ O script baixa os PDFs do Release privado `fontes-ecf-2026-11`, ou dos endereço
 
 **Endpoint:** `POST /documentos` fica desligado em produção (`Ingestao:EndpointHabilitado`), porque é público nesta versão e aciona provedor pago (SQ-12). `GET /documentos`, `GET /documentos/{id}` e `POST /documentos/{id}/desativar` não acionam o provedor.
 
-**Chave da OpenAI:** não fica no Vercel nem no GitHub. Sem ela, a Api.RAG funciona, mas não gera embeddings.
+**Chave da OpenAI:** não fica no GitHub nem no código. Desde 2026-11-12, está no Vercel como variável sensível `OpenAI__ApiKey`, cadastrada por Kaio Macedo (ver "Perguntas em produção" abaixo). Sem ela, a Api.RAG funciona, mas não gera embeddings nem busca.
 
 **Busca por MCP (mudança 06):** a ferramenta `buscar_no_manual` fica em `/mcp` da Api.RAG ([contrato](contratos/mcp-buscar-no-manual.md)), e a Api.Agente a chama pelo endereço de `Conhecimento:UrlDoServidorMcp`, definido em `appsettings.Production.json`. Nenhuma das opções abaixo é segredo, exceto a chave.
 
@@ -148,7 +148,7 @@ O script baixa os PDFs do Release privado `fontes-ecf-2026-11`, ou dos endereço
 
 **Chave da Sofia central (`SOFIA_A2A_TOKEN`):** desde 2026-11-10, o cartão e o RPC do A2A exigem a chave Bearer compartilhada do treinamento. Kaio Macedo a cadastra como variável sensível `SOFIA_A2A_TOKEN` no projeto `agente-ecf-agente` (`vercel env add SOFIA_A2A_TOKEN production --sensitive`, com o valor digitado por ele). Sem ela, o A2A responde 503 e o resto do serviço segue no ar. A conferência com a chave é `bash .github/scripts/verificar-sofia-a2a.sh`.
 
-**Chave da OpenAI de produção:** decidida por Kaio Macedo em 2026-11-10: a que o projeto já usa. Ele a cadastra como variável sensível `OpenAI__ApiKey` no projeto `agente-ecf-rag`, e depois a busca é ligada com `Busca__Habilitada=true` e um novo deploy. Até lá, a busca segue desligada, e a etapa 5 registra a limitação "consulta ao manual desativada".
+**Chave da OpenAI de produção:** decidida por Kaio Macedo em 2026-11-10: a que o projeto já usa. Ele a cadastrou como variável sensível `OpenAI__ApiKey` nos projetos `agente-ecf-rag` e `agente-ecf-agente` em 2026-11-12, e a busca foi ligada com `Busca__Habilitada=true` e um novo deploy. Sem a chave ou com a busca desligada, a etapa 5 registra a limitação "consulta ao manual desativada".
 
 **Perguntas em produção (mudança 17):** ligadas em 2026-11-12. Kaio Macedo cadastrou a variável sensível `OpenAI__ApiKey` em `agente-ecf-rag` e `agente-ecf-agente`. O assistente criou as variáveis de configuração `Busca__Habilitada=true` (Api.RAG) e `Perguntas__Habilitada=true` e `Llm__Habilitada=true` (Api.Agente) e rodou o CD de novo. Elas ficam no Vercel, e não no `appsettings.Production.json`, porque o teste de contêineres do CI sobe as imagens no ambiente de produção sem chave. Para desligar, basta remover as variáveis de configuração e rodar o CD de novo. A avaliação local roda com `bash .github/scripts/avaliar-respostas.sh`, que lê a chave do arquivo do `SofiaInfis` e a conexão da base pelo Vercel, sem exibi-las.
 

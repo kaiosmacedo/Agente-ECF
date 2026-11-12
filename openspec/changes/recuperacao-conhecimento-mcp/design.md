@@ -1,6 +1,8 @@
 # Design: Recuperação de conhecimento por MCP
 
-> **Estado:** aprovado por Kaio Macedo em 2026-11-07, com o ADR 0005. A chave da OpenAI em produção ficou em aberto (E04): a busca vai para produção desativada.
+> **Estado:** aprovado por Kaio Macedo em 2026-11-07, com o ADR 0005. A chave da OpenAI em produção ficou em aberto (E04): a busca foi para produção desativada.
+>
+> **Atualizado em 2026-11-12:** E04 decidida em 2026-11-10 (a chave que o projeto já usa) e chave cadastrada no Vercel em 2026-11-12; a busca está ligada em produção, usada pela etapa 5 e pelas perguntas da mudança 17. Duas notas da verificação: a consulta da etapa 5 leva o código `REGRA_...` do manual quando existe, senão o do registro, porque o identificador `EST-...` só agrupa e a ferramenta recusa hífen (ver `docs/avaliacao/recuperacao.md`); e a relevância é 1 menos a distância de cosseno, como no contrato da ferramenta.
 
 ## Context
 

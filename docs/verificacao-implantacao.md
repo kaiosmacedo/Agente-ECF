@@ -29,4 +29,4 @@ Os dois serviços atendem ao roteiro da skill, com quatro ressalvas: o plano Hob
 
 - **Plano do Vercel:** confirmar se a INFIS pode usar o plano Hobby, que o Vercel destina a uso pessoal e não comercial, ou passar o time para um plano pago.
 - **MongoDB Atlas (mudança 12):** criar o cluster gratuito, o usuário de banco com permissão mínima e o acesso de rede, e cadastrar a conexão no Vercel. O Vercel não tem IP de saída fixo, então liberar o acesso de qualquer IP exige aprovação explícita, com senha forte e TLS. A skill pede isso, e o assistente não cria contas nem manuseia senhas.
-- **Chave da OpenAI em produção:** cadastrar no Vercel a variável sensível `OpenAI__ApiKey`, com a chave que o projeto já usa. Depois disso, o assistente liga a busca no manual (`Busca__Habilitada=true`, mudança 06) e, quando a mudança 10 estiver pronta, a análise com IA.
+- **Chave da OpenAI em produção:** feito em 2026-11-12. Kaio Macedo cadastrou a variável sensível `OpenAI__ApiKey` nos dois projetos, e a busca no manual (mudança 06) e as perguntas (mudança 17) foram ligadas. A análise com IA (mudança 10) está adiada pelo congelamento de 2026-11-12.
