@@ -1,5 +1,5 @@
 # Contexto de build: esta pasta, igual ao Root Directory do projeto no Vercel (ADR 0002).
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:11.0 AS build
 ARG VERSAO=local
 WORKDIR /src
 COPY Api.RAG.csproj ./
