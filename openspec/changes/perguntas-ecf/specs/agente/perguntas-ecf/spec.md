@@ -130,9 +130,9 @@ Cada pergunta SHALL virar uma execução registrada com o hash e o tamanho da pe
 - **AND** nenhuma busca nem geração é feita
 
 ### Requirement: REQ-PERGUNTA-010 Avaliação antes de ligar em produção
-O modo pergunta SHALL ficar desligado em produção até que um conjunto de perguntas sintéticas, com a página esperada no manual e perguntas que os manuais não respondem, passe no critério de aceite do plano técnico aprovado por Kaio Macedo (P11, GD-08). O resultado da avaliação SHALL ficar em `docs/avaliacao/perguntas.md`.
+O modo pergunta SHALL ficar desligado em produção até que um conjunto de perguntas sintéticas, com a página esperada no manual e perguntas que os manuais não respondem, passe no critério de aceite do plano técnico aprovado por Kaio Macedo (P11, GD-08). O resultado da avaliação SHALL ficar em `docs/avaliacao/respostas.md`.
 
 #### Scenario: Ligar sem avaliação
-- **GIVEN** `docs/avaliacao/perguntas.md` sem resultado aprovado
+- **GIVEN** `docs/avaliacao/respostas.md` sem resultado aprovado
 - **WHEN** o deploy de produção roda
 - **THEN** `Perguntas__Habilitada` continua `false`
