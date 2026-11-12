@@ -1,5 +1,7 @@
 using Api.Agente.Aplicacao.Conhecimento;
+using Api.Agente.Aplicacao.Consumo;
 using Api.Agente.Aplicacao.Execucoes;
+using Api.Agente.Aplicacao.Perguntas;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -37,7 +39,12 @@ internal sealed class FabricaApi(string? conexaoReal = null) : WebApplicationFac
         builder.UseSetting("SOFIA_A2A_TOKEN", ChaveDeTeste);
         if (conexaoReal is null)
         {
-            builder.ConfigureTestServices(servicos => servicos.AddSingleton<IRepositorioDeExecucoes>(new RepositorioEmMemoria()));
+            builder.ConfigureTestServices(servicos =>
+            {
+                servicos.AddSingleton<IRepositorioDeExecucoes>(new RepositorioEmMemoria());
+                servicos.AddSingleton<IRepositorioDePerguntas>(new PerguntasEmMemoria());
+                servicos.AddSingleton<IRepositorioDeConsumo>(new ConsumoEmMemoria());
+            });
         }
 
         // Como em produção hoje: a busca no manual responde desativada, sem rede (mudança 06, E04).

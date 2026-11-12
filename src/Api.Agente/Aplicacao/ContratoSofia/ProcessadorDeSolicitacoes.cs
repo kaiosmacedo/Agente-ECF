@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Json;
 using Api.Agente.Aplicacao.Analise;
 using Api.Agente.Aplicacao.Execucoes;
+using Api.Agente.Aplicacao.Perguntas;
 using Api.Agente.Dominio.Execucoes;
 
 namespace Api.Agente.Aplicacao.ContratoSofia;
@@ -15,7 +16,7 @@ internal sealed record DesfechoDaSolicitacao(ResultadoAnaliseSofia? Resultado, s
 /// Entrada do canal A2A (REQ-A2A-002): lê o contrato SOFIA, valida os identificadores e o contrato, entrega o pedido
 /// normalizado ao serviço de análise, registra a execução e projeta o resultado. O conteúdo é dado não confiável (P10).
 /// </summary>
-internal sealed class ProcessadorDeSolicitacoes(IRepositorioDeExecucoes repositorio, ServicoDeAnalise servico)
+internal sealed class ProcessadorDeSolicitacoes(IRepositorioDeExecucoes repositorio, ServicoDeAnalise servico, ServicoDePerguntas? perguntas = null)
 {
     /// <summary>Sem catálogo nem consulta ao manual: as etapas 4 e 5 não rodam. Para os testes do contrato.</summary>
     public ProcessadorDeSolicitacoes(IRepositorioDeExecucoes repositorio, AmbienteDaAnalise ambiente, TimeProvider relogio)
@@ -38,6 +39,14 @@ internal sealed class ProcessadorDeSolicitacoes(IRepositorioDeExecucoes reposito
         if (solicitacao is null || !ValidadorDaSolicitacao.IdentificadoresValidos(solicitacao))
         {
             return new DesfechoDaSolicitacao(null, "identificadores_invalidos");
+        }
+
+        // Pedido que só traz a pergunta, como o da Sofia central sem arquivo (REQ-PERGUNTA-001; mudança 17, D2).
+        if (perguntas is { Habilitada: true } && ValidarContrato(solicitacao) is null && SoTrazAPergunta(solicitacao))
+        {
+            var resposta = await perguntas.ResponderAsync(
+                new PedidoDePergunta(solicitacao.Pergunta!, "a2a", Guid.Parse(solicitacao.IdSolicitacao!), null, correlacao), cancelamento);
+            return new DesfechoDaSolicitacao(ProjecaoDaPerguntaParaSofia.Projetar(solicitacao, resposta), null);
         }
 
         try
@@ -94,6 +103,11 @@ internal sealed class ProcessadorDeSolicitacoes(IRepositorioDeExecucoes reposito
             new ErroSofia("falha_tecnica", Mensagem),
             Veredito: MontadorDoEnvelope.NomeDoVeredito(VereditoDaExecucao.NaoAvaliado));
     }
+
+    /// <summary>Um único documento cujo texto, sem espaços nas pontas, é a própria pergunta (D2).</summary>
+    public static bool SoTrazAPergunta(SolicitacaoAnaliseSofia solicitacao) =>
+        solicitacao is { Pergunta: { } pergunta, Documentos: [{ Texto: { } texto }] }
+        && string.Equals(texto.Trim(), pergunta.Trim(), StringComparison.Ordinal);
 
     private static string Hash(string texto) => Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(texto)));
 }
