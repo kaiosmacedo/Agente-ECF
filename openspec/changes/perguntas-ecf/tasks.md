@@ -37,6 +37,6 @@
 - [x] 6.1 Criar o conjunto `docs/avaliacao/perguntas-respostas.json` e o script `.github/scripts/avaliar-respostas.sh` (REQ-PERGUNTA-010; D11).
 - [x] 6.2 Rodar a avaliação local com a chave do RAG e registrar o resultado em `docs/avaliacao/respostas.md` (E11; D11).
 - [x] 6.3 Atualizar `docs/contratos/sofia-a2a.md`, `docs/ci-cd.md`, `docs/roteiro.md` e o cofre Obsidian.
-- [ ] 6.4 **(depende de Kaio Macedo)** Cadastrar `OpenAI__ApiKey` em `agente-ecf-rag` e `agente-ecf-agente` (E11).
-- [ ] 6.5 Ligar a busca, o LLM e as perguntas em produção, atualizar as cópias do cartão e verificar pela Sofia (Migration Plan, passo 4).
+- [x] 6.4 **(feito por Kaio Macedo em 2026-11-12)** Cadastrar `OpenAI__ApiKey` em `agente-ecf-rag` e `agente-ecf-agente` (E11).
+- [ ] 6.5 Ligar a busca, o LLM e as perguntas em produção, atualizar as cópias do cartão e verificar pela Sofia (Migration Plan, passo 4). **Feito em 2026-11-12, menos a verificação pela conversa da Sofia central:** as variáveis de configuração estão no Vercel. Em produção, 10 de 10 perguntas do roteiro saíram como esperado, o A2A 0.3.0 com o pseudodocumento saiu `concluido` e o cartão está na versão 1.4.0. A conversa da Sofia ainda não chama o agente, porque o catálogo dela não tem os IPs atuais do Vercel (`docs/contratos/sofia-a2a.md`). As cópias do cartão em `docs/contratos/` seguem com a configuração padrão (1.3.0), que é a usada nos testes de contrato.
 - [ ] 6.6 Executar `/opsx:verify` e arquivar a mudança.

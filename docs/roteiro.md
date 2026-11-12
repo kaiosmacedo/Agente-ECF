@@ -46,7 +46,7 @@ Cada mudança segue o fluxo da constitution (6.1): especificação → esclareci
 | 14 | `telemetria-servicos` | `plataforma/observabilidade` | 01 | — | `testes-agentes-ia` | Arquivada; em produção desde 2026-11-05 (PR #13) |
 | 15 | `classificacao-e-veredito` | `agente/contrato-resultado` | 03 | 07, 08 | `sofia-a2a-contrato`, `testes-agentes-ia` | Arquivada; em produção desde 2026-11-06 (PR #17 e PR #21) |
 | 16 | `documentacao-api` | `plataforma/documentacao-api` | 01, 03 | — | `testes-agentes-ia` | Concluída: em produção e arquivada em 2026-11-10 (PR #41). Página do Swagger em https://agente-ecf-agente.vercel.app/swagger |
-| 17 | `perguntas-ecf` | `agente/perguntas-ecf` | 05, 06, 13 (e 10, conforme E02) | 02, 03, 12 | `semantic-kernel-tools`, `mcp-client-server`, `rag-pgvector`, `controle-custos-llm`, `sofia-a2a-contrato`, `testes-agentes-ia` | Aprovada por Kaio Macedo em 2026-11-12, com a emenda v2.2.0; implementada na branch `feat/perguntas-ecf`, desligada em produção até a chave da OpenAI no `agente-ecf-agente` |
+| 17 | `perguntas-ecf` | `agente/perguntas-ecf` | 05, 06, 13 (e 10, conforme E02) | 02, 03, 12 | `semantic-kernel-tools`, `mcp-client-server`, `rag-pgvector`, `controle-custos-llm`, `sofia-a2a-contrato`, `testes-agentes-ia` | Aprovada por Kaio Macedo em 2026-11-12, com a emenda v2.2.0. Em produção desde 2026-11-12 (PR #49): perguntas pelo `POST /perguntas` e pelo A2A. Falta a Sofia central atualizar os IPs do Vercel no catálogo dela. |
 
 `github-versionamento` vale para todas as mudanças. As mudanças 05 a 09 podem avançar em paralelo com 04 quando suas dependências estiverem mescladas.
 

@@ -150,7 +150,7 @@ O script baixa os PDFs do Release privado `fontes-ecf-2026-11`, ou dos endereço
 
 **Chave da OpenAI de produção:** decidida por Kaio Macedo em 2026-11-10: a que o projeto já usa. Ele a cadastra como variável sensível `OpenAI__ApiKey` no projeto `agente-ecf-rag`, e depois a busca é ligada com `Busca__Habilitada=true` e um novo deploy. Até lá, a busca segue desligada, e a etapa 5 registra a limitação "consulta ao manual desativada".
 
-**Perguntas em produção (mudança 17):** ficam desligadas até Kaio Macedo cadastrar a variável sensível `OpenAI__ApiKey` também no projeto `agente-ecf-agente`. Depois, um PR liga `Busca:Habilitada` na Api.RAG e `Perguntas:Habilitada` e `Llm:Habilitada` na Api.Agente. A avaliação local roda com `bash .github/scripts/avaliar-respostas.sh`, que lê a chave do arquivo do `SofiaInfis` e a conexão da base pelo Vercel, sem exibi-las.
+**Perguntas em produção (mudança 17):** ligadas em 2026-11-12. Kaio Macedo cadastrou a variável sensível `OpenAI__ApiKey` em `agente-ecf-rag` e `agente-ecf-agente`. O assistente criou as variáveis de configuração `Busca__Habilitada=true` (Api.RAG) e `Perguntas__Habilitada=true` e `Llm__Habilitada=true` (Api.Agente) e rodou o CD de novo. Elas ficam no Vercel, e não no `appsettings.Production.json`, porque o teste de contêineres do CI sobe as imagens no ambiente de produção sem chave. Para desligar, basta remover as variáveis de configuração e rodar o CD de novo. A avaliação local roda com `bash .github/scripts/avaliar-respostas.sh`, que lê a chave do arquivo do `SofiaInfis` e a conexão da base pelo Vercel, sem exibi-las.
 
 ## Telemetria
 
