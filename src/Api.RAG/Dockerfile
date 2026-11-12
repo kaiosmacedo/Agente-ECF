@@ -8,7 +8,7 @@ COPY . ./
 # O CD grava versao.txt, porque o build do Vercel não recebe o ARG (P19, REQ-EXEC-006).
 RUN dotnet publish Api.RAG.csproj -c Release -o /app --no-restore -p:SourceRevisionId=$(cat versao.txt 2>/dev/null || echo "$VERSAO")
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0
+FROM mcr.microsoft.com/dotnet/aspnet:11.0
 WORKDIR /app
 COPY --from=build /app ./
 USER $APP_UID
