@@ -1,6 +1,8 @@
 # Design: Servidor A2A para a Sofia INFIS
 
 > **Estado:** implementado a pedido de Kaio Macedo em 2026-11-05, com protocolo A2A v1.0, rede `sofia_network` e sem token, por decisão dele. A emenda v2.0.0 (PR #8) foi aprovada e mesclada.
+>
+> **Atualizado em 2026-11-12:** desde 2026-11-10 valem D10 a D14: A2A 0.3.0 da Sofia central no mesmo `/a2a` e chave Bearer compartilhada `SOFIA_A2A_TOKEN`. Onde este documento ainda fala em "sem token", em autenticação fora do escopo ou em `message/send` com -32601 (que hoje só vale com `A2A-Version: 1.0`), prevalecem D10 a D12. O professor incluiu o agente no catálogo da Sofia central, e o teste ponta a ponta com ECF sintética passou em 2026-11-12 (D13).
 
 ## Context
 

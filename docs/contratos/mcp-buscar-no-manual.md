@@ -2,7 +2,7 @@
 
 Contrato da busca nos manuais oficiais que a Api.RAG expõe por MCP e que a Api.Agente usa na etapa 5 do fluxo (P15, RA-03). Requisitos em `openspec/changes/recuperacao-conhecimento-mcp/` (REQ-RECUP-001 a 006, REQ-CONSULTA-001 a 007) e transporte no [ADR 0005](../adr/0005-mcp-sem-estado-no-vercel.md).
 
-**Situação:** em produção desde a mudança 06, mas **desligada** (`Busca:Habilitada` é `false`): a chave da OpenAI de produção está em aberto, por decisão de Kaio Macedo em 2026-11-07. Desligada, a ferramenta responde `busca_desativada`, e a etapa 5 registra a limitação, sem falha técnica.
+**Situação:** em produção desde a mudança 06 e **ligada desde 2026-11-12** (`Busca__Habilitada=true` no Vercel, com a chave da OpenAI cadastrada por Kaio Macedo); também usada pelas perguntas sobre a ECF (mudança 17). O padrão do código continua `Busca:Habilitada` `false`. Desligada, a ferramenta responde `busca_desativada`, e a etapa 5 registra a limitação, sem falha técnica.
 
 ## Transporte
 

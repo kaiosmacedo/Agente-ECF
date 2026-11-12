@@ -1,6 +1,6 @@
 # Roteiro do Agente-ECF
 
-Sequência das mudanças OpenSpec que constroem o agente, com dependências, decisões pendentes (DP) e skills de cada uma. A constitution (`openspec/constitution.md`) prevalece sobre este roteiro. Atualizado em 2026-11-07.
+Sequência das mudanças OpenSpec que constroem o agente, com dependências, decisões pendentes (DP) e skills de cada uma. A constitution (`openspec/constitution.md`) prevalece sobre este roteiro. Atualizado em 2026-11-12, com o estado congelado depois da apresentação ao time.
 
 ## Como ler
 
@@ -16,15 +16,52 @@ Cada mudança segue o fluxo da constitution (6.1): especificação → esclareci
 
 | Etapa | Situação |
 | --- | --- |
-| Constitution | v2.1.0 vigente (ratificada na v1.1.0; emendas aprovadas por Kaio Macedo). |
+| Constitution | v2.2.0 vigente desde 2026-11-12 (ratificada na v1.1.0; emendas aprovadas por Kaio Macedo; a v2.2.0 acrescentou as perguntas sobre a ECF, mudança 17). |
 | CI/CD | CI com checks obrigatórios `OpenSpec` e `.NET`; CD publica no Vercel a cada merge na `main`. |
 | Vercel | Em produção: https://agente-ecf-agente.vercel.app e https://agente-ecf-rag.vercel.app (time `agent-ecf`). |
 | Mudança 01 | Concluída: mesclada (PR #2), em produção e arquivada em 2026-10-29; specs vigentes em `openspec/specs/plataforma/`. |
 | Mudança 02 | Congelada em 2026-11-05, por decisão de Kaio Macedo: não há autenticação de usuário. Desde 2026-11-10, o A2A exige só a chave Bearer compartilhada da Sofia central (SQ-12). Código preservado na branch `feat/autenticacao-autorizacao` (PR #7, em rascunho). |
-| Mudança 13 | Esqueleto em produção desde 2026-11-05 (PR #9): cartão, `SendMessage` A2A v1.0, contrato SOFIA v1.0 e CORS. Desde 2026-11-10, também o A2A 0.3.0 e a chave Bearer da Sofia central do treinamento, conferidos em produção com a chave; falta o professor cadastrar o agente no catálogo da Sofia central. Falta o teste com a Sofia real, quando o cliente A2A dela existir. A análise completa chega com as mudanças 03 a 10. |
+| Mudança 13 | Esqueleto em produção desde 2026-11-05 (PR #9): cartão, `SendMessage` A2A v1.0, contrato SOFIA v1.0 e CORS. Desde 2026-11-10, também o A2A 0.3.0 e a chave Bearer da Sofia central do treinamento, conferidos em produção com a chave; o professor cadastrou o agente no catálogo da Sofia central, e o teste ponta a ponta com ECF sintética pela Sofia central passou em 2026-11-12. Verificada em 2026-11-12; o arquivamento espera o aceite de Kaio Macedo à PATCH 2.2.1 (DP-16) e ao ajuste de quatro requisitos (tarefa 7.5). |
 | Mudança 03 | Em produção e arquivada desde 2026-11-05 (PR #10): nove etapas, status, achados e `GET /analises/{id}`, com banco no Neon. |
-| Mudanças 04 a 08 | Em produção: consumo e base do manual (04, 05), busca no manual por MCP, desligada até a decisão da chave (06), recepção da ECF (07) e validação estrutural do leiaute 12 (08). A ECF com erro de estrutura impeditivo sai `recusado`, com o que corrigir; sem ele, `parcial`. Estado de cada uma na tabela abaixo. |
-| Mudanças 09 a 12 | Especificações aprovadas por Kaio Macedo em 2026-10-29 (PR #4) e adequadas às regras SQ-12 e RA-07 em 2026-11-05. |
+| Mudanças 04 a 08 | Em produção: consumo e base do manual (04, 05), busca no manual por MCP, ligada desde 2026-11-12 (06), recepção da ECF (07) e validação estrutural do leiaute 12 (08). A ECF com erro de estrutura impeditivo sai `recusado`, com o que corrigir; sem ele, `parcial`. Estado de cada uma na tabela abaixo. |
+| Mudanças 09 a 12 | Especificações aprovadas por Kaio Macedo em 2026-10-29 (PR #4) e adequadas às regras SQ-12 e RA-07 em 2026-11-05. Adiadas pelo congelamento de 2026-11-12 (seção "Estado congelado"). |
+| Mudança 17 | Concluída: em produção desde 2026-11-12 (PR #49 a #53) e arquivada no mesmo dia. Perguntas sobre a ECF pelo `POST /perguntas` e pelo A2A, com a fonte citada. |
+
+## Estado congelado em 2026-11-12
+
+Depois da apresentação ao time, em 2026-11-12, Kaio Macedo decidiu congelar o estado atual. O que está em produção continua no ar, as mudanças que podiam ser concluídas foram verificadas e arquivadas, e nenhuma expansão ou função nova é implementada por enquanto. As expansões abaixo ficam documentadas, com as especificações preservadas em `openspec/changes/`, para quando ele decidir retomar.
+
+**Em produção:**
+
+- Validação estrutural da ECF do leiaute 12, com veredito e o que corrigir (`POST /analises` e A2A).
+- Consulta ao manual dos leiautes 7 a 12 na etapa 5 da análise.
+- Perguntas sobre a ECF com a fonte citada (`POST /perguntas` e A2A).
+- Página do Swagger.
+- Integração com a Sofia central, conferida em 2026-11-12 com pergunta e com ECF sintética.
+
+**Expansões adiadas:**
+
+| Expansão | O que acrescentaria | Onde está | O que falta para retomar |
+| --- | --- | --- | --- |
+| 09 `regras-negocio-irpj-csll` | Regras de IRPJ e CSLL como validadores, a partir das regras das tabelas do programa da ECF | Proposta e specs aprovadas | Respostas do superior (`docs/perguntas-negocio-ecf.md`), esclarecimentos, plano e tarefas |
+| 10 `analise-llm` | Etapas 7 e 8 (análise com LLM e validação da saída); com elas, o status pode chegar a `concluido` | Proposta, specs, plano e tarefas (PR #40) | Aprovação do plano por Kaio Macedo |
+| 11 `ferramentas-agente` | Etapa 6, ferramentas externas autorizadas | Proposta e specs aprovadas | Mudança 10 |
+| 12 `memoria-conversacional` | Conversa com memória em MongoDB Atlas | Proposta e specs aprovadas | Mudança 10 e um identificador de conversa, que o contrato SOFIA v1.0 não tem |
+| 02 `autenticacao-autorizacao` | Identidade verificada, perfis e organização | Branch `feat/autenticacao-autorizacao` (PR #7, rascunho) | Decisão de adotar autenticação (seção "Autenticação adiada") |
+| Perguntas, além da 17 | Comparar versões do manual, pergunta e ECF na mesma resposta (E09), fontes que não são manuais (legislação, soluções de consulta, jurisprudência) e outras escriturações (ECD, EFD) | Fora do escopo da 17 (`openspec/changes/archive/2026-11-12-perguntas-ecf/proposal.md`) | Nova mudança |
+| Limiar de relevância das perguntas (E08) | Recusar sem chamar o modelo quando nenhum trecho é relevante o bastante | Vazio; a avaliação achou uma diferença de só 0,044 entre perguntas respondíveis e não respondíveis (`docs/avaliacao/respostas.md`) | Avaliação com mais perguntas |
+| Dados reais | ECF de empresas reais | Seção "Pré-condições transversais" | DP-11, DP-12 e medir ECF reais contra o limite de 4 MiB do Vercel |
+
+**Mudanças verificadas que esperam um aceite para arquivar:**
+
+- 06 e 13: a PATCH 2.2.1 da constitution (DP-03 e DP-14 atualizadas com os valores em uso; DP-16 para as decisões resolvidas) e, na 13, o ajuste de quatro requisitos pelo `/opsx:update`. Os detalhes estão nas tarefas 7.2 da 06 e 7.5 da 13.
+- 05: o Release com os PDFs originais (tarefa 5.1) e a aprovação do conjunto de avaliação (DP-24).
+
+**Dependências externas em aberto:**
+
+- O Release com os PDFs originais dos manuais (mudança 05, tarefa 5.1): só Kaio Macedo pode criá-lo.
+- A lista de IPs exatos da Sofia central, que pode deixar de reconhecer o agente quando o Vercel troca de IP (`docs/contratos/sofia-a2a.md`).
+- O corte de 20.000 caracteres da Sofia central, que impede ECF reais por ela; a ECF sintética da demonstração passa.
 
 ## Mudanças
 
@@ -34,19 +71,19 @@ Cada mudança segue o fluxo da constitution (6.1): especificação → esclareci
 | 02 | `autenticacao-autorizacao` | `plataforma/autenticacao` | 01 | 09 | `testes-agentes-ia` | Congelada |
 | 03 | `execucao-e-resultado` | `agente/execucao-analise`, `agente/contrato-resultado` | 01, 13 | 07, 08, 15, 23, 25 | `sofia-a2a-contrato`, `testes-agentes-ia`, `vercel-dotnet-pgvector-atlas` | Arquivada; em produção desde 2026-11-05 (PR #10) |
 | 04 | `registro-consumo-ia` | `plataforma/consumo-custos` | 01 | 13, 26 | `controle-custos-llm`, `testes-agentes-ia` | Arquivada; em produção desde 2026-11-06 (PR #18) |
-| 05 | `base-conhecimento-ingestao` | `rag/ingestao-documentos`, `rag/administracao-base` | 04 | 02, 03, 04, 24 | `rag-pgvector`, `controle-custos-llm`, `testes-agentes-ia` | Em produção, com os seis manuais carregados e a recuperação avaliada (`docs/avaliacao/recuperacao.md`); falta o Release com os originais |
-| 06 | `recuperacao-conhecimento-mcp` | `rag/recuperacao-conhecimento`, `agente/consulta-conhecimento` | 03, 05 | 03, 14 | `mcp-client-server`, `rag-pgvector`, `vercel-dotnet-pgvector-atlas` | Implementada; chave decidida em 2026-11-10: a busca liga quando a chave for cadastrada no Vercel |
+| 05 | `base-conhecimento-ingestao` | `rag/ingestao-documentos`, `rag/administracao-base` | 04 | 02, 03, 04, 24 | `rag-pgvector`, `controle-custos-llm`, `testes-agentes-ia` | Em produção, com os seis manuais carregados e a recuperação avaliada (`docs/avaliacao/recuperacao.md`). Verificada em 2026-11-12: os 10 requisitos têm implementação e teste. Não pode ser arquivada ainda: falta o Release com os originais (tarefa 5.1, que só Kaio Macedo pode criar com `publicar-fontes.sh`) e a aprovação dele do conjunto de avaliação e dos valores 1600/300 (DP-24) |
+| 06 | `recuperacao-conhecimento-mcp` | `rag/recuperacao-conhecimento`, `agente/consulta-conhecimento` | 03, 05 | 03, 14 | `mcp-client-server`, `rag-pgvector`, `vercel-dotnet-pgvector-atlas` | Em produção com a busca ligada desde 2026-11-12, conferida na etapa 5 e no `/mcp`. Verificada em 2026-11-12; o arquivamento espera o aceite de Kaio Macedo à PATCH 2.2.1, que atualiza DP-03 e DP-14 com os valores em uso (tarefa 7.2) |
 | 07 | `recepcao-identificacao-leiaute` | `agente/recepcao-arquivos`, `agente/identificacao-leiaute` | 03 | 04, 05, 11, 22, 25 | `testes-agentes-ia` | Concluída: em produção e arquivada em 2026-11-07 |
 | 08 | `validacao-estrutural` | `agente/validacao-estrutural` | 07 | 04 | `testes-agentes-ia` | Concluída: em produção desde 2026-11-07 e arquivada em 2026-11-08. Estrutura do leiaute 12, com o catálogo `ecf-l12-1.5.0`, conferido no programa da ECF 12.2.8 pelo gabarito e pela decisão E10; o que segue declarado está em `docs/catalogo/revisao-ecf-leiaute-12.md` |
 | 09 | `regras-negocio-irpj-csll` | `agente/regras-negocio` | 08 | 04, 06 | `testes-agentes-ia` | Especificação aprovada; E01 e E02 dependem das respostas do superior (`docs/perguntas-negocio-ecf.md`) |
-| 10 | `analise-llm` | `agente/analise-llm` | 04, 06, 08 | 02, 12, 14 | `semantic-kernel-tools`, `controle-custos-llm`, `testes-agentes-ia` | Especificação aprovada; Kaio Macedo decidiu o modelo, o envio à OpenAI e a chave em 2026-11-10; plano no repositório (PR #40), à espera da aprovação, para retomar depois da autenticação com a Sofia |
+| 10 | `analise-llm` | `agente/analise-llm` | 04, 06, 08 | 02, 12, 14 | `semantic-kernel-tools`, `controle-custos-llm`, `testes-agentes-ia` | Especificação aprovada; Kaio Macedo decidiu o modelo, o envio à OpenAI e a chave em 2026-11-10; plano no repositório (PR #40), à espera da aprovação. Adiada pelo congelamento de 2026-11-12 |
 | 11 | `ferramentas-agente` | `agente/ferramentas` | 10 | 10 | `semantic-kernel-tools`, `testes-agentes-ia` | Especificação aprovada; esclarecimentos decididos em 2026-11-10 |
 | 12 | `memoria-conversacional` | `agente/memoria-conversacional` | 10 | 01, 11 | `memoria-mongodb`, `testes-agentes-ia` | Especificação aprovada; MongoDB Atlas e retenção decididos em 2026-11-10 |
-| 13 | `servidor-a2a` | `integracao/servidor-a2a`, `integracao/contrato-sofia`, `integracao/cors` | 01 | 09, 16 | `sofia-a2a-contrato`, `sofia-a2a-implementacao`, `sofia-cors-rest-a2a`, `vercel-dotnet-pgvector-atlas`, `testes-agentes-ia` | Esqueleto em produção |
+| 13 | `servidor-a2a` | `integracao/servidor-a2a`, `integracao/contrato-sofia`, `integracao/cors` | 01 | 09, 16 | `sofia-a2a-contrato`, `sofia-a2a-implementacao`, `sofia-cors-rest-a2a`, `vercel-dotnet-pgvector-atlas`, `testes-agentes-ia` | Em produção, com a Sofia central chamando o agente (pergunta e ECF sintética, 2026-11-12). Verificada; arquivamento à espera do aceite da PATCH 2.2.1 e do ajuste de quatro requisitos (tarefa 7.5) |
 | 14 | `telemetria-servicos` | `plataforma/observabilidade` | 01 | — | `testes-agentes-ia` | Arquivada; em produção desde 2026-11-05 (PR #13) |
 | 15 | `classificacao-e-veredito` | `agente/contrato-resultado` | 03 | 07, 08 | `sofia-a2a-contrato`, `testes-agentes-ia` | Arquivada; em produção desde 2026-11-06 (PR #17 e PR #21) |
 | 16 | `documentacao-api` | `plataforma/documentacao-api` | 01, 03 | — | `testes-agentes-ia` | Concluída: em produção e arquivada em 2026-11-10 (PR #41). Página do Swagger em https://agente-ecf-agente.vercel.app/swagger |
-| 17 | `perguntas-ecf` | `agente/perguntas-ecf` | 05, 06, 13 (e 10, conforme E02) | 02, 03, 12 | `semantic-kernel-tools`, `mcp-client-server`, `rag-pgvector`, `controle-custos-llm`, `sofia-a2a-contrato`, `testes-agentes-ia` | Aprovada por Kaio Macedo em 2026-11-12, com a emenda v2.2.0. Em produção desde 2026-11-12 (PR #49): perguntas pelo `POST /perguntas` e pelo A2A, verificadas também pela conversa da Sofia central. Falta `/opsx:verify` e arquivar. |
+| 17 | `perguntas-ecf` | `agente/perguntas-ecf` | 05, 06, 13 (e 10, conforme E02) | 02, 03, 12 | `semantic-kernel-tools`, `mcp-client-server`, `rag-pgvector`, `controle-custos-llm`, `sofia-a2a-contrato`, `testes-agentes-ia` | Aprovada por Kaio Macedo em 2026-11-12, com a emenda v2.2.0. Em produção desde 2026-11-12 (PR #49): perguntas pelo `POST /perguntas` e pelo A2A, verificadas também pela conversa da Sofia central. Concluída: verificada e arquivada em 2026-11-12. |
 
 `github-versionamento` vale para todas as mudanças. As mudanças 05 a 09 podem avançar em paralelo com 04 quando suas dependências estiverem mescladas.
 

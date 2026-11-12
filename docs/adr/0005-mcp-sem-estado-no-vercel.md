@@ -46,10 +46,10 @@ Feita em 2026-11-07, só em `localhost`, com duas instâncias do mesmo servidor 
 
 - O MCP funciona com a hospedagem atual, sem serviço novo.
 - Recursos que dependem de sessão, como notificações do servidor e assinatura de recursos, ficam fora. Nenhum é necessário para a busca.
-- **Falta confirmar no Vercel** (tarefa 6.2 da mudança 06): que a resposta `text/event-stream` passa sem ficar retida, o tempo máximo de execução da função para a busca e o limite de 4,5 MB do corpo, que não pesa para consultas pequenas. Se o transporte falhar em produção, a busca fica desativada por configuração e a etapa 5 vira limitação até a decisão sobre o host.
+- **Confirmado no Vercel** (tarefa 6.2 da mudança 06): em 2026-11-07, `tools/list` e `busca_desativada` em `text/event-stream`; em 2026-11-12, com a chave, `tools/call` com 5 trechos do leiaute 12, sem sessão. O tempo máximo de execução não foi medido à parte. Texto original da pendência: que a resposta `text/event-stream` passa sem ficar retida, o tempo máximo de execução da função para a busca e o limite de 4,5 MB do corpo, que não pesa para consultas pequenas. Se o transporte falhar em produção, a busca fica desativada por configuração e a etapa 5 vira limitação até a decisão sobre o host.
 
 ## Verificação
 
 - Teste de integração da mudança 06 com duas instâncias da Api.RAG atrás de um proxy que alterna as requisições.
-- Teste de arquitetura: nenhuma ferramenta MCP guarda estado entre chamadas, e a Api.Agente não tem conexão com o banco da Api.RAG (P15).
+- Teste de arquitetura: a Api.Agente não tem conexão com o banco da Api.RAG (P15). Que nenhuma ferramenta MCP guarda estado entre chamadas é coberto pelo teste com duas instâncias alternadas (`McpTests`), não por um teste de arquitetura.
 - Em produção, `tools/list` e `tools/call` respondidos por instâncias diferentes (tarefa 6.2 da mudança 06).
