@@ -139,10 +139,18 @@ O script baixa os PDFs do Release privado `fontes-ecf-2026-11`, ou dos endereço
 | Api.Agente | `Conhecimento:UrlDoServidorMcp` | `http://localhost:8081/mcp` | Endereço da ferramenta; em produção, `https://agente-ecf-rag.vercel.app/mcp`. |
 | Api.Agente | `Conhecimento:TimeoutEmSegundos` | `10` | Timeout de cada tentativa. |
 | Api.Agente | `Conhecimento:MaximoDeConsultasPorExecucao` | `10` | Regras consultadas por execução. |
+| Api.Agente | `Perguntas:Habilitada` | `false` | Liga as perguntas sobre a ECF no A2A e no `POST /perguntas` (mudança 17). |
+| Api.Agente | `Perguntas:LimitePorDia` | `500` | Perguntas respondidas por dia (UTC); acima disso, `limite_de_uso`. |
+| Api.Agente | `Perguntas:RelevanciaMinima` | vazio | Limiar dos trechos, só depois da avaliação (DP-03). |
+| Api.Agente | `Llm:Habilitada` | `false` | Liga a redação com o `gpt-4.1-mini`. Ligada, exige `OpenAI:ApiKey` na inicialização; desligada, a pergunta recebe só os trechos (reserva). |
+| Api.Agente | `Llm:Modelo` / `Temperatura` / `TimeoutPorChamadaEmSegundos` / `Retentativas` | `gpt-4.1-mini` / `0` / `30` / `2` | Parâmetros do modelo, os mesmos da mudança 10. |
+| Api.Agente | `Consumo:TabelasDePrecos` | `gpt-4.1-mini` a US$ 0,40 e US$ 1,60 por milhão | Preço conferido na página oficial em 2026-11-12 (DP-13). |
 
 **Chave da Sofia central (`SOFIA_A2A_TOKEN`):** desde 2026-11-10, o cartão e o RPC do A2A exigem a chave Bearer compartilhada do treinamento. Kaio Macedo a cadastra como variável sensível `SOFIA_A2A_TOKEN` no projeto `agente-ecf-agente` (`vercel env add SOFIA_A2A_TOKEN production --sensitive`, com o valor digitado por ele). Sem ela, o A2A responde 503 e o resto do serviço segue no ar. A conferência com a chave é `bash .github/scripts/verificar-sofia-a2a.sh`.
 
 **Chave da OpenAI de produção:** decidida por Kaio Macedo em 2026-11-10: a que o projeto já usa. Ele a cadastra como variável sensível `OpenAI__ApiKey` no projeto `agente-ecf-rag`, e depois a busca é ligada com `Busca__Habilitada=true` e um novo deploy. Até lá, a busca segue desligada, e a etapa 5 registra a limitação "consulta ao manual desativada".
+
+**Perguntas em produção (mudança 17):** ficam desligadas até Kaio Macedo cadastrar a variável sensível `OpenAI__ApiKey` também no projeto `agente-ecf-agente`. Depois, um PR liga `Busca:Habilitada` na Api.RAG e `Perguntas:Habilitada` e `Llm:Habilitada` na Api.Agente. A avaliação local roda com `bash .github/scripts/avaliar-respostas.sh`, que lê a chave do arquivo do `SofiaInfis` e a conexão da base pelo Vercel, sem exibi-las.
 
 ## Telemetria
 

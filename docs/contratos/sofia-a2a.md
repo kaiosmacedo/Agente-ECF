@@ -242,6 +242,28 @@ Resposta (o texto do Artifact foi formatado aqui para leitura; ele chega como st
 
 `concluido` fica reservado para quando todas as validações obrigatórias existirem (P05).
 
+## Pergunta sem arquivo (mudança 17)
+
+Quando a Sofia central encaminha uma pergunta sobre a ECF sem arquivo, o único documento é `sofia-question-context`, e o texto dele é a própria pergunta. Com `Perguntas:Habilitada=true`, o agente reconhece esse pedido pelo texto e não pelo id: um único documento cujo texto, sem espaços nas pontas, é igual à `pergunta`. Nesse caso, ele responde a pergunta em vez de devolver `nenhuma_ecf`.
+
+A resposta usa só os trechos de uma versão do manual: a que a pergunta citar, pelo leiaute ou pelo ano-calendário, ou o leiaute 12. O contrato v1.0 não muda:
+
+- `analise` traz a resposta, com até 3.000 caracteres;
+- `observacoes` traz uma linha por fonte, como "Fonte: Manual de Orientação do Leiaute 12 da ECF, versão leiaute-12, p. 63.", e a limitação da resposta;
+- `achados` vai vazio;
+- `idExecucaoAgente` é o identificador da pergunta, e não há `veredito`.
+
+| Situação | `status` do contrato | `erro.codigo` |
+| --- | --- | --- |
+| Resposta aceita, com ao menos um trecho citado | `concluido` | — |
+| Os manuais não tratam do assunto, a versão citada está fora da base ou só saíram os trechos (reserva) | `parcial` | — |
+| Pergunta vazia ou acima de 500 caracteres | `erro` | `pergunta_invalida` ou `pergunta_acima_do_limite` |
+| Busca no manual indisponível ou desligada | `erro` | `consulta_indisponivel` |
+| Limite diário de perguntas atingido | `erro` | `limite_de_uso` |
+| Banco indisponível | `erro` | `falha_tecnica` |
+
+A resposta nunca declara uma ECF conforme. `concluido` aqui quer dizer que a pergunta foi respondida com fonte, não que algum documento foi validado (constitution v2.2.0, seção 1.3). Com o modo pergunta ligado, o cartão sai na versão 1.4.0, com o exemplo "O que é o Registro 0000 da ECF?" e a tag `perguntas`. Desligado, o cartão continua o 1.3.0 e o pedido cai em `nenhuma_ecf`. O mesmo serviço atende `POST /perguntas` no REST, com o contrato `resposta-pergunta` 1.0.
+
 **Campos opcionais:** além dos da v1.0, o resultado traz `idExecucaoAgente`, o identificador para consultar `GET /analises/{id}` (ver `envelope-resultado.md`), `revisaoHumana`, `veredito`, `resumoAchados` e `naoVerificados`, a lista do que o arquivo não prova. Com achados, cada um traz também `categoria`, `origem`, `regra`, `classe`, `registros`, `orientacao` e `fonte`. Quem não os conhece pode ignorá-los.
 
 **Veredito:** é o campo que diz como a ECF está: `conforme`, `conforme-com-ressalvas`, `recusado`, `parcial` ou `nao-avaliado` (ver `envelope-resultado.md`). O `status` só diz se a análise rodou: `recusado` pode vir com `status` `parcial`.
