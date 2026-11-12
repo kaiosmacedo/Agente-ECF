@@ -211,7 +211,7 @@ curl -fsS "http://localhost:8080/analises/$execucao" \
 docker logs "$RAG" 2>&1 | jq -e -s 'any(.[]; .Message? == "Busca no manual recusada: busca_desativada")' > /dev/null \
   || falhar "$id" "A Api.RAG não recebeu a chamada MCP da Api.Agente."
 # Pergunta sem arquivo (mudança 17): com a busca desligada na Api.RAG, a resposta é consulta_indisponivel, sem falha.
-curl -fsS -X POST "http://localhost:8080/perguntas" -H "Content-Type: application/json" -d '{"pergunta":"O que é o Registro 0000 da ECF?"}' \
+curl -fsS -X POST "http://localhost:8080/perguntas" -H "Content-Type: application/json" -d '{"pergunta":"O que \u00e9 o Registro 0000 da ECF?"}' \
   | jq -e '.versaoContrato == "1.0" and .status == "erro" and .erro.codigo == "consulta_indisponivel" and .versaoDoManual == "leiaute-12"' > /dev/null \
   || falhar "$id" "A pergunta pelo REST não chegou à busca da Api.RAG."
 docker rm -f "$id" "$RAG" > /dev/null
