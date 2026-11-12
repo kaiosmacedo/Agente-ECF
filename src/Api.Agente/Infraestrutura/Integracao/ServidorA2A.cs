@@ -3,6 +3,7 @@ using A2A.AspNetCore;
 using Api.Agente.Aplicacao.ContratoSofia;
 using Api.Agente.Infraestrutura.Configuracao;
 using Api.Agente.Infraestrutura.Observabilidade;
+using Api.Agente.Infraestrutura.Perguntas;
 using Microsoft.Extensions.Options;
 
 namespace Api.Agente.Infraestrutura.Integracao;
@@ -19,7 +20,9 @@ internal static class ServidorA2A
 
         // O SDK lê as capacidades deste cartão; o endereço real vem das opções validadas, abaixo.
         servicos.AddA2AAgent<AgenteA2A>(AgenteA2A.Cartao(new OpcoesA2A().UrlPublica));
-        servicos.AddSingleton(provedor => AgenteA2A.Cartao(provedor.GetRequiredService<IOptions<OpcoesA2A>>().Value.UrlPublica));
+        servicos.AddSingleton(provedor => AgenteA2A.Cartao(
+            provedor.GetRequiredService<IOptions<OpcoesA2A>>().Value.UrlPublica,
+            provedor.GetService<IOptions<OpcoesDasPerguntas>>()?.Value.Habilitada ?? false));
         return servicos;
     }
 

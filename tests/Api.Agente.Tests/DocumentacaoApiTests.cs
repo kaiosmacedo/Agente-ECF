@@ -93,14 +93,14 @@ public sealed partial class DocumentacaoApiTests
         Assert.DoesNotContain(chave, documento, StringComparison.Ordinal);
     }
 
-    [Fact(DisplayName = "REQ-DOCAPI-004 O documento traz as quatro rotas públicas, com os métodos")]
+    [Fact(DisplayName = "REQ-DOCAPI-004 O documento traz as cinco rotas públicas, com os métodos")]
     public async Task RotasPublicas()
     {
         using var fabrica = new FabricaApi();
         using var documento = JsonDocument.Parse(await Ler(fabrica, "/openapi/v1.json"));
         var rotas = documento.RootElement.GetProperty("paths");
 
-        foreach (var (caminho, metodo) in new[] { ("/analises", "post"), ("/analises/{id}", "get"), ("/a2a", "post"), ("/.well-known/agent-card.json", "get") })
+        foreach (var (caminho, metodo) in new[] { ("/analises", "post"), ("/analises/{id}", "get"), ("/perguntas", "post"), ("/a2a", "post"), ("/.well-known/agent-card.json", "get") })
         {
             Assert.True(rotas.TryGetProperty(caminho, out var rota), $"Rota {caminho} ausente do documento.");
             Assert.True(rota.TryGetProperty(metodo, out _), $"Método {metodo} ausente em {caminho}.");

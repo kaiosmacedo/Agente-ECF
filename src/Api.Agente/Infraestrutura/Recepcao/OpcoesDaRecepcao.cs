@@ -4,6 +4,7 @@ using Api.Agente.Aplicacao.Analise;
 using Api.Agente.Aplicacao.Conhecimento;
 using Api.Agente.Aplicacao.ContratoSofia;
 using Api.Agente.Aplicacao.Execucoes;
+using Api.Agente.Aplicacao.Perguntas;
 using Api.Agente.Dominio.Leiaute;
 using Api.Agente.Infraestrutura.Configuracao;
 using Api.Agente.Infraestrutura.Integracao;
@@ -73,7 +74,7 @@ internal static class RegistroDaRecepcao
                 validacao: new ParametrosDaValidacao(limites.MaximoDeAchadosPorRegra, limites.MaximoDeAchados));
         });
         servicos.AddSingleton(provedor => new ProcessadorDeSolicitacoes(
-            provedor.GetRequiredService<IRepositorioDeExecucoes>(), provedor.GetRequiredService<ServicoDeAnalise>()));
+            provedor.GetRequiredService<IRepositorioDeExecucoes>(), provedor.GetRequiredService<ServicoDeAnalise>(), provedor.GetService<ServicoDePerguntas>()));
         return servicos;
     }
 }

@@ -5,6 +5,7 @@ using Api.Agente.Infraestrutura.Cors;
 using Api.Agente.Infraestrutura.Hospedagem;
 using Api.Agente.Infraestrutura.Integracao;
 using Api.Agente.Infraestrutura.Observabilidade;
+using Api.Agente.Infraestrutura.Perguntas;
 using Api.Agente.Infraestrutura.Persistencia;
 using Api.Agente.Infraestrutura.Recepcao;
 
@@ -19,6 +20,7 @@ builder.Services.AdicionarRecepcao(builder.Configuration);
 builder.Services.AdicionarServidorA2A(builder.Configuration);
 builder.Services.AdicionarPersistencia(builder.Configuration);
 builder.Services.AdicionarConsultaAoManual(builder.Configuration);
+builder.Services.AdicionarPerguntas(builder.Configuration);
 builder.Services.AdicionarDocumentacao();
 
 var app = builder.Build();
@@ -36,6 +38,7 @@ app.UsarAutenticacaoDaSofia();
 app.MapearSaude();
 app.MapearA2A();
 app.MapearAnalises();
+app.MapearPerguntas();
 app.UsarDocumentacao();
 
 await app.RunAsync();
