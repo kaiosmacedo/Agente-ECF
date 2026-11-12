@@ -1,4 +1,6 @@
 using System.Net;
+using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using Api.Agente.Tests.Infra;
@@ -103,6 +105,64 @@ public sealed partial class DocumentacaoApiTests
             Assert.True(rotas.TryGetProperty(caminho, out var rota), $"Rota {caminho} ausente do documento.");
             Assert.True(rota.TryGetProperty(metodo, out _), $"Método {metodo} ausente em {caminho}.");
         }
+    }
+
+    [Fact(DisplayName = "REQ-DOCAPI-005 O multipart declara o arquivo binário em uma propriedade obrigatória com nome")]
+    public async Task UploadDeclaraParteArquivo()
+    {
+        using var fabrica = new FabricaApi();
+        using var documento = JsonDocument.Parse(await Ler(fabrica, "/openapi/v1.json"));
+        var corpo = documento.RootElement.GetProperty("paths").GetProperty("/analises").GetProperty("post").GetProperty("requestBody");
+        var schema = corpo.GetProperty("content").GetProperty("multipart/form-data").GetProperty("schema");
+
+        Assert.True(corpo.GetProperty("required").GetBoolean());
+        Assert.Equal("object", schema.GetProperty("type").GetString());
+        var arquivo = Assert.Single(schema.GetProperty("properties").EnumerateObject());
+        Assert.Equal("arquivo", arquivo.Name);
+        Assert.Equal("string", arquivo.Value.GetProperty("type").GetString());
+        Assert.Equal("binary", arquivo.Value.GetProperty("format").GetString());
+        Assert.Equal("arquivo", Assert.Single(schema.GetProperty("required").EnumerateArray()).GetString());
+    }
+
+    [Theory(DisplayName = "REQ-DOCAPI-005 O multipart construído com o nome publicado analisa a ECF; sem anexo retorna 400")]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task EnvioConformeDocumento(bool anexar)
+    {
+        using var fabrica = new FabricaApi();
+        using var documento = JsonDocument.Parse(await Ler(fabrica, "/openapi/v1.json"));
+        var schema = documento.RootElement.GetProperty("paths").GetProperty("/analises").GetProperty("post")
+            .GetProperty("requestBody").GetProperty("content").GetProperty("multipart/form-data").GetProperty("schema");
+        var nome = Assert.Single(schema.GetProperty("properties").EnumerateObject()).Name;
+        using var formulario = new MultipartFormDataContent();
+        if (anexar)
+        {
+            var texto = await File.ReadAllTextAsync(Path.Combine(Repositorio.Raiz, "tests", "Api.Agente.Tests", "Dados", "ecf", "gabarito", "01-valor-fora-da-lista.txt"), Cancelamento);
+            var arquivo = new ByteArrayContent(Encoding.Latin1.GetBytes(texto));
+            arquivo.Headers.ContentType = new MediaTypeHeaderValue("text/plain");
+            formulario.Add(arquivo, nome, "ecf-sintetica.txt");
+        }
+        else
+        {
+            formulario.Add(new StringContent("sem anexo"), "descricao");
+        }
+
+        using var resposta = await fabrica.CreateClient().PostAsync(new Uri("/analises", UriKind.Relative), formulario, Cancelamento);
+        using var resultado = JsonDocument.Parse(await resposta.Content.ReadAsStringAsync(Cancelamento));
+        if (!anexar)
+        {
+            Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
+            Assert.Contains("Falta a parte \"arquivo\"", resultado.RootElement.GetProperty("detail").GetString(), StringComparison.Ordinal);
+            return;
+        }
+
+        Assert.Equal(HttpStatusCode.Created, resposta.StatusCode);
+        Assert.Equal("recusado", resultado.RootElement.GetProperty("veredito").GetString());
+        var achado = Assert.Single(resultado.RootElement.GetProperty("achados").EnumerateArray());
+        Assert.Equal("EST-CAMPO-006 0000.IND_SIT_INI_PER", achado.GetProperty("fundamento").GetString());
+        var registro = Assert.Single(achado.GetProperty("registros").EnumerateArray());
+        Assert.Equal("0000", registro.GetProperty("registro").GetString());
+        Assert.Equal(1, registro.GetProperty("linha").GetInt32());
     }
 
     // A configuração da interface fica num objeto literal em index.js: var configObject = {...};

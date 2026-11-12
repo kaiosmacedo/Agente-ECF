@@ -50,6 +50,8 @@ docker compose up --build agente-ecf
 
 Um arquivo da ECF pode ser enviado em `POST /analises`, em `multipart/form-data` na parte `arquivo`. O resultado de uma análise fica em `GET /analises/{id}` (`docs/contratos/envelope-resultado.md`), e a API REST está descrita em `/openapi/v1.json`, com a página do Swagger em `/swagger` (em produção, https://agente-ecf-agente.vercel.app/swagger).
 
+Para testar pelo Swagger, expandir `POST /analises`, clicar em `Try it out`, selecionar a ECF no campo **arquivo** e executar. Os exemplos sintéticos e os resultados esperados estão em [docs/demonstracao-ecf.md](docs/demonstracao-ecf.md).
+
 Com `dotnet run`, a Api.Agente escuta em `http://localhost:8080`, desde que `ConnectionStrings__Execucoes` esteja definida, e a Api.RAG em `http://localhost:8081` (perfil local). Em contêiner, a porta vem de `PORT`, com 8080 como padrão. Os demais comandos de verificação estão em `docs/ci-cd.md`.
 
 ## Fluxo de trabalho
