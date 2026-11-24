@@ -1,10 +1,13 @@
 # Atualização de dependências (SQ-11): actions fixadas por SHA, pacotes NuGet e imagens Docker.
+# Pausado desde 2026-11-23, com o estado congelado (docs/roteiro.md): open-pull-requests-limit: 0 não abre PR de versão.
+# As atualizações de segurança do Dependabot, quando ligadas no repositório, não dependem deste limite. Para retomar, remova as linhas do limite.
 version: 2
 updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
+    open-pull-requests-limit: 0
     commit-message:
       prefix: ci
 
@@ -14,6 +17,7 @@ updates:
       - /tests/*
     schedule:
       interval: weekly
+    open-pull-requests-limit: 0
     commit-message:
       prefix: build
       include: scope
@@ -23,6 +27,7 @@ updates:
       - /src/*
     schedule:
       interval: weekly
+    open-pull-requests-limit: 0
     commit-message:
       prefix: build
       include: scope
