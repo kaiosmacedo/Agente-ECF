@@ -20,7 +20,7 @@ Cada mudança segue o fluxo da constitution (6.1): especificação → esclareci
 | CI/CD | CI com checks obrigatórios `OpenSpec` e `.NET`; CD publica no Vercel a cada merge na `main`. |
 | Vercel | Em produção: https://agente-ecf-agente.vercel.app e https://agente-ecf-rag.vercel.app (time `agent-ecf`). |
 | Mudança 01 | Concluída: mesclada (PR #2), em produção e arquivada em 2026-10-29; specs vigentes em `openspec/specs/plataforma/`. |
-| Mudança 02 | Congelada em 2026-11-05, por decisão de Kaio Macedo: não há autenticação de usuário. Desde 2026-11-10, o A2A exige só a chave Bearer compartilhada da Sofia central (SQ-12). Código preservado na branch `feat/autenticacao-autorizacao` (PR #7, em rascunho). |
+| Mudança 02 | Congelada em 2026-11-05, por decisão de Kaio Macedo: não há autenticação de usuário. Desde 2026-11-10, o A2A exige só a chave Bearer compartilhada da Sofia central (SQ-12). Código preservado na tag `congelada/autenticacao-autorizacao` (commit `f23331f`, do PR #7, fechado na limpeza das branches de 2026-11-23). |
 | Mudança 13 | Esqueleto em produção desde 2026-11-05 (PR #9): cartão, `SendMessage` A2A v1.0, contrato SOFIA v1.0 e CORS. Desde 2026-11-10, também o A2A 0.3.0 e a chave Bearer da Sofia central do treinamento, conferidos em produção com a chave; o professor cadastrou o agente no catálogo da Sofia central, e o teste ponta a ponta com ECF sintética pela Sofia central passou em 2026-11-12. Verificada em 2026-11-12; o arquivamento espera o aceite de Kaio Macedo à PATCH 2.2.1 (DP-16) e ao ajuste de quatro requisitos (tarefa 7.5). |
 | Mudança 03 | Em produção e arquivada desde 2026-11-05 (PR #10): nove etapas, status, achados e `GET /analises/{id}`, com banco no Neon. |
 | Mudanças 04 a 08 | Em produção: consumo e base do manual (04, 05), busca no manual por MCP, ligada desde 2026-11-12 (06), recepção da ECF (07) e validação estrutural do leiaute 12 (08). A ECF com erro de estrutura impeditivo sai `recusado`, com o que corrigir; sem ele, `parcial`. Estado de cada uma na tabela abaixo. |
@@ -47,7 +47,7 @@ Depois da apresentação ao time, em 2026-11-12, Kaio Macedo decidiu congelar o 
 | 10 `analise-llm` | Etapas 7 e 8 (análise com LLM e validação da saída); com elas, o status pode chegar a `concluido` | Proposta, specs, plano e tarefas (PR #40) | Aprovação do plano por Kaio Macedo |
 | 11 `ferramentas-agente` | Etapa 6, ferramentas externas autorizadas | Proposta e specs aprovadas | Mudança 10 |
 | 12 `memoria-conversacional` | Conversa com memória em MongoDB Atlas | Proposta e specs aprovadas | Mudança 10 e um identificador de conversa, que o contrato SOFIA v1.0 não tem |
-| 02 `autenticacao-autorizacao` | Identidade verificada, perfis e organização | Branch `feat/autenticacao-autorizacao` (PR #7, rascunho) | Decisão de adotar autenticação (seção "Autenticação adiada") |
+| 02 `autenticacao-autorizacao` | Identidade verificada, perfis e organização | Tag `congelada/autenticacao-autorizacao` (código do PR #7) | Decisão de adotar autenticação (seção "Autenticação adiada") |
 | Perguntas, além da 17 | Comparar versões do manual, pergunta e ECF na mesma resposta (E09), fontes que não são manuais (legislação, soluções de consulta, jurisprudência) e outras escriturações (ECD, EFD) | Fora do escopo da 17 (`openspec/changes/archive/2026-11-12-perguntas-ecf/proposal.md`) | Nova mudança |
 | Limiar de relevância das perguntas (E08) | Recusar sem chamar o modelo quando nenhum trecho é relevante o bastante | Vazio; a avaliação achou uma diferença de só 0,044 entre perguntas respondíveis e não respondíveis (`docs/avaliacao/respostas.md`) | Avaliação com mais perguntas |
 | Dados reais | ECF de empresas reais | Seção "Pré-condições transversais" | DP-11, DP-12 e medir ECF reais contra o limite de 4 MiB do Vercel |
@@ -56,6 +56,8 @@ Depois da apresentação ao time, em 2026-11-12, Kaio Macedo decidiu congelar o 
 
 - 06 e 13: a PATCH 2.2.1 da constitution (DP-03 e DP-14 atualizadas com os valores em uso; DP-16 para as decisões resolvidas) e, na 13, o ajuste de quatro requisitos pelo `/opsx:update`. Os detalhes estão nas tarefas 7.2 da 06 e 7.5 da 13.
 - 05: o Release com os PDFs originais (tarefa 5.1) e a aprovação do conjunto de avaliação (DP-24).
+
+**Branches:** desde a limpeza de 2026-11-23, o repositório só tem a `main`. As branches já mescladas foram apagadas (cada uma pode ser restaurada pela página do seu PR), o código da mudança 02 ficou na tag `congelada/autenticacao-autorizacao`, e o dependabot está pausado (`open-pull-requests-limit: 0`) enquanto o estado estiver congelado.
 
 **Dependências externas em aberto:**
 
@@ -143,7 +145,7 @@ A primeira versão não tem autenticação de usuário (constitution, SQ-12). De
 **Retomada:**
 
 1. Definir o que a skill `sofia-cors-rest-a2a` deixa em aberto: emissor, audience de cada agente, scopes ou papéis, como a Sofia obtém o token e se o cartão fica público. O contrato SOFIA v1.0 não tem organização, então é preciso decidir também como ela chega (`X-Organizacao-Id` ou outro meio, sempre fora do contrato).
-2. Comparar a definição com a especificação da mudança 02 e com o trabalho preservado no PR #7 (ADR 0003, validação de JWT, perfis e `X-Organizacao-Id`). A diretriz da skill é compatível com a validação de JWT já pronta.
+2. Comparar a definição com a especificação da mudança 02 e com o trabalho preservado na tag `congelada/autenticacao-autorizacao`, do PR #7 (ADR 0003, validação de JWT, perfis e `X-Organizacao-Id`); para retomar, criar a branch a partir da tag. A diretriz da skill é compatível com a validação de JWT já pronta.
 3. Concluir a mudança 02, com CORS antes da autenticação no pipeline. A política de autenticação por padrão protege os endpoints existentes; cada um passa a declarar o perfil exigido.
 4. Reaplicar as exigências da tabela, com testes.
 5. Encerrar a regra SQ-12 por emenda à constitution.
